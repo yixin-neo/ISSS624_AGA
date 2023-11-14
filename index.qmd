@@ -1,0 +1,13 @@
+---
+title: "ISSS624_AGA"
+---
+
+Welcome to my Applied Geospatial Analysis Website.
+
+I will be sharing my learning journey with you.
+
+```{r}
+#| echo: false
+#| eval: false
+1 + 1
+```
