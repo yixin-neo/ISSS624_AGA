@@ -1,5 +1,5 @@
 ---
-title: "Hands-on Exercise 1: Geospatial Data Wrangling with R"
+title: "Hands-on Exercise 1.1: Geospatial Data Wrangling with R"
 author: "NeoYX"
 date: '14 Nov 2023'
 date-modified: "`r Sys.Date()`"

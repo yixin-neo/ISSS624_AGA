@@ -1,0 +1,48 @@
+---
+title: "Hands-on Exercise 2.2: Global Measures of Spatial Autocorrelation"
+author: "NeoYX"
+date: '20 Nov 2023'
+date-modified: "`r Sys.Date()`"
+editor: visual
+execute: 
+  freeze: auto
+  warning: false
+  #echo: false
+  #message: false
+  html:
+    code-fold: True
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
+---
+
+## Overview
+
+## Getting Started
+
+```{r}
+pacman::p_load(sf, tidyverse)
+```
+
+## 1.1 Learning Outcome
+
+## Importing Geospatial data
+
+```{r}
+
+```
+
+```{r}
+#| eval: false
+
+```
+
+```{r}
+#| code-fold: True
+#| eval: false
+#| echo: false
+```
+
+## Theories
+
+### 

@@ -7,8 +7,21 @@ website:
     left: 
       - text: "Hands-on Exercises"
         menu: 
-          - text: "Hands-on Exercise 1"
-            href: "Hands-on_Ex1/Hands-on_Ex1.qmd"
+          - text: "Hands-on Exercise 1.1"
+            href: "Hands-on_Ex1/Hands-on_Ex1_1.qmd"
+          - text: "Hands-on Exercise 1.2"
+            href: "Hands-on_Ex1/Hands-on_Ex1_2.qmd"
+          - text: "Hands-on Exercise 2.1"
+            #href: "Hands-on_Ex2/Hands-on_Ex2_1.qmd"
+          - text: "Hands-on Exercise 2.2"
+            #href: "Hands-on_Ex2/Hands-on_Ex2_2.qmd"
+          - text: "Hands-on Exercise 2.3"
+            #href: "Hands-on_Ex2/Hands-on_Ex2_3.qmd"
+            
+      - text: "Take-home Exercises"
+        menu: 
+          - text: "Take-home Exercise 1"
+          - text: "Take-home Exercise 2"
 
     right:
       - href: index.qmd
@@ -21,7 +34,12 @@ website:
     contents:
       - section: "Hands-on Exercise"
         contents:
-          - Hands-on_Ex1/Hands-on_Ex1.qmd
+          - Hands-on_Ex1/Hands-on_Ex1_1.qmd
+          - Hands-on_Ex1/Hands-on_Ex1_2.qmd
+          #- Hands-on_Ex2/Hands-on_Ex2_1.qmd
+          #- Hands-on_Ex2/Hands-on_Ex2_2.qmd
+          #- Hands-on_Ex2/Hands-on_Ex2_2.qmd
+          
 
 format:
   html:

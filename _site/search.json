@@ -7,39 +7,151 @@
     "text": "About this site\n\n1 + 1\n\n[1] 2"
   },
   {
-    "objectID": "Hands-on_Ex1/Hands-on_Ex1.html",
-    "href": "Hands-on_Ex1/Hands-on_Ex1.html",
-    "title": "Hands-on Exercise 1: Geospatial Data Wrangling with R",
+    "objectID": "Hands-on_Ex1/Hands-on_Ex1_1.html",
+    "href": "Hands-on_Ex1/Hands-on_Ex1_1.html",
+    "title": "Hands-on Exercise 1.1: Geospatial Data Wrangling with R",
     "section": "",
     "text": "In this hands-on exercise, I will learn how to import and wrangle geospatial data using appropriate R packages."
   },
   {
-    "objectID": "Hands-on_Ex1/Hands-on_Ex1.html#getting-started",
-    "href": "Hands-on_Ex1/Hands-on_Ex1.html#getting-started",
-    "title": "Hands-on Exercise 1: Geospatial Data Wrangling with R",
+    "objectID": "Hands-on_Ex1/Hands-on_Ex1_1.html#getting-started",
+    "href": "Hands-on_Ex1/Hands-on_Ex1_1.html#getting-started",
+    "title": "Hands-on Exercise 1.1: Geospatial Data Wrangling with R",
     "section": "Getting Started",
     "text": "Getting Started\nThe code chunk below install and load sf and tidyverse packages into R environment.\nThe sp package provides classes and methods for spatial data types in 2005. The sf package was released in 2016 to give standardise support for vector data in R. It is also coherent with tidyverse.\n\npacman::p_load(sf, tidyverse)"
   },
   {
-    "objectID": "Hands-on_Ex1/Hands-on_Ex1.html#learning-outcome",
-    "href": "Hands-on_Ex1/Hands-on_Ex1.html#learning-outcome",
-    "title": "Hands-on Exercise 1: Geospatial Data Wrangling with R",
+    "objectID": "Hands-on_Ex1/Hands-on_Ex1_1.html#learning-outcome",
+    "href": "Hands-on_Ex1/Hands-on_Ex1_1.html#learning-outcome",
+    "title": "Hands-on Exercise 1.1: Geospatial Data Wrangling with R",
     "section": "1.1 Learning Outcome",
     "text": "1.1 Learning Outcome"
   },
   {
-    "objectID": "Hands-on_Ex1/Hands-on_Ex1.html#importing-geospatial-data",
-    "href": "Hands-on_Ex1/Hands-on_Ex1.html#importing-geospatial-data",
-    "title": "Hands-on Exercise 1: Geospatial Data Wrangling with R",
+    "objectID": "Hands-on_Ex1/Hands-on_Ex1_1.html#importing-geospatial-data",
+    "href": "Hands-on_Ex1/Hands-on_Ex1_1.html#importing-geospatial-data",
+    "title": "Hands-on Exercise 1.1: Geospatial Data Wrangling with R",
     "section": "Importing Geospatial data",
     "text": "Importing Geospatial data\n\nImporting polygon feature data\nst_read() is a func from sf package, used to read files in shapefile format.\ndsn- data source name\n\nmpsz <- st_read(dsn=\"data/geospatial\", layer = \"MP14_SUBZONE_WEB_PL\")\n\nReading layer `MP14_SUBZONE_WEB_PL' from data source \n  `C:\\yixin-neo\\ISSS624_AGA\\Hands-on_Ex1\\data\\geospatial' using driver `ESRI Shapefile'\nSimple feature collection with 323 features and 15 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 2667.538 ymin: 15748.72 xmax: 56396.44 ymax: 50256.33\nProjected CRS: SVY21\n\n\n\n\nGeospatial data handling functions\n·       st_read & read sf: read simple features from file or database, or retrieve layer names and their geometry type(s)\n·       st write &write_sf: write simple features object to file or database\n·       st_as_sf: convert a sf object from a non-geospatial tabular data frame\n·       st as_text: convert to Well Known Text(WKT)\n·       st as_binary: convert to Well Known Binary(WKB)\n·       st_as_sfc: convert geometries to sfc (e.g., from WKT, WKB) as(x, “Spatial”): convert to Spatial*\n·       st transform(x, crs, ...): convert coordinates of x to a different coordinate reference system\nThe code chunk below allows us to unsf the mpsz and work tbl_df or data.frame.\n\nmpsz_tbl_df <- as_tibble(mpsz)"
   },
   {
-    "objectID": "Hands-on_Ex1/Hands-on_Ex1.html#theories",
-    "href": "Hands-on_Ex1/Hands-on_Ex1.html#theories",
-    "title": "Hands-on Exercise 1: Geospatial Data Wrangling with R",
+    "objectID": "Hands-on_Ex1/Hands-on_Ex1_1.html#theories",
+    "href": "Hands-on_Ex1/Hands-on_Ex1_1.html#theories",
+    "title": "Hands-on Exercise 1.1: Geospatial Data Wrangling with R",
     "section": "Theories",
     "text": "Theories\n\nKML and shapefiles\nA KMZ file is a zipped (or compressed) KML file, and a SHZ is a zipped/compressed Shapefile.\nA shapefile is an Esri vector data storage format for storing the location, shape, and attributes of geographic features. It is stored as a set of related files and contains one feature class.\nThe shapefile format can spatially describe vector features: points, lines, and polygons, representing, for example, water wells, rivers, and lakes. Each item usually has attributes that describe it, such as name or temperature.\nKML and Shapefiles could contain the exact same data, however KML (Keyhole Markup Language) is much more suited to displaying time based track information, whereas shapefiles are more suited to displaying Geometries, like boundaries, areas, roads, etc.\nShapefiles are composed of 3 mandatory files\n·       . shp (geometry), <- multipolygon, polylines or points. Can only be one type in each file , can combined in layers\n·       . dbf (attributes) <- table\n·       . shx (index)  <- binds first two together\n\n\nGCS [Geographic Coordinate System] (3D) and PCS [Projected Coordinate System ] (2D)\nGCS: uses lat, long, elevation to locate positions on Earth. Units are in degree and metres. Earth is represented as a sphere. Eg. WGS84 (world Gedetic system 1984)\nPCS: Units are usually metres to locate position on a Flat surface. Involves projecting 3D Earth into a 2D plane. It distorts the true shapes, areas, distances, or directions to some extent, depending on the projection method chosen.\nPreserve:\n·       Conformal projections minimize distortion in shape\n·       Equidistant projections minimize distortion in distance\n·       Equal-area projection minimize distortion in area\n·       Azimuthal or True-direction projections minimize distortion in direction.\nGoogle maps uses Mercator projection system. It is chosen as it preserves direction and angles. It is useful for navigation (google map) . It is originally created for sea navigation in older days. The cons are that this projection does not preserve area and shape.\nSingapore uses SVY21 or the EPSG:3414 projected coordinate system."
+  },
+  {
+    "objectID": "Hands-on_Ex1/Hands-on_Ex1_2.html#getting-started",
+    "href": "Hands-on_Ex1/Hands-on_Ex1_2.html#getting-started",
+    "title": "Hands-on Exercise 1.2: Choropleth Mapping with R",
+    "section": "Getting Started",
+    "text": "Getting Started\n\npacman::p_load(sf, tidyverse)"
+  },
+  {
+    "objectID": "Hands-on_Ex1/Hands-on_Ex1_2.html#learning-outcome",
+    "href": "Hands-on_Ex1/Hands-on_Ex1_2.html#learning-outcome",
+    "title": "Hands-on Exercise 1.2: Choropleth Mapping with R",
+    "section": "1.1 Learning Outcome",
+    "text": "1.1 Learning Outcome"
+  },
+  {
+    "objectID": "Hands-on_Ex1/Hands-on_Ex1_2.html#importing-geospatial-data",
+    "href": "Hands-on_Ex1/Hands-on_Ex1_2.html#importing-geospatial-data",
+    "title": "Hands-on Exercise 1.2: Choropleth Mapping with R",
+    "section": "Importing Geospatial data",
+    "text": "Importing Geospatial data\n\nImporting polygon feature data\nst_read() is a func from sf package, used to read files in shapefile format.\ndsn- data source name\n\nmpsz <- st_read(dsn=\"data/geospatial\", layer = \"MP14_SUBZONE_WEB_PL\")\n\nReading layer `MP14_SUBZONE_WEB_PL' from data source \n  `C:\\yixin-neo\\ISSS624_AGA\\Hands-on_Ex1\\data\\geospatial' using driver `ESRI Shapefile'\nSimple feature collection with 323 features and 15 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 2667.538 ymin: 15748.72 xmax: 56396.44 ymax: 50256.33\nProjected CRS: SVY21\n\n\n\nmpsz_tbl_df <- as_tibble(mpsz)"
+  },
+  {
+    "objectID": "Hands-on_Ex1/Hands-on_Ex1_2.html#theories",
+    "href": "Hands-on_Ex1/Hands-on_Ex1_2.html#theories",
+    "title": "Hands-on Exercise 1.2: Choropleth Mapping with R",
+    "section": "Theories",
+    "text": "Theories"
+  },
+  {
+    "objectID": "Hands-on_Ex2/Hands-on_Ex2_1.html#getting-started",
+    "href": "Hands-on_Ex2/Hands-on_Ex2_1.html#getting-started",
+    "title": "Hands-on Exercise 2.1: Spatial Weights and Applications",
+    "section": "Getting Started",
+    "text": "Getting Started\n\npacman::p_load(sf, tidyverse)"
+  },
+  {
+    "objectID": "Hands-on_Ex2/Hands-on_Ex2_1.html#learning-outcome",
+    "href": "Hands-on_Ex2/Hands-on_Ex2_1.html#learning-outcome",
+    "title": "Hands-on Exercise 2.1: Spatial Weights and Applications",
+    "section": "1.1 Learning Outcome",
+    "text": "1.1 Learning Outcome"
+  },
+  {
+    "objectID": "Hands-on_Ex2/Hands-on_Ex2_1.html#importing-geospatial-data",
+    "href": "Hands-on_Ex2/Hands-on_Ex2_1.html#importing-geospatial-data",
+    "title": "Hands-on Exercise 2.1: Spatial Weights and Applications",
+    "section": "Importing Geospatial data",
+    "text": "Importing Geospatial data"
+  },
+  {
+    "objectID": "Hands-on_Ex2/Hands-on_Ex2_1.html#theories",
+    "href": "Hands-on_Ex2/Hands-on_Ex2_1.html#theories",
+    "title": "Hands-on Exercise 2.1: Spatial Weights and Applications",
+    "section": "Theories",
+    "text": "Theories"
+  },
+  {
+    "objectID": "Hands-on_Ex2/Hands-on_Ex2_2.html#getting-started",
+    "href": "Hands-on_Ex2/Hands-on_Ex2_2.html#getting-started",
+    "title": "Hands-on Exercise 2.2: Global Measures of Spatial Autocorrelation",
+    "section": "Getting Started",
+    "text": "Getting Started\n\npacman::p_load(sf, tidyverse)"
+  },
+  {
+    "objectID": "Hands-on_Ex2/Hands-on_Ex2_2.html#learning-outcome",
+    "href": "Hands-on_Ex2/Hands-on_Ex2_2.html#learning-outcome",
+    "title": "Hands-on Exercise 2.2: Global Measures of Spatial Autocorrelation",
+    "section": "1.1 Learning Outcome",
+    "text": "1.1 Learning Outcome"
+  },
+  {
+    "objectID": "Hands-on_Ex2/Hands-on_Ex2_2.html#importing-geospatial-data",
+    "href": "Hands-on_Ex2/Hands-on_Ex2_2.html#importing-geospatial-data",
+    "title": "Hands-on Exercise 2.2: Global Measures of Spatial Autocorrelation",
+    "section": "Importing Geospatial data",
+    "text": "Importing Geospatial data"
+  },
+  {
+    "objectID": "Hands-on_Ex2/Hands-on_Ex2_2.html#theories",
+    "href": "Hands-on_Ex2/Hands-on_Ex2_2.html#theories",
+    "title": "Hands-on Exercise 2.2: Global Measures of Spatial Autocorrelation",
+    "section": "Theories",
+    "text": "Theories"
+  },
+  {
+    "objectID": "Hands-on_Ex2/Hands-on_Ex2_3.html#getting-started",
+    "href": "Hands-on_Ex2/Hands-on_Ex2_3.html#getting-started",
+    "title": "Hands-on Exercise 2.3:Local Measures of Spatial Autocorrelation",
+    "section": "Getting Started",
+    "text": "Getting Started\n\npacman::p_load(sf, tidyverse)"
+  },
+  {
+    "objectID": "Hands-on_Ex2/Hands-on_Ex2_3.html#learning-outcome",
+    "href": "Hands-on_Ex2/Hands-on_Ex2_3.html#learning-outcome",
+    "title": "Hands-on Exercise 2.3:Local Measures of Spatial Autocorrelation",
+    "section": "1.1 Learning Outcome",
+    "text": "1.1 Learning Outcome"
+  },
+  {
+    "objectID": "Hands-on_Ex2/Hands-on_Ex2_3.html#importing-geospatial-data",
+    "href": "Hands-on_Ex2/Hands-on_Ex2_3.html#importing-geospatial-data",
+    "title": "Hands-on Exercise 2.3:Local Measures of Spatial Autocorrelation",
+    "section": "Importing Geospatial data",
+    "text": "Importing Geospatial data"
+  },
+  {
+    "objectID": "Hands-on_Ex2/Hands-on_Ex2_3.html#theories",
+    "href": "Hands-on_Ex2/Hands-on_Ex2_3.html#theories",
+    "title": "Hands-on Exercise 2.3:Local Measures of Spatial Autocorrelation",
+    "section": "Theories",
+    "text": "Theories"
   },
   {
     "objectID": "index.html",
