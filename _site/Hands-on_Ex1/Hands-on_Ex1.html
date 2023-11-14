@@ -128,7 +128,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-fixed">
+<body class="nav-sidebar docked nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -170,10 +170,39 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
     </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Hands-on Exercise 1: Geospatial Data Wrangling with R</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Hands-on Exercise</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Hands-on_Ex1/Hands-on_Ex1.html" class="sidebar-item-text sidebar-link active">Hands-on Exercise 1: Geospatial Data Wrangling with R</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
@@ -182,9 +211,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul>
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
   <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">Getting Started</a></li>
+  <li><a href="#learning-outcome" id="toc-learning-outcome" class="nav-link" data-scroll-target="#learning-outcome">1.1 Learning Outcome</a></li>
   <li><a href="#importing-geospatial-data" id="toc-importing-geospatial-data" class="nav-link" data-scroll-target="#importing-geospatial-data">Importing Geospatial data</a>
   <ul class="collapse">
   <li><a href="#importing-polygon-feature-data" id="toc-importing-polygon-feature-data" class="nav-link" data-scroll-target="#importing-polygon-feature-data">Importing polygon feature data</a></li>
+  <li><a href="#geospatial-data-handling-functions" id="toc-geospatial-data-handling-functions" class="nav-link" data-scroll-target="#geospatial-data-handling-functions">Geospatial data handling functions</a></li>
+  </ul></li>
+  <li><a href="#theories" id="toc-theories" class="nav-link" data-scroll-target="#theories">Theories</a>
+  <ul class="collapse">
+  <li><a href="#kml-and-shapefiles" id="toc-kml-and-shapefiles" class="nav-link" data-scroll-target="#kml-and-shapefiles">KML and shapefiles</a></li>
+  <li><a href="#gcs-geographic-coordinate-system-3d-and-pcs-projected-coordinate-system-2d" id="toc-gcs-geographic-coordinate-system-3d-and-pcs-projected-coordinate-system-2d" class="nav-link" data-scroll-target="#gcs-geographic-coordinate-system-3d-and-pcs-projected-coordinate-system-2d">GCS [Geographic Coordinate System] (3D) and PCS [Projected Coordinate System ] (2D)</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -194,7 +230,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Hands-on Exercise 1: Geospatial Data Wrangling with R</h1>
+<h1 class="title d-none d-lg-block">Hands-on Exercise 1: Geospatial Data Wrangling with R</h1>
 </div>
 
 
@@ -234,9 +270,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="getting-started" class="level2">
 <h2 class="anchored" data-anchor-id="getting-started">Getting Started</h2>
 <p>The code chunk below install and load sf and tidyverse packages into R environment.</p>
+<p>The <code>sp</code> package provides classes and methods for spatial data types in 2005. The <a href="https://r-spatial.github.io/sf/"><code>sf</code></a> package was released in 2016 to give standardise support for vector data in R. It is also coherent with <a href="https://www.tidyverse.org/">tidyverse</a>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="learning-outcome" class="level2">
+<h2 class="anchored" data-anchor-id="learning-outcome">1.1 Learning Outcome</h2>
 </section>
 <section id="importing-geospatial-data" class="level2">
 <h2 class="anchored" data-anchor-id="importing-geospatial-data">Importing Geospatial data</h2>
@@ -256,9 +296,49 @@ Bounding box:  xmin: 2667.538 ymin: 15748.72 xmax: 56396.44 ymax: 50256.33
 Projected CRS: SVY21</code></pre>
 </div>
 </div>
+</section>
+<section id="geospatial-data-handling-functions" class="level3">
+<h3 class="anchored" data-anchor-id="geospatial-data-handling-functions">Geospatial data handling functions</h3>
+<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; st_read &amp; read sf: read simple features from file or database, or retrieve layer names and their geometry type(s)</p>
+<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; st write &amp;write_sf: write simple features object to file or database</p>
+<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; st_as_sf: convert a sf object from a non-geospatial tabular data frame</p>
+<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; st as_text: convert to Well Known Text(WKT)</p>
+<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; st as_binary: convert to Well Known Binary(WKB)</p>
+<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; st_as_sfc: convert geometries to sfc (e.g., from WKT, WKB) as(x, “Spatial”): convert to Spatial*</p>
+<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; st transform(x, crs, ...): convert coordinates of x to a different coordinate reference system</p>
+<p>The code chunk below allows us to unsf the mpsz and work tbl_df or data.frame.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mpsz_tbl_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <div class="cell">
 
 </div>
+</section>
+</section>
+<section id="theories" class="level2">
+<h2 class="anchored" data-anchor-id="theories">Theories</h2>
+<section id="kml-and-shapefiles" class="level3">
+<h3 class="anchored" data-anchor-id="kml-and-shapefiles">KML and shapefiles</h3>
+<p>A KMZ file is a zipped (or compressed) KML file, and a SHZ is a zipped/compressed Shapefile.</p>
+<p>A shapefile is an Esri vector data storage format for storing the location, shape, and attributes of geographic features. It is stored as a set of related files and contains one feature class.</p>
+<p>The shapefile format can spatially describe vector features: <strong>points, lines, and polygons</strong>, representing, for example, water wells, rivers, and lakes. Each item usually has attributes that describe it, such as name or temperature.</p>
+<p>KML and Shapefiles could contain the exact same data, however KML (Keyhole Markup Language) is much more suited to displaying time based track information, whereas shapefiles are more suited to displaying Geometries, like boundaries, areas, roads, etc.</p>
+<p><strong>Shapefiles are composed of 3 mandatory files</strong></p>
+<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . shp (geometry), &lt;- multipolygon, polylines or points. Can only be one type in each file , can combined in layers</p>
+<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . dbf (attributes) &lt;- table</p>
+<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . shx (index)&nbsp; &lt;- binds first two together</p>
+</section>
+<section id="gcs-geographic-coordinate-system-3d-and-pcs-projected-coordinate-system-2d" class="level3">
+<h3 class="anchored" data-anchor-id="gcs-geographic-coordinate-system-3d-and-pcs-projected-coordinate-system-2d">GCS [Geographic Coordinate System] (3D) and PCS [Projected Coordinate System ] (2D)</h3>
+<p><strong>GCS</strong>: uses lat, long, elevation to locate positions on Earth. Units are in degree and metres. Earth is represented as a <u>sphere</u>. Eg. WGS84 (world Gedetic system 1984)</p>
+<p><strong>PCS</strong>: Units are usually metres to locate position on a <u>Flat</u> surface. Involves projecting 3D Earth into a 2D plane. It distorts the true <u>shapes</u>, <u>areas</u>, <u>distances</u>, or <u>directions</u> to some extent, depending on the projection method chosen.</p>
+<p>Preserve:</p>
+<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Conformal projections minimize distortion in <strong>shape</strong></p>
+<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Equidistant projections minimize distortion in <strong>distance</strong></p>
+<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Equal-area projection minimize distortion in <strong>area</strong></p>
+<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Azimuthal or True-direction projections minimize distortion in <strong>direction</strong>.</p>
+<p>Google maps uses Mercator projection system. It is chosen as it preserves direction and angles. It is useful for navigation (google map) . It is originally created for sea navigation in older days. The cons are that this projection does not&nbsp;preserve&nbsp;area and shape.</p>
+<p>Singapore uses <strong>SVY21</strong> or the <strong>EPSG:3414</strong> projected coordinate system.</p>
 
 
 </section>

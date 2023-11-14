@@ -44,7 +44,7 @@ dsn- data source name
 mpsz <- st_read(dsn="data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
 ```
 
-### Geospatial data handling functions 
+### Geospatial data handling functions
 
 ·       st_read & read sf: read simple features from file or database, or retrieve layer names and their geometry type(s)
 
