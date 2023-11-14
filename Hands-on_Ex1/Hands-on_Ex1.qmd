@@ -24,9 +24,13 @@ In this hands-on exercise, I will learn how to import and wrangle geospatial dat
 
 The code chunk below install and load sf and tidyverse packages into R environment.
 
+The `sp` package provides classes and methods for spatial data types in 2005. The [`sf`](https://r-spatial.github.io/sf/) package was released in 2016 to give standardise support for vector data in R. It is also coherent with [tidyverse](https://www.tidyverse.org/).
+
 ```{r}
 pacman::p_load(sf, tidyverse)
 ```
+
+## 1.1 Learning Outcome
 
 ## Importing Geospatial data
 
@@ -40,8 +44,71 @@ dsn- data source name
 mpsz <- st_read(dsn="data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
 ```
 
+### Geospatial data handling functions 
+
+·       st_read & read sf: read simple features from file or database, or retrieve layer names and their geometry type(s)
+
+·       st write &write_sf: write simple features object to file or database
+
+·       st_as_sf: convert a sf object from a non-geospatial tabular data frame
+
+·       st as_text: convert to Well Known Text(WKT)
+
+·       st as_binary: convert to Well Known Binary(WKB)
+
+·       st_as_sfc: convert geometries to sfc (e.g., from WKT, WKB) as(x, "Spatial"): convert to Spatial\*
+
+·       st transform(x, crs, \...): convert coordinates of x to a different coordinate reference system
+
+The code chunk below allows us to unsf the mpsz and work tbl_df or data.frame.
+
+```{r}
+#| eval: false
+mpsz_tbl_df <- as_tibble(mpsz)
+```
+
 ```{r}
 #| code-fold: True
 #| eval: false
 #| echo: false
 ```
+
+## Theories
+
+### KML and shapefiles
+
+A KMZ file is a zipped (or compressed) KML file, and a SHZ is a zipped/compressed Shapefile.
+
+A shapefile is an Esri vector data storage format for storing the location, shape, and attributes of geographic features. It is stored as a set of related files and contains one feature class.
+
+The shapefile format can spatially describe vector features: **points, lines, and polygons**, representing, for example, water wells, rivers, and lakes. Each item usually has attributes that describe it, such as name or temperature.
+
+KML and Shapefiles could contain the exact same data, however KML (Keyhole Markup Language) is much more suited to displaying time based track information, whereas shapefiles are more suited to displaying Geometries, like boundaries, areas, roads, etc.
+
+**Shapefiles are composed of 3 mandatory files**
+
+·       . shp (geometry), \<- multipolygon, polylines or points. Can only be one type in each file , can combined in layers
+
+·       . dbf (attributes) \<- table
+
+·       . shx (index)  \<- binds first two together
+
+### GCS \[Geographic Coordinate System\] (3D) and PCS \[Projected Coordinate System \] (2D)
+
+**GCS**: uses lat, long, elevation to locate positions on Earth. Units are in degree and metres. Earth is represented as a [sphere]{.underline}. Eg. WGS84 (world Gedetic system 1984)
+
+**PCS**: Units are usually metres to locate position on a [Flat]{.underline} surface. Involves projecting 3D Earth into a 2D plane. It distorts the true [shapes]{.underline}, [areas]{.underline}, [distances]{.underline}, or [directions]{.underline} to some extent, depending on the projection method chosen.
+
+Preserve:
+
+·       Conformal projections minimize distortion in **shape**
+
+·       Equidistant projections minimize distortion in **distance**
+
+·       Equal-area projection minimize distortion in **area**
+
+·       Azimuthal or True-direction projections minimize distortion in **direction**.
+
+Google maps uses Mercator projection system. It is chosen as it preserves direction and angles. It is useful for navigation (google map) . It is originally created for sea navigation in older days. The cons are that this projection does not preserve area and shape.
+
+Singapore uses **SVY21** or the **EPSG:3414** projected coordinate system.
