@@ -11,7 +11,7 @@ execute:
   #message: false
 format: 
   html:
-    code-fold: True
+    code-fold: false
     code-overflow: scroll
     code-summary: "Show the code"
     code-line-numbers: true

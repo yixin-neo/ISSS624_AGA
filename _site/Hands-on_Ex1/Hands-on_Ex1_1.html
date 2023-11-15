@@ -343,10 +343,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 class="anchored" data-anchor-id="getting-started">1.3 Getting Started</h2>
 <p>The code chunk below install and load sf and tidyverse packages into R environment:</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <ul>
 <li><p><strong>sf</strong> for importing, managing, and processing geospatial data, and</p></li>
@@ -375,10 +372,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>dsn- data source name (aka data path)</p>
 <p>layer - shapefile name. No extensions like .shp, .dbf, .prj and .shx are needed.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>mpsz <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn=</span><span class="st">"data/geospatial"</span>, <span class="at">layer =</span> <span class="st">"MP14_SUBZONE_WEB_PL"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Reading layer `MP14_SUBZONE_WEB_PL' from data source 
   `C:\yixin-neo\ISSS624_AGA\Hands-on_Ex1\data\geospatial' using driver `ESRI Shapefile'
@@ -396,11 +390,8 @@ Projected CRS: SVY21</code></pre>
 <li><p>x extend and y extend of the data are given</p></li>
 </ul>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">library</span>(knitr)</span>
 <span id="cb4-2"><a href="#cb4-2"></a><span class="fu">kable</span>(<span class="fu">head</span>(mpsz, <span class="at">n =</span> <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped">
 <colgroup>
@@ -505,10 +496,7 @@ Projected CRS: SVY21</code></pre>
 <h3 class="anchored" data-anchor-id="importing-polyline-feature-data-in-shapefile-form">1.4.2 Importing polyline feature data in shapefile form</h3>
 <p>The code chunk below uses <em>st_read()</em> function of <strong>sf</strong> package to import <code>CyclingPath</code> shapefile into R as line feature data frame.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>cyclingpath <span class="ot">=</span> <span class="fu">st_read</span>(<span class="at">dsn=</span><span class="st">'data/geospatial'</span>, <span class="at">layer=</span><span class="st">'CyclingPathGazette'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Reading layer `CyclingPathGazette' from data source 
   `C:\yixin-neo\ISSS624_AGA\Hands-on_Ex1\data\geospatial' using driver `ESRI Shapefile'
@@ -520,10 +508,7 @@ Projected CRS: SVY21</code></pre>
 </div>
 </div>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(cyclingpath, <span class="at">n =</span> <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped">
 <thead>
@@ -558,10 +543,7 @@ Projected CRS: SVY21</code></pre>
 <h3 class="anchored" data-anchor-id="importing-gis-data-in-kml-format">1.4.3 Importing GIS data in kml format</h3>
 <p>The <code>pre-schools-location-kml</code> is in kml format.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>preschool <span class="ot">=</span> <span class="fu">st_read</span>(<span class="st">'data/geospatial/pre-schools-location-kml.kml'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Reading layer `PRESCHOOLS_LOCATION' from data source 
   `C:\yixin-neo\ISSS624_AGA\Hands-on_Ex1\data\geospatial\pre-schools-location-kml.kml' 
@@ -576,10 +558,7 @@ Geodetic CRS:  WGS 84</code></pre>
 </div>
 <p>Note that preschool is in WSG84 coordinates system (3D).</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(preschool, <span class="at">n =</span> <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped">
 <colgroup>
@@ -619,19 +598,13 @@ Geodetic CRS:  WGS 84</code></pre>
 <h3 class="anchored" data-anchor-id="working-with-st_geometry">1.5.1 Working with <em>st_geometry()</em></h3>
 <p>The column in the sf data.frame that contains the geometries is a list, of class <code>sfc</code>. We can retrieve the geometry list-column in this case by mpsz$geom or mpsz[[1]], but the more general way uses <em>st_geometry()</em> as shown in the code chunk below.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">class</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "sf"         "data.frame"</code></pre>
 </div>
 </div>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="fu">st_geometry</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Geometry set for 323 features 
 Geometry type: MULTIPOLYGON
@@ -646,10 +619,7 @@ First 5 geometries:</code></pre>
 <h3 class="anchored" data-anchor-id="working-with-glimpse">1.5.2 Working with glimpse()</h3>
 <p>Beside the basic feature information, we also would like to learn more about the associated <strong>attribute</strong> information in the data frame. This is the time you will find <em>glimpse()</em> of <strong>dplyr</strong>. very handy as shown in the code chunk below.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">glimpse</span>(<span class="fu">head</span>(mpsz))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 6
 Columns: 16
@@ -677,10 +647,7 @@ $ geometry   &lt;MULTIPOLYGON [m]&gt; MULTIPOLYGON (((31495.56 30..., MULTIPOLYG
 <h3 class="anchored" data-anchor-id="working-with-head">1.5.3 Working with <em>head()</em></h3>
 <p>Sometimes we would like to reveal complete information of a feature object, this is the job of <a href="https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/head"><em>head()</em></a> of Base R</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="fu">head</span>(mpsz,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 3 features and 15 fields
 Geometry type: MULTIPOLYGON
@@ -707,30 +674,21 @@ Projected CRS: SVY21
 <h2 class="anchored" data-anchor-id="plotting-the-geospatial-data">1.6 Plotting the Geospatial Data</h2>
 <p>In geospatial data science, by looking at the feature information is not enough. We are also interested to <strong>visualise</strong> the geospatial features. One of the ways is to use the <em>plot()</em> of R Graphic.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="fu">plot</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output-display">
 <p><img src="Hands-on_Ex1_1_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>The default plot of an sf object is a multi-plot of all attributes, up to a reasonable maximum as shown above. We can, however, choose to plot only the geometry (multi-polygon) by using the code chunk below.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(mpsz))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output-display">
 <p><img src="Hands-on_Ex1_1_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Alternatively, we can also choose the plot the <code>sf</code> object by using a specific attribute as shown in the code chunk below.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="fu">plot</span>(mpsz[<span class="st">"REGION_N"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output-display">
 <p><img src="Hands-on_Ex1_1_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -759,10 +717,7 @@ Projected CRS: SVY21
 </ol>
 <p>Using the st_crs() to check in detail of the <code>mpsz</code>reveals that although it claims to be in svy21 (singapore proj sys), reading until end of print shows that it is wrongly in EPSG9001 (singapore uses epsg3414)</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="fu">st_crs</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Coordinate Reference System:
   User input: SVY21 
@@ -806,17 +761,11 @@ PROJCRS["SVY21",
 </div>
 <p>In order to assign the correct EPSG code to <code>mpsz</code> data frame, <em>st_set_crs()</em> of <strong>sf</strong> package is used as shown in the code chunk below.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>mpsz3414 <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(mpsz, <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Recheck</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="fu">st_crs</span>(mpsz3414)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Coordinate Reference System:
   User input: EPSG:3414 
@@ -868,10 +817,7 @@ PROJCRS["SVY21 / Singapore TM",
 <p>In geospatial analytics, it is very common for us to transform the original data from <strong>geographic</strong> coordinate system (3D) to <strong>projected</strong> coordinate system (2D). This is because geographic coordinate system is not appropriate if the analysis need to use <strong>distance</strong> or/and <strong>area</strong> measurements.</p>
 <p>Let us take preschool simple feature data frame as an example. The print below reveals that it is in wgs84 coordinate system (3D).</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="fu">st_geometry</span>(preschool)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Geometry set for 1925 features 
 Geometry type: POINT
@@ -883,10 +829,7 @@ First 5 geometries:</code></pre>
 </div>
 </div>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="fu">st_crs</span>(preschool)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Coordinate Reference System:
   User input: WGS 84 
@@ -910,10 +853,7 @@ GEOGCRS["WGS 84",
 <p>Note that <em><code>st_set_crs()</code></em> is not appropriate and <em><code>st_transform()</code></em> of sf package should be used. This is because we need to reproject <code>preschool</code> from one coordinate system to another coordinate system <strong>mathemetically</strong>.</p>
 <p>Let us perform the projection transformation by using the code chunk below.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a>preschool3414 <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(preschool, <span class="at">crs=</span><span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Recheck</p>
 <div class="cell">
@@ -943,11 +883,8 @@ First 5 geometries:</code></pre>
 <h3 class="anchored" data-anchor-id="importing-the-aspatial-data">1.8.1 Importing the aspatial data</h3>
 <p>Since <code>listings</code> data set is in csv file format, we will use <a href="https://readr.tidyverse.org/reference/read_delim.html"><em>read_csv()</em></a> of <strong>readr</strong> package to import <code>listing.csv</code> as shown the code chunk below. The output R object is called <code>listings</code> and it is a <a href="https://r4ds.had.co.nz/tibbles.html">tibble data frame</a>.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>listings <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'data/aspatial/listings.csv'</span>)</span>
 <span id="cb33-2"><a href="#cb33-2"></a><span class="fu">class</span>(listings)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "spec_tbl_df" "tbl_df"      "tbl"         "data.frame" </code></pre>
 </div>
@@ -955,10 +892,7 @@ First 5 geometries:</code></pre>
 <p>After importing the data file into R, it is important for us to examine if the data file has been imported correctly.</p>
 <p>The code chunk below shows <em>list()</em> of Base R instead of <em>glimpse()</em> is used to do the job.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="fu">list</span>(listings)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 # A tibble: 4,161 × 18
@@ -987,10 +921,7 @@ First 5 geometries:</code></pre>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(listings))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped">
 <colgroup>
@@ -1163,30 +1094,27 @@ First 5 geometries:</code></pre>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a><span class="fu">library</span>(gt)</span>
 <span id="cb38-2"><a href="#cb38-2"></a><span class="fu">head</span>(listings) <span class="sc">%&gt;%</span> <span class="fu">gt</span>() <span class="sc">%&gt;%</span> <span class="fu">tab_header</span>(<span class="at">title =</span> <span class="st">"AirBnB listings"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output-display">
 
-<div id="jdcnqqjaxb" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#jdcnqqjaxb table {
+<div id="yvkzixhidx" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#yvkzixhidx table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#jdcnqqjaxb thead, #jdcnqqjaxb tbody, #jdcnqqjaxb tfoot, #jdcnqqjaxb tr, #jdcnqqjaxb td, #jdcnqqjaxb th {
+#yvkzixhidx thead, #yvkzixhidx tbody, #yvkzixhidx tfoot, #yvkzixhidx tr, #yvkzixhidx td, #yvkzixhidx th {
   border-style: none;
 }
 
-#jdcnqqjaxb p {
+#yvkzixhidx p {
   margin: 0;
   padding: 0;
 }
 
-#jdcnqqjaxb .gt_table {
+#yvkzixhidx .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1212,12 +1140,12 @@ First 5 geometries:</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#jdcnqqjaxb .gt_caption {
+#yvkzixhidx .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#jdcnqqjaxb .gt_title {
+#yvkzixhidx .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1229,7 +1157,7 @@ First 5 geometries:</code></pre>
   border-bottom-width: 0;
 }
 
-#jdcnqqjaxb .gt_subtitle {
+#yvkzixhidx .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1241,7 +1169,7 @@ First 5 geometries:</code></pre>
   border-top-width: 0;
 }
 
-#jdcnqqjaxb .gt_heading {
+#yvkzixhidx .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1253,13 +1181,13 @@ First 5 geometries:</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#jdcnqqjaxb .gt_bottom_border {
+#yvkzixhidx .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#jdcnqqjaxb .gt_col_headings {
+#yvkzixhidx .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1274,7 +1202,7 @@ First 5 geometries:</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#jdcnqqjaxb .gt_col_heading {
+#yvkzixhidx .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1294,7 +1222,7 @@ First 5 geometries:</code></pre>
   overflow-x: hidden;
 }
 
-#jdcnqqjaxb .gt_column_spanner_outer {
+#yvkzixhidx .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1306,15 +1234,15 @@ First 5 geometries:</code></pre>
   padding-right: 4px;
 }
 
-#jdcnqqjaxb .gt_column_spanner_outer:first-child {
+#yvkzixhidx .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#jdcnqqjaxb .gt_column_spanner_outer:last-child {
+#yvkzixhidx .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#jdcnqqjaxb .gt_column_spanner {
+#yvkzixhidx .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1326,11 +1254,11 @@ First 5 geometries:</code></pre>
   width: 100%;
 }
 
-#jdcnqqjaxb .gt_spanner_row {
+#yvkzixhidx .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#jdcnqqjaxb .gt_group_heading {
+#yvkzixhidx .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1356,7 +1284,7 @@ First 5 geometries:</code></pre>
   text-align: left;
 }
 
-#jdcnqqjaxb .gt_empty_group_heading {
+#yvkzixhidx .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1371,15 +1299,15 @@ First 5 geometries:</code></pre>
   vertical-align: middle;
 }
 
-#jdcnqqjaxb .gt_from_md > :first-child {
+#yvkzixhidx .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#jdcnqqjaxb .gt_from_md > :last-child {
+#yvkzixhidx .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#jdcnqqjaxb .gt_row {
+#yvkzixhidx .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1398,7 +1326,7 @@ First 5 geometries:</code></pre>
   overflow-x: hidden;
 }
 
-#jdcnqqjaxb .gt_stub {
+#yvkzixhidx .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1411,7 +1339,7 @@ First 5 geometries:</code></pre>
   padding-right: 5px;
 }
 
-#jdcnqqjaxb .gt_stub_row_group {
+#yvkzixhidx .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1425,15 +1353,15 @@ First 5 geometries:</code></pre>
   vertical-align: top;
 }
 
-#jdcnqqjaxb .gt_row_group_first td {
+#yvkzixhidx .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#jdcnqqjaxb .gt_row_group_first th {
+#yvkzixhidx .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#jdcnqqjaxb .gt_summary_row {
+#yvkzixhidx .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1443,16 +1371,16 @@ First 5 geometries:</code></pre>
   padding-right: 5px;
 }
 
-#jdcnqqjaxb .gt_first_summary_row {
+#yvkzixhidx .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#jdcnqqjaxb .gt_first_summary_row.thick {
+#yvkzixhidx .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#jdcnqqjaxb .gt_last_summary_row {
+#yvkzixhidx .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1462,7 +1390,7 @@ First 5 geometries:</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#jdcnqqjaxb .gt_grand_summary_row {
+#yvkzixhidx .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1472,7 +1400,7 @@ First 5 geometries:</code></pre>
   padding-right: 5px;
 }
 
-#jdcnqqjaxb .gt_first_grand_summary_row {
+#yvkzixhidx .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1482,7 +1410,7 @@ First 5 geometries:</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#jdcnqqjaxb .gt_last_grand_summary_row_top {
+#yvkzixhidx .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1492,11 +1420,11 @@ First 5 geometries:</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#jdcnqqjaxb .gt_striped {
+#yvkzixhidx .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#jdcnqqjaxb .gt_table_body {
+#yvkzixhidx .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1505,7 +1433,7 @@ First 5 geometries:</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#jdcnqqjaxb .gt_footnotes {
+#yvkzixhidx .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1519,7 +1447,7 @@ First 5 geometries:</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#jdcnqqjaxb .gt_footnote {
+#yvkzixhidx .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1528,7 +1456,7 @@ First 5 geometries:</code></pre>
   padding-right: 5px;
 }
 
-#jdcnqqjaxb .gt_sourcenotes {
+#yvkzixhidx .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1542,7 +1470,7 @@ First 5 geometries:</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#jdcnqqjaxb .gt_sourcenote {
+#yvkzixhidx .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1550,63 +1478,63 @@ First 5 geometries:</code></pre>
   padding-right: 5px;
 }
 
-#jdcnqqjaxb .gt_left {
+#yvkzixhidx .gt_left {
   text-align: left;
 }
 
-#jdcnqqjaxb .gt_center {
+#yvkzixhidx .gt_center {
   text-align: center;
 }
 
-#jdcnqqjaxb .gt_right {
+#yvkzixhidx .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#jdcnqqjaxb .gt_font_normal {
+#yvkzixhidx .gt_font_normal {
   font-weight: normal;
 }
 
-#jdcnqqjaxb .gt_font_bold {
+#yvkzixhidx .gt_font_bold {
   font-weight: bold;
 }
 
-#jdcnqqjaxb .gt_font_italic {
+#yvkzixhidx .gt_font_italic {
   font-style: italic;
 }
 
-#jdcnqqjaxb .gt_super {
+#yvkzixhidx .gt_super {
   font-size: 65%;
 }
 
-#jdcnqqjaxb .gt_footnote_marks {
+#yvkzixhidx .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#jdcnqqjaxb .gt_asterisk {
+#yvkzixhidx .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#jdcnqqjaxb .gt_indent_1 {
+#yvkzixhidx .gt_indent_1 {
   text-indent: 5px;
 }
 
-#jdcnqqjaxb .gt_indent_2 {
+#yvkzixhidx .gt_indent_2 {
   text-indent: 10px;
 }
 
-#jdcnqqjaxb .gt_indent_3 {
+#yvkzixhidx .gt_indent_3 {
   text-indent: 15px;
 }
 
-#jdcnqqjaxb .gt_indent_4 {
+#yvkzixhidx .gt_indent_4 {
   text-indent: 20px;
 }
 
-#jdcnqqjaxb .gt_indent_5 {
+#yvkzixhidx .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -1756,11 +1684,8 @@ First 5 geometries:</code></pre>
 </div>
 <div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="fu">library</span>(DT)</span>
 <span id="cb39-2"><a href="#cb39-2"></a><span class="fu">datatable</span>(<span class="fu">head</span>(listings), <span class="at">class =</span> <span class="st">'cell-border stripe'</span>, <span class="at">options =</span> <span class="fu">list</span>(<span class="at">pageLength =</span> <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 </div>
 </div>
@@ -1772,15 +1697,12 @@ First 5 geometries:</code></pre>
 <p>The code chunk below converts <code>listing</code> data frame into a simple feature data frame by using <a href="https://r-spatial.github.io/sf/reference/st_as_sf.html"><em>st_as_sf()</em></a> of <strong>sf</strong> packages.</p>
 <p>EPSG 4326 is associated with WGS84.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a>listings_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(listings,</span>
 <span id="cb40-2"><a href="#cb40-2"></a>                        <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">'longitude'</span>,<span class="st">'latitude'</span>),</span>
 <span id="cb40-3"><a href="#cb40-3"></a>                        <span class="at">crs=</span><span class="dv">4326</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb40-4"><a href="#cb40-4"></a>  <span class="fu">st_transform</span>(<span class="at">crs=</span><span class="dv">3414</span>)</span>
 <span id="cb40-5"><a href="#cb40-5"></a></span>
 <span id="cb40-6"><a href="#cb40-6"></a><span class="fu">class</span>(listings_sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "sf"         "tbl_df"     "tbl"        "data.frame"</code></pre>
 </div>
@@ -1792,10 +1714,7 @@ First 5 geometries:</code></pre>
 </ul>
 <p>Let us examine the content of our newly created sf dataframe</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a><span class="fu">glimpse</span>(listings_sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 4,161
 Columns: 17
@@ -1832,10 +1751,7 @@ $ geometry                       &lt;POINT [m]&gt; POINT (22646.02 35167.9), POI
 <p><strong>The solution:</strong></p>
 <p>A buffer is a zone around a spatial object, recall that <code>cyclingpath</code> is a multiline-string sf object.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a><span class="fu">st_geometry</span>(cyclingpath)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Geometry set for 2248 features 
 Geometry type: MULTILINESTRING
@@ -1853,10 +1769,7 @@ First 5 geometries:</code></pre>
 </div>
 <p>Take a peak at this df before calculating area.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a><span class="fu">head</span>(buffer_cycling)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 6 features and 2 fields
 Geometry type: POLYGON
@@ -1936,10 +1849,7 @@ Projected CRS: SVY21
 </div>
 <p>Lastly, sum() of Base R will be used to derive the total land involved</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a><span class="fu">sum</span>(buffer_cycling<span class="sc">$</span>AREA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>1556978 [m^2]</code></pre>
 </div>
@@ -1953,10 +1863,7 @@ Projected CRS: SVY21
 <p>A pre-school service group want to find out the numbers of pre-schools in each Planning Subzone.</p>
 <p>Before that, lets double confirm both data are using same projection system.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="fu">identical</span>(<span class="fu">st_crs</span>(mpsz3414), <span class="fu">st_crs</span>(preschool3414))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] TRUE</code></pre>
 </div>
@@ -1968,10 +1875,7 @@ Projected CRS: SVY21
 <li><p>length() of Base R is used to calculate numbers of pre-schools that fall inside each planning subzone.</p></li>
 </ol>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1"></a>mpsz3414<span class="sc">$</span><span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span> <span class="ot">&lt;-</span> <span class="fu">lengths</span>(<span class="fu">st_intersects</span>(mpsz3414,preschool3414))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="callout-warning callout callout-style-simple no-icon">
 <div class="callout-body d-flex">
@@ -1986,10 +1890,7 @@ Projected CRS: SVY21
 </div>
 <p>Now check summary stats of <code>PreSch Count</code> column in each subzone.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb55"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a><span class="fu">summary</span>(mpsz3414<span class="sc">$</span><span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
    0.00    0.00    3.00    5.96    9.00   58.00 </code></pre>
@@ -1997,11 +1898,8 @@ Projected CRS: SVY21
 </div>
 <p>To list the planning subzone with the most number of pre-school, the <a href="https://dplyr.tidyverse.org/reference/top_n.html"><em>top_n()</em></a> of <strong>dplyr</strong> package can be used.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="fu">kable</span>(<span class="fu">top_n</span>(mpsz3414, <span class="dv">3</span>, <span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb57-2"><a href="#cb57-2"></a>        <span class="fu">arrange</span>(<span class="fu">desc</span>(<span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped">
 <colgroup>
@@ -2108,15 +2006,12 @@ Projected CRS: SVY21
 </div>
 <p>To calculate the density (# schools/subzone area) of preschool by planning subzone :</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a>mpsz3414 <span class="ot">&lt;-</span> mpsz3414 <span class="sc">%&gt;%</span></span>
 <span id="cb58-2"><a href="#cb58-2"></a>  <span class="fu">mutate</span>(<span class="at">AREA =</span> <span class="fu">st_area</span>(mpsz3414),</span>
 <span id="cb58-3"><a href="#cb58-3"></a>         <span class="at">DENSITY =</span> <span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span> <span class="sc">/</span>AREA <span class="sc">*</span> <span class="dv">1000000</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb58-4"><a href="#cb58-4"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(DENSITY))</span>
 <span id="cb58-5"><a href="#cb58-5"></a></span>
 <span id="cb58-6"><a href="#cb58-6"></a><span class="fu">kable</span>(<span class="fu">head</span>(mpsz3414))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped">
 <colgroup>
@@ -2305,10 +2200,7 @@ Projected CRS: SVY21
 <p>In practice, many geospatial analytics start with Exploratory Data Analysis. In this section, wewill learn how to use appropriate <a href="https://ggplot2.tidyverse.org/">ggplot2</a> functions to create functional and yet truthful statistical graphs for EDA purposes.</p>
 <p>Firstly, we will plot a histogram to reveal the distribution of <code>PreSch Density</code>. Conventionally, <em>hist()</em> of R Graphics will be used as shown in the code chunk below.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1"></a><span class="fu">hist</span>(mpsz3414<span class="sc">$</span>DENSITY)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output-display">
 <p><img src="Hands-on_Ex1_1_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -2320,8 +2212,6 @@ Projected CRS: SVY21
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a>q <span class="ot">&lt;-</span> <span class="fu">quantile</span>(<span class="fu">as.numeric</span>(mpsz3414<span class="sc">$</span>DENSITY), <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>))</span>
 <span id="cb60-2"><a href="#cb60-2"></a></span>
 <span id="cb60-3"><a href="#cb60-3"></a><span class="fu">ggplot</span>(<span class="at">data=</span>mpsz3414, </span>
@@ -2337,7 +2227,6 @@ Projected CRS: SVY21
 <span id="cb60-13"><a href="#cb60-13"></a>       <span class="at">subtitle=</span> <span class="st">"There are many planning sub-zones with a single pre-school, on the other hand, </span><span class="sc">\n</span><span class="st">there are two planning sub-zones with at least 20 pre-schools"</span>,</span>
 <span id="cb60-14"><a href="#cb60-14"></a>      <span class="at">x =</span> <span class="st">"Pre-school density (per km sq)"</span>,</span>
 <span id="cb60-15"><a href="#cb60-15"></a>      <span class="at">y =</span> <span class="st">"Frequency"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output-display">
 <p><img src="Hands-on_Ex1_1_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -2345,8 +2234,6 @@ Projected CRS: SVY21
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb61"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1"></a><span class="fu">library</span>(plotly)</span>
 <span id="cb61-2"><a href="#cb61-2"></a>q <span class="ot">&lt;-</span> <span class="fu">quantile</span>(<span class="fu">as.numeric</span>(mpsz3414<span class="sc">$</span>DENSITY), <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>))</span>
 <span id="cb61-3"><a href="#cb61-3"></a></span>
@@ -2365,10 +2252,9 @@ Projected CRS: SVY21
 <span id="cb61-16"><a href="#cb61-16"></a>      <span class="at">y =</span> <span class="st">"Frequency"</span>)</span>
 <span id="cb61-17"><a href="#cb61-17"></a></span>
 <span id="cb61-18"><a href="#cb61-18"></a><span class="fu">ggplotly</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output-display">
-<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-d7f27b1848bd3806cccc" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-d7f27b1848bd3806cccc">{"x":{"data":[{"orientation":"v","width":[1.873773313947583,1.8737733139475834,1.8737733139475834,1.8737733139475825,1.8737733139475807,1.8737733139475843,1.8737733139475807,1.8737733139475807,1.8737733139475843,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[0,1.873773313947583,3.7475466278951663,5.6213199418427493,7.4950932557903318,9.3688665697379143,11.242639883685499,13.116413197633079,14.990186511580664,16.863959825528248,18.737733139475829,20.611506453423416,22.485279767370997,24.359053081318578,26.232826395266162,28.106599709213747,29.980373023161327,31.854146337108915,33.727919651056496,35.601692965004077],"y":[104,33,34,29,23,33,33,8,12,6,2,1,1,1,1,0,0,0,0,2],"text":["count: 104<br />as.numeric(DENSITY):  0.000000","count:  33<br />as.numeric(DENSITY):  1.873773","count:  34<br />as.numeric(DENSITY):  3.747547","count:  29<br />as.numeric(DENSITY):  5.621320","count:  23<br />as.numeric(DENSITY):  7.495093","count:  33<br />as.numeric(DENSITY):  9.368867","count:  33<br />as.numeric(DENSITY): 11.242640","count:   8<br />as.numeric(DENSITY): 13.116413","count:  12<br />as.numeric(DENSITY): 14.990187","count:   6<br />as.numeric(DENSITY): 16.863960","count:   2<br />as.numeric(DENSITY): 18.737733","count:   1<br />as.numeric(DENSITY): 20.611506","count:   1<br />as.numeric(DENSITY): 22.485280","count:   1<br />as.numeric(DENSITY): 24.359053","count:   1<br />as.numeric(DENSITY): 26.232826","count:   0<br />as.numeric(DENSITY): 28.106600","count:   0<br />as.numeric(DENSITY): 29.980373","count:   0<br />as.numeric(DENSITY): 31.854146","count:   0<br />as.numeric(DENSITY): 33.727920","count:   2<br />as.numeric(DENSITY): 35.601693"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(173,216,230,1)","line":{"width":1.8897637795275593,"color":"rgba(0,0,0,1)"}},"showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[5.2028611308114519,5.2028611308114519],"y":[-5.2000000000000002,109.2],"text":"xintercept: 5.202861","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(0,0,255,1)","dash":"dash"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[10.379927815404336,10.379927815404336],"y":[-5.2000000000000002,109.2],"text":"xintercept: 10.37993","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(0,0,0,1)","dash":"dash"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4],"y":[75],"text":"50th <br />percentile","hovertext":"x: 4<br />y: 75","textfont":{"size":7.559055118110237,"color":"rgba(0,0,0,1)"},"type":"scatter","mode":"text","hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[9],"y":[75],"text":"75th <br />percentile","hovertext":"x: 9<br />y: 75","textfont":{"size":7.559055118110237,"color":"rgba(0,0,0,1)"},"type":"scatter","mode":"text","hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.762557077625573,"r":7.3059360730593621,"b":40.182648401826491,"l":43.105022831050235},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"Are pre-school even distributed in Singapore?","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-2.8106599709213747,38.412352935925448],"tickmode":"array","ticktext":["0","10","20","30"],"tickvals":[-4.4408920985006262e-16,9.9999999999999982,20,30.000000000000004],"categoryorder":"array","categoryarray":["0","10","20","30"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y","title":{"text":"Pre-school density (per km sq)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-5.2000000000000002,109.2],"tickmode":"array","ticktext":["0","25","50","75","100"],"tickvals":[0,25,50,75,100],"categoryorder":"array","categoryarray":["0","25","50","75","100"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":{"text":"Frequency","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"662446315670":{"x":{},"type":"bar"},"662448a55815":{"xintercept":{}},"662452086731":{"xintercept":{}},"662460d33880":{"x":{},"y":{}},"66243372299":{"x":{},"y":{}}},"cur_data":"662446315670","visdat":{"662446315670":["function (y) ","x"],"662448a55815":["function (y) ","x"],"662452086731":["function (y) ","x"],"662460d33880":["function (y) ","x"],"66243372299":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-9c33ef96ee8aee24487f" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-9c33ef96ee8aee24487f">{"x":{"data":[{"orientation":"v","width":[1.873773313947583,1.8737733139475834,1.8737733139475834,1.8737733139475825,1.8737733139475807,1.8737733139475843,1.8737733139475807,1.8737733139475807,1.8737733139475843,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[0,1.873773313947583,3.7475466278951663,5.6213199418427493,7.4950932557903318,9.3688665697379143,11.242639883685499,13.116413197633079,14.990186511580664,16.863959825528248,18.737733139475829,20.611506453423416,22.485279767370997,24.359053081318578,26.232826395266162,28.106599709213747,29.980373023161327,31.854146337108915,33.727919651056496,35.601692965004077],"y":[104,33,34,29,23,33,33,8,12,6,2,1,1,1,1,0,0,0,0,2],"text":["count: 104<br />as.numeric(DENSITY):  0.000000","count:  33<br />as.numeric(DENSITY):  1.873773","count:  34<br />as.numeric(DENSITY):  3.747547","count:  29<br />as.numeric(DENSITY):  5.621320","count:  23<br />as.numeric(DENSITY):  7.495093","count:  33<br />as.numeric(DENSITY):  9.368867","count:  33<br />as.numeric(DENSITY): 11.242640","count:   8<br />as.numeric(DENSITY): 13.116413","count:  12<br />as.numeric(DENSITY): 14.990187","count:   6<br />as.numeric(DENSITY): 16.863960","count:   2<br />as.numeric(DENSITY): 18.737733","count:   1<br />as.numeric(DENSITY): 20.611506","count:   1<br />as.numeric(DENSITY): 22.485280","count:   1<br />as.numeric(DENSITY): 24.359053","count:   1<br />as.numeric(DENSITY): 26.232826","count:   0<br />as.numeric(DENSITY): 28.106600","count:   0<br />as.numeric(DENSITY): 29.980373","count:   0<br />as.numeric(DENSITY): 31.854146","count:   0<br />as.numeric(DENSITY): 33.727920","count:   2<br />as.numeric(DENSITY): 35.601693"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(173,216,230,1)","line":{"width":1.8897637795275593,"color":"rgba(0,0,0,1)"}},"showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[5.2028611308114519,5.2028611308114519],"y":[-5.2000000000000002,109.2],"text":"xintercept: 5.202861","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(0,0,255,1)","dash":"dash"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[10.379927815404336,10.379927815404336],"y":[-5.2000000000000002,109.2],"text":"xintercept: 10.37993","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(0,0,0,1)","dash":"dash"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4],"y":[75],"text":"50th <br />percentile","hovertext":"x: 4<br />y: 75","textfont":{"size":7.559055118110237,"color":"rgba(0,0,0,1)"},"type":"scatter","mode":"text","hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[9],"y":[75],"text":"75th <br />percentile","hovertext":"x: 9<br />y: 75","textfont":{"size":7.559055118110237,"color":"rgba(0,0,0,1)"},"type":"scatter","mode":"text","hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.762557077625573,"r":7.3059360730593621,"b":40.182648401826491,"l":43.105022831050235},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"Are pre-school even distributed in Singapore?","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-2.8106599709213747,38.412352935925448],"tickmode":"array","ticktext":["0","10","20","30"],"tickvals":[-4.4408920985006262e-16,9.9999999999999982,20,30.000000000000004],"categoryorder":"array","categoryarray":["0","10","20","30"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y","title":{"text":"Pre-school density (per km sq)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-5.2000000000000002,109.2],"tickmode":"array","ticktext":["0","25","50","75","100"],"tickvals":[0,25,50,75,100],"categoryorder":"array","categoryarray":["0","25","50","75","100"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":{"text":"Frequency","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"70cc4759152e":{"x":{},"type":"bar"},"70cc4aaf1f43":{"xintercept":{}},"70cc692073a0":{"xintercept":{}},"70cc2d9921d2":{"x":{},"y":{}},"70cc7e982463":{"x":{},"y":{}}},"cur_data":"70cc4759152e","visdat":{"70cc4759152e":["function (y) ","x"],"70cc4aaf1f43":["function (y) ","x"],"70cc692073a0":["function (y) ","x"],"70cc2d9921d2":["function (y) ","x"],"70cc7e982463":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </div>
@@ -2376,8 +2262,6 @@ Projected CRS: SVY21
 </div>
 <p><strong>DIY: Using ggplot2 method, plot a scatterplot showing the relationship between Pre-school Density and Pre-school Count.</strong></p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>mpsz3414, </span>
 <span id="cb62-2"><a href="#cb62-2"></a>       <span class="fu">aes</span>(<span class="at">y =</span> <span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span>, </span>
 <span id="cb62-3"><a href="#cb62-3"></a>           <span class="at">x=</span> <span class="fu">as.numeric</span>(DENSITY)))<span class="sc">+</span></span>
@@ -2388,7 +2272,6 @@ Projected CRS: SVY21
 <span id="cb62-8"><a href="#cb62-8"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">""</span>,</span>
 <span id="cb62-9"><a href="#cb62-9"></a>      <span class="at">x =</span> <span class="st">"Pre-school density (per km sq)"</span>,</span>
 <span id="cb62-10"><a href="#cb62-10"></a>      <span class="at">y =</span> <span class="st">"Pre-school count"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output-display">
 <p><img src="Hands-on_Ex1_1_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -2432,10 +2315,7 @@ Projected CRS: SVY21
 </ul>
 <p>The code chunk below allows us to unsf the mpsz and work tbl_df or data.frame.</p>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb63"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1"></a>mpsz_tbl_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 
 
