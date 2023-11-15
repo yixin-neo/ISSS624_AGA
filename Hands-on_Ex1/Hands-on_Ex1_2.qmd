@@ -434,14 +434,179 @@ tm_shape(mpsz_pop2020)+
 
 > DIY: Using what you had learned, prepare choropleth maps by using different classification methods supported by tmap and compare their differences.
 
-> DIY: Preparing choropleth maps by using similar classification method but with different numbers of classes (i.e. 2, 6, 10, 20). Compare the output maps, what observation can you draw?
+Using tmap_arrange:
 
 ```{r}
+kmeans<- tm_shape(mpsz_pop2020)+
+    tm_fill("DEPENDENCY", n = 5, style = 'kmeans') +
+  tm_borders(alpha = 0.5)
 
+sd <- tm_shape(mpsz_pop2020)+
+    tm_fill("DEPENDENCY", n = 5, style = 'sd') +
+  tm_borders(alpha = 0.5)
+
+fisher <- tm_shape(mpsz_pop2020)+
+    tm_fill("DEPENDENCY", n = 5, style = 'fisher') +
+  tm_borders(alpha = 0.5)
+
+tmap_arrange(kmeans, sd, fisher, asp = 4, nrow=3)
 ```
 
-```{r}
+> DIY: Preparing choropleth maps by using similar classification method but with different numbers of classes (i.e. 2, 6, 10, 20). Compare the output maps, what observation can you draw?
 
+Assigning multiple values to at least one of the aesthetics arguments.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill(c('DEPENDENCY','DEPENDENCY'),
+          style= c('jenks','jenks'),
+          n = c(3,10),
+          palette= list('Greens', 'Greens')) +
+  tm_borders(alpha = 0.5) +
+  tm_layout(legend.position = c('right','bottom'),
+            legend.width = 0.5,
+            legend.height = 0.4,
+            legend.text.size = 0.35 )
+```
+
+#### 2.4.3.2 Plotting choropleth maps with custome break
+
+The breakpoints can be set explicitly by means of the ***breaks*** argument to the *tm_fill().*
+
+-   breaks include min and max
+
+-   to have n categories, n+1 elements to be specified in breaks option
+
+-   values must be in increasing order
+
+Good practise: descriptive statistics on variable before setting break points
+
+```{r}
+summary(mpsz_pop2020$DEPENDENCY)
+```
+
+With reference to summary stats and boxplot above,
+
+-   break points are 0.6, 0.7, 0.8, 0.9
+
+-   min = 0 and max = 1.0
+
+-   break vector is thus c(0, 0.6, 0.7, 0.8, 0.9, 1.0)
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY", breaks = c(0, 0.6, 0.7, 0.8, 0.9, 1.0)) +
+  tm_borders(alpha = 0.5)
+```
+
+### 2.4.4 Colour scheme
+
+#### 2.4.4.1 Using ColourBrewer palette (predefined)
+
+Assign the preferred colour to *palette* argument of *tm_fill()*
+
+::: panel-tabset
+## normal
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 6,
+          style = "quantile",
+          palette = "Blues") +
+  tm_borders(alpha = 0.5)
+```
+
+## reverse
+
+Reverse the colour scheme by adding \"-\"
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 6,
+          style = "quantile",
+          palette = "-Greens") +
+  tm_borders(alpha = 0.5)
+```
+:::
+
+### 2.4.5 Map Layouts
+
+-   customise title, scale bar, compass, margins, aspect ratios
+
+-   other than colour palette and data classification (breaks) which is done in tm_fill()
+
+#### 2.4.5.1 Map Legend
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY", 
+          style = "jenks", 
+          palette = "Blues", 
+          legend.hist = TRUE, 
+          legend.is.portrait = TRUE,
+          legend.hist.z = 0.1) +
+  tm_layout(main.title = "Distribution of Dependency Ratio by planning subzone \n(Jenks classification)",
+            main.title.position = "center",
+            main.title.size = 1,
+            legend.height = 0.45, 
+            legend.width = 0.35,
+            legend.outside = FALSE,
+            legend.position = c("right", "bottom"),
+            frame = FALSE) +
+  tm_borders(alpha = 0.5)
+```
+
+#### 2.4.5.2 Map style
+
+**tmap** allows a wide variety of layout settings to be changed. They can be called by using [tmap_style()](https://www.rdocumentation.org/packages/tmap/versions/3.3-3/topics/tm_layout)
+
+Predefined styles: \'white\', \'gray\', \'natural\', \'bw\', \'classic\', \'cobalt\', albatross\', \'beaver\', \'col_blind\', \'watercolor\'
+
+Below is an example of *classic* style
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 6,
+          style = "quantile",
+          palette = "-Greens") +
+  tm_borders(alpha = 0.5)+
+  tmap_style('natural')
+```
+
+#### 2.4.5.3 Cartographic Furniture
+
+Can include other map furniture like compass, scale bar, and grid lines
+
+tmap_style has to be used at the **last**, think cannot mix with tm
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY", 
+          style = "quantile", 
+          palette = "Reds",
+          title = "No. of persons") +
+  tm_layout(main.title = "Distribution of Dependency Ratio \nby planning subzone",
+            main.title.position = "center",
+            main.title.size = 1.2,
+            legend.height = 0.45, 
+            legend.width = 0.35,
+            frame = TRUE) +
+  tm_borders(alpha = 0.5) +
+  tm_compass(type="8star", size = 2) +
+  tm_scale_bar(width = 0.15) +
+  tm_grid(lwd = 0.1, alpha = 0.2) +
+  tm_credits("Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)\n and Population data from Department of Statistics DOS", 
+             position = c("left", "bottom")) +
+  tmap_style('natural')
+```
+
+To reset the default style, refer below
+
+```{r}
+tmap_style("white")
 ```
 
 ```{r}

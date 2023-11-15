@@ -247,6 +247,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#plotting-a-choropleth-map-quickly-by-using-qtm" id="toc-plotting-a-choropleth-map-quickly-by-using-qtm" class="nav-link" data-scroll-target="#plotting-a-choropleth-map-quickly-by-using-qtm">2.4.1 Plotting a choropleth map quickly by using <em>qtm()</em></a></li>
   <li><a href="#creating-a-choropleth-map-by-using-tmaps-elements" id="toc-creating-a-choropleth-map-by-using-tmaps-elements" class="nav-link" data-scroll-target="#creating-a-choropleth-map-by-using-tmaps-elements">2.4.2 Creating a Choropleth map by using tmap’s elements</a></li>
   <li><a href="#data-classification-methods-of-tmap" id="toc-data-classification-methods-of-tmap" class="nav-link" data-scroll-target="#data-classification-methods-of-tmap">2.4.3 Data classification methods of <strong>tmap</strong></a></li>
+  <li><a href="#colour-scheme" id="toc-colour-scheme" class="nav-link" data-scroll-target="#colour-scheme">2.4.4 Colour scheme</a></li>
+  <li><a href="#map-layouts" id="toc-map-layouts" class="nav-link" data-scroll-target="#map-layouts">2.4.5 Map Layouts</a></li>
   </ul></li>
   <li><a href="#theories" id="toc-theories" class="nav-link" data-scroll-target="#theories">Theories</a>
   <ul class="collapse">
@@ -1229,14 +1231,194 @@ Important
 <blockquote class="blockquote">
 <p>DIY: Using what you had learned, prepare choropleth maps by using different classification methods supported by tmap and compare their differences.</p>
 </blockquote>
+<p>Using tmap_arrange:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>kmeans<span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb35-2"><a href="#cb35-2"></a>    <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>, <span class="at">n =</span> <span class="dv">5</span>, <span class="at">style =</span> <span class="st">'kmeans'</span>) <span class="sc">+</span></span>
+<span id="cb35-3"><a href="#cb35-3"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span>
+<span id="cb35-4"><a href="#cb35-4"></a></span>
+<span id="cb35-5"><a href="#cb35-5"></a>sd <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb35-6"><a href="#cb35-6"></a>    <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>, <span class="at">n =</span> <span class="dv">5</span>, <span class="at">style =</span> <span class="st">'sd'</span>) <span class="sc">+</span></span>
+<span id="cb35-7"><a href="#cb35-7"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span>
+<span id="cb35-8"><a href="#cb35-8"></a></span>
+<span id="cb35-9"><a href="#cb35-9"></a>fisher <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb35-10"><a href="#cb35-10"></a>    <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>, <span class="at">n =</span> <span class="dv">5</span>, <span class="at">style =</span> <span class="st">'fisher'</span>) <span class="sc">+</span></span>
+<span id="cb35-11"><a href="#cb35-11"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span>
+<span id="cb35-12"><a href="#cb35-12"></a></span>
+<span id="cb35-13"><a href="#cb35-13"></a><span class="fu">tmap_arrange</span>(kmeans, sd, fisher, <span class="at">asp =</span> <span class="dv">4</span>, <span class="at">nrow=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 <blockquote class="blockquote">
 <p>DIY: Preparing choropleth maps by using similar classification method but with different numbers of classes (i.e.&nbsp;2, 6, 10, 20). Compare the output maps, what observation can you draw?</p>
 </blockquote>
+<p>Assigning multiple values to at least one of the aesthetics arguments.</p>
 <div class="cell">
-
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb36-2"><a href="#cb36-2"></a>  <span class="fu">tm_fill</span>(<span class="fu">c</span>(<span class="st">'DEPENDENCY'</span>,<span class="st">'DEPENDENCY'</span>),</span>
+<span id="cb36-3"><a href="#cb36-3"></a>          <span class="at">style=</span> <span class="fu">c</span>(<span class="st">'jenks'</span>,<span class="st">'jenks'</span>),</span>
+<span id="cb36-4"><a href="#cb36-4"></a>          <span class="at">n =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">10</span>),</span>
+<span id="cb36-5"><a href="#cb36-5"></a>          <span class="at">palette=</span> <span class="fu">list</span>(<span class="st">'Greens'</span>, <span class="st">'Greens'</span>)) <span class="sc">+</span></span>
+<span id="cb36-6"><a href="#cb36-6"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb36-7"><a href="#cb36-7"></a>  <span class="fu">tm_layout</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="st">'right'</span>,<span class="st">'bottom'</span>),</span>
+<span id="cb36-8"><a href="#cb36-8"></a>            <span class="at">legend.width =</span> <span class="fl">0.5</span>,</span>
+<span id="cb36-9"><a href="#cb36-9"></a>            <span class="at">legend.height =</span> <span class="fl">0.4</span>,</span>
+<span id="cb36-10"><a href="#cb36-10"></a>            <span class="at">legend.text.size =</span> <span class="fl">0.35</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
 </div>
+</div>
+</section>
+<section id="plotting-choropleth-maps-with-custome-break" class="level4">
+<h4 class="anchored" data-anchor-id="plotting-choropleth-maps-with-custome-break">2.4.3.2 Plotting choropleth maps with custome break</h4>
+<p>The breakpoints can be set explicitly by means of the <strong><em>breaks</em></strong> argument to the <em>tm_fill().</em></p>
+<ul>
+<li><p>breaks include min and max</p></li>
+<li><p>to have n categories, n+1 elements to be specified in breaks option</p></li>
+<li><p>values must be in increasing order</p></li>
+</ul>
+<p>Good practise: descriptive statistics on variable before setting break points</p>
 <div class="cell">
-
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="fu">summary</span>(mpsz_pop2020<span class="sc">$</span>DEPENDENCY)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+ 0.0000  0.6519  0.7025  0.7742  0.7645 19.0000      92 </code></pre>
+</div>
+</div>
+<p>With reference to summary stats and boxplot above,</p>
+<ul>
+<li><p>break points are 0.6, 0.7, 0.8, 0.9</p></li>
+<li><p>min = 0 and max = 1.0</p></li>
+<li><p>break vector is thus c(0, 0.6, 0.7, 0.8, 0.9, 1.0)</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb39-2"><a href="#cb39-2"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>, <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.6</span>, <span class="fl">0.7</span>, <span class="fl">0.8</span>, <span class="fl">0.9</span>, <span class="fl">1.0</span>)) <span class="sc">+</span></span>
+<span id="cb39-3"><a href="#cb39-3"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="colour-scheme" class="level3">
+<h3 class="anchored" data-anchor-id="colour-scheme">2.4.4 Colour scheme</h3>
+<section id="using-colourbrewer-palette-predefined" class="level4">
+<h4 class="anchored" data-anchor-id="using-colourbrewer-palette-predefined">2.4.4.1 Using ColourBrewer palette (predefined)</h4>
+<p>Assign the preferred colour to <em>palette</em> argument of <em>tm_fill()</em></p>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">normal</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">reverse</a></li></ul>
+<div class="tab-content">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb40-2"><a href="#cb40-2"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
+<span id="cb40-3"><a href="#cb40-3"></a>          <span class="at">n =</span> <span class="dv">6</span>,</span>
+<span id="cb40-4"><a href="#cb40-4"></a>          <span class="at">style =</span> <span class="st">"quantile"</span>,</span>
+<span id="cb40-5"><a href="#cb40-5"></a>          <span class="at">palette =</span> <span class="st">"Blues"</span>) <span class="sc">+</span></span>
+<span id="cb40-6"><a href="#cb40-6"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<p>Reverse the colour scheme by adding "-"</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb41-2"><a href="#cb41-2"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
+<span id="cb41-3"><a href="#cb41-3"></a>          <span class="at">n =</span> <span class="dv">6</span>,</span>
+<span id="cb41-4"><a href="#cb41-4"></a>          <span class="at">style =</span> <span class="st">"quantile"</span>,</span>
+<span id="cb41-5"><a href="#cb41-5"></a>          <span class="at">palette =</span> <span class="st">"-Greens"</span>) <span class="sc">+</span></span>
+<span id="cb41-6"><a href="#cb41-6"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="map-layouts" class="level3">
+<h3 class="anchored" data-anchor-id="map-layouts">2.4.5 Map Layouts</h3>
+<ul>
+<li><p>customise title, scale bar, compass, margins, aspect ratios</p></li>
+<li><p>other than colour palette and data classification (breaks) which is done in tm_fill()</p></li>
+</ul>
+<section id="map-legend" class="level4">
+<h4 class="anchored" data-anchor-id="map-legend">2.4.5.1 Map Legend</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb42-2"><a href="#cb42-2"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>, </span>
+<span id="cb42-3"><a href="#cb42-3"></a>          <span class="at">style =</span> <span class="st">"jenks"</span>, </span>
+<span id="cb42-4"><a href="#cb42-4"></a>          <span class="at">palette =</span> <span class="st">"Blues"</span>, </span>
+<span id="cb42-5"><a href="#cb42-5"></a>          <span class="at">legend.hist =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb42-6"><a href="#cb42-6"></a>          <span class="at">legend.is.portrait =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb42-7"><a href="#cb42-7"></a>          <span class="at">legend.hist.z =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
+<span id="cb42-8"><a href="#cb42-8"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Distribution of Dependency Ratio by planning subzone </span><span class="sc">\n</span><span class="st">(Jenks classification)"</span>,</span>
+<span id="cb42-9"><a href="#cb42-9"></a>            <span class="at">main.title.position =</span> <span class="st">"center"</span>,</span>
+<span id="cb42-10"><a href="#cb42-10"></a>            <span class="at">main.title.size =</span> <span class="dv">1</span>,</span>
+<span id="cb42-11"><a href="#cb42-11"></a>            <span class="at">legend.height =</span> <span class="fl">0.45</span>, </span>
+<span id="cb42-12"><a href="#cb42-12"></a>            <span class="at">legend.width =</span> <span class="fl">0.35</span>,</span>
+<span id="cb42-13"><a href="#cb42-13"></a>            <span class="at">legend.outside =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb42-14"><a href="#cb42-14"></a>            <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="st">"right"</span>, <span class="st">"bottom"</span>),</span>
+<span id="cb42-15"><a href="#cb42-15"></a>            <span class="at">frame =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb42-16"><a href="#cb42-16"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="map-style" class="level4">
+<h4 class="anchored" data-anchor-id="map-style">2.4.5.2 Map style</h4>
+<p><strong>tmap</strong> allows a wide variety of layout settings to be changed. They can be called by using <a href="https://www.rdocumentation.org/packages/tmap/versions/3.3-3/topics/tm_layout">tmap_style()</a></p>
+<p>Predefined styles: 'white', 'gray', 'natural', 'bw', 'classic', 'cobalt', albatross', 'beaver', 'col_blind', 'watercolor'</p>
+<p>Below is an example of <em>classic</em> style</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb43-2"><a href="#cb43-2"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
+<span id="cb43-3"><a href="#cb43-3"></a>          <span class="at">n =</span> <span class="dv">6</span>,</span>
+<span id="cb43-4"><a href="#cb43-4"></a>          <span class="at">style =</span> <span class="st">"quantile"</span>,</span>
+<span id="cb43-5"><a href="#cb43-5"></a>          <span class="at">palette =</span> <span class="st">"-Greens"</span>) <span class="sc">+</span></span>
+<span id="cb43-6"><a href="#cb43-6"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb43-7"><a href="#cb43-7"></a>  <span class="fu">tmap_style</span>(<span class="st">'natural'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="cartographic-furniture" class="level4">
+<h4 class="anchored" data-anchor-id="cartographic-furniture">2.4.5.3 Cartographic Furniture</h4>
+<p>Can include other map furniture like compass, scale bar, and grid lines</p>
+<p>tmap_style has to be used at the <strong>last</strong>, think cannot mix with tm</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb44-2"><a href="#cb44-2"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>, </span>
+<span id="cb44-3"><a href="#cb44-3"></a>          <span class="at">style =</span> <span class="st">"quantile"</span>, </span>
+<span id="cb44-4"><a href="#cb44-4"></a>          <span class="at">palette =</span> <span class="st">"Reds"</span>,</span>
+<span id="cb44-5"><a href="#cb44-5"></a>          <span class="at">title =</span> <span class="st">"No. of persons"</span>) <span class="sc">+</span></span>
+<span id="cb44-6"><a href="#cb44-6"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Distribution of Dependency Ratio </span><span class="sc">\n</span><span class="st">by planning subzone"</span>,</span>
+<span id="cb44-7"><a href="#cb44-7"></a>            <span class="at">main.title.position =</span> <span class="st">"center"</span>,</span>
+<span id="cb44-8"><a href="#cb44-8"></a>            <span class="at">main.title.size =</span> <span class="fl">1.2</span>,</span>
+<span id="cb44-9"><a href="#cb44-9"></a>            <span class="at">legend.height =</span> <span class="fl">0.45</span>, </span>
+<span id="cb44-10"><a href="#cb44-10"></a>            <span class="at">legend.width =</span> <span class="fl">0.35</span>,</span>
+<span id="cb44-11"><a href="#cb44-11"></a>            <span class="at">frame =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb44-12"><a href="#cb44-12"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb44-13"><a href="#cb44-13"></a>  <span class="fu">tm_compass</span>(<span class="at">type=</span><span class="st">"8star"</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb44-14"><a href="#cb44-14"></a>  <span class="fu">tm_scale_bar</span>(<span class="at">width =</span> <span class="fl">0.15</span>) <span class="sc">+</span></span>
+<span id="cb44-15"><a href="#cb44-15"></a>  <span class="fu">tm_grid</span>(<span class="at">lwd =</span> <span class="fl">0.1</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb44-16"><a href="#cb44-16"></a>  <span class="fu">tm_credits</span>(<span class="st">"Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)</span><span class="sc">\n</span><span class="st"> and Population data from Department of Statistics DOS"</span>, </span>
+<span id="cb44-17"><a href="#cb44-17"></a>             <span class="at">position =</span> <span class="fu">c</span>(<span class="st">"left"</span>, <span class="st">"bottom"</span>)) <span class="sc">+</span></span>
+<span id="cb44-18"><a href="#cb44-18"></a>  <span class="fu">tmap_style</span>(<span class="st">'natural'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>To reset the default style, refer below</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a><span class="fu">tmap_style</span>(<span class="st">"white"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 
