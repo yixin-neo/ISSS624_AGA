@@ -299,20 +299,97 @@ kable(head(listings))
 library(gt)
 head(listings) %>% gt() %>% tab_header(title = "AirBnB listings")
 ```
-:::
 
-Another package available is DT for interactive tables.
+## DT (interactive table)
 
 ```{r}
-#| echo: false
 #| eval: false
 library(DT)
-datatable(head(listings), class = 'cell-border stripe')#, options = list(pageLength = 5))
+datatable(head(listings), class = 'cell-border stripe', options = list(pageLength = 3))
+```
+:::
+
+Two useful fields we need are `latitude` and `longitude` and they are in decimal degree format. As a best guess, we will assume that the data is in **wgs84** Geographic Coordinate System.
+
+### 1.8.2 Creating a simple feature data frame from an aspatial data frame
+
+The code chunk below converts `listing` data frame into a simple feature data frame by using [*st_as_sf()*](https://r-spatial.github.io/sf/reference/st_as_sf.html) of **sf** packages.
+
+EPSG 4326 is associated with WGS84.
+
+```{r}
+listings_sf <- st_as_sf(listings,
+                        coords = c('longitude','latitude'),
+                        crs=4326) %>%
+  st_transform(crs=3414)
+
+class(listings_sf)
+```
+
+Things to learn from the arguments above:
+
+-   *coords* argument requires you to provide the column name of the x-coordinates first then followed by the column name of the y-coordinates.
+
+-   *crs* argument requires you to provide the coordinates system in epsg format. [EPSG: 4326](https://epsg.io/4326) is wgs84 Geographic Coordinate System and [EPSG: 3414](https://epsg.io/3414) is Singapore SVY21 Projected Coordinate System. You can search for other country's epsg code by referring to [epsg.io](https://epsg.io/).
+
+Let us examine the content of our newly created sf dataframe
+
+```{r}
+glimpse(listings_sf)
+```
+
+A new column `geometry` has been added at the back of the df. Additionally, lat long columns were both dropped from the df.
+
+## 1.9 Geoprocessing with sf package
+
+Besides providing functions to handling (i.e. importing, exporting, assigning projection, transforming projection etc) geospatial data, **sf** package also offers a wide range of geoprocessing (also known as GIS analysis) functions.
+
+In this section, we will learn how to perform two commonly used geoprocessing functions, namely [buffering](https://www.gislounge.com/buffers-in-gis/) and point in polygon count.
+
+### 1.9.1 Buffering
+
+The scenario:
+
+The authority is planning to upgrade the exiting cycling path. To do so, they need to acquire 5 metres of reserved land on the both sides of the current cycling path. You are tasked to determine the extend of the land need to be acquired and their total area.
+
+The solution:
+
+Firstly, [*st_buffer()*](https://r-spatial.github.io/sf/reference/geos_unary.html) of **sf** package is used to compute the 5-meter buffers around `cyclingpath` . A buffer is a zone around a spatial object, recall that `cyclingpath` is a multiline-string sf object.
+
+```{r}
+st_geometry(cyclingpath)
 ```
 
 ```{r}
-
+buffer_cycling <- st_buffer(cyclingpath,
+                            dist = 5,
+                            nQuadSegs = 30)
 ```
+
+```{r}
+plot(buffer_cycling)
+```
+
+```{r}
+head(buffer_cycling)
+```
+
+Now, we will calculate the area of the buffers as shown in the code chunk below.
+
+We are also adding a derived column to `buffer_cycling` too.
+
+```{r}
+buffer_cycling$AREA <- st_area(buffer_cycling)
+kable(head(buffer_cycling))
+```
+
+Lastly, sum() of Base R will be used to derive the total land involved
+
+```{r}
+sum(buffer_cycling$AREA)
+```
+
+**Good Job!**
 
 ```{r}
 

@@ -251,6 +251,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#importing-and-converting-an-aspatial-data" id="toc-importing-and-converting-an-aspatial-data" class="nav-link" data-scroll-target="#importing-and-converting-an-aspatial-data">1.8 Importing and Converting An Aspatial Data</a>
   <ul class="collapse">
   <li><a href="#importing-the-aspatial-data" id="toc-importing-the-aspatial-data" class="nav-link" data-scroll-target="#importing-the-aspatial-data">1.8.1 Importing the aspatial data</a></li>
+  <li><a href="#creating-a-simple-feature-data-frame-from-an-aspatial-data-frame" id="toc-creating-a-simple-feature-data-frame-from-an-aspatial-data-frame" class="nav-link" data-scroll-target="#creating-a-simple-feature-data-frame-from-an-aspatial-data-frame">1.8.2 Creating a simple feature data frame from an aspatial data frame</a></li>
+  </ul></li>
+  <li><a href="#geoprocessing-with-sf-package" id="toc-geoprocessing-with-sf-package" class="nav-link" data-scroll-target="#geoprocessing-with-sf-package">1.9 Geoprocessing with sf package</a>
+  <ul class="collapse">
+  <li><a href="#buffering" id="toc-buffering" class="nav-link" data-scroll-target="#buffering">1.9.1 Buffering</a></li>
   </ul></li>
   <li><a href="#theories" id="toc-theories" class="nav-link" data-scroll-target="#theories">Theories</a>
   <ul class="collapse">
@@ -968,7 +973,7 @@ First 5 geometries:</code></pre>
 </div>
 <p>Other ways of displaying tabular data in R:</p>
 <div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">kable</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">gt</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">kable</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">gt</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">DT (interactive table)</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell">
@@ -1155,23 +1160,23 @@ First 5 geometries:</code></pre>
 </details>
 <div class="cell-output-display">
 
-<div id="arwzsotnhp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#arwzsotnhp table {
+<div id="usjpkslccn" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#usjpkslccn table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#arwzsotnhp thead, #arwzsotnhp tbody, #arwzsotnhp tfoot, #arwzsotnhp tr, #arwzsotnhp td, #arwzsotnhp th {
+#usjpkslccn thead, #usjpkslccn tbody, #usjpkslccn tfoot, #usjpkslccn tr, #usjpkslccn td, #usjpkslccn th {
   border-style: none;
 }
 
-#arwzsotnhp p {
+#usjpkslccn p {
   margin: 0;
   padding: 0;
 }
 
-#arwzsotnhp .gt_table {
+#usjpkslccn .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1197,12 +1202,12 @@ First 5 geometries:</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#arwzsotnhp .gt_caption {
+#usjpkslccn .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#arwzsotnhp .gt_title {
+#usjpkslccn .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1214,7 +1219,7 @@ First 5 geometries:</code></pre>
   border-bottom-width: 0;
 }
 
-#arwzsotnhp .gt_subtitle {
+#usjpkslccn .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1226,7 +1231,7 @@ First 5 geometries:</code></pre>
   border-top-width: 0;
 }
 
-#arwzsotnhp .gt_heading {
+#usjpkslccn .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1238,13 +1243,13 @@ First 5 geometries:</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#arwzsotnhp .gt_bottom_border {
+#usjpkslccn .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#arwzsotnhp .gt_col_headings {
+#usjpkslccn .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1259,7 +1264,7 @@ First 5 geometries:</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#arwzsotnhp .gt_col_heading {
+#usjpkslccn .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1279,7 +1284,7 @@ First 5 geometries:</code></pre>
   overflow-x: hidden;
 }
 
-#arwzsotnhp .gt_column_spanner_outer {
+#usjpkslccn .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1291,15 +1296,15 @@ First 5 geometries:</code></pre>
   padding-right: 4px;
 }
 
-#arwzsotnhp .gt_column_spanner_outer:first-child {
+#usjpkslccn .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#arwzsotnhp .gt_column_spanner_outer:last-child {
+#usjpkslccn .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#arwzsotnhp .gt_column_spanner {
+#usjpkslccn .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1311,11 +1316,11 @@ First 5 geometries:</code></pre>
   width: 100%;
 }
 
-#arwzsotnhp .gt_spanner_row {
+#usjpkslccn .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#arwzsotnhp .gt_group_heading {
+#usjpkslccn .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1341,7 +1346,7 @@ First 5 geometries:</code></pre>
   text-align: left;
 }
 
-#arwzsotnhp .gt_empty_group_heading {
+#usjpkslccn .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1356,15 +1361,15 @@ First 5 geometries:</code></pre>
   vertical-align: middle;
 }
 
-#arwzsotnhp .gt_from_md > :first-child {
+#usjpkslccn .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#arwzsotnhp .gt_from_md > :last-child {
+#usjpkslccn .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#arwzsotnhp .gt_row {
+#usjpkslccn .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1383,7 +1388,7 @@ First 5 geometries:</code></pre>
   overflow-x: hidden;
 }
 
-#arwzsotnhp .gt_stub {
+#usjpkslccn .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1396,7 +1401,7 @@ First 5 geometries:</code></pre>
   padding-right: 5px;
 }
 
-#arwzsotnhp .gt_stub_row_group {
+#usjpkslccn .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1410,15 +1415,15 @@ First 5 geometries:</code></pre>
   vertical-align: top;
 }
 
-#arwzsotnhp .gt_row_group_first td {
+#usjpkslccn .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#arwzsotnhp .gt_row_group_first th {
+#usjpkslccn .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#arwzsotnhp .gt_summary_row {
+#usjpkslccn .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1428,16 +1433,16 @@ First 5 geometries:</code></pre>
   padding-right: 5px;
 }
 
-#arwzsotnhp .gt_first_summary_row {
+#usjpkslccn .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#arwzsotnhp .gt_first_summary_row.thick {
+#usjpkslccn .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#arwzsotnhp .gt_last_summary_row {
+#usjpkslccn .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1447,7 +1452,7 @@ First 5 geometries:</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#arwzsotnhp .gt_grand_summary_row {
+#usjpkslccn .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1457,7 +1462,7 @@ First 5 geometries:</code></pre>
   padding-right: 5px;
 }
 
-#arwzsotnhp .gt_first_grand_summary_row {
+#usjpkslccn .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1467,7 +1472,7 @@ First 5 geometries:</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#arwzsotnhp .gt_last_grand_summary_row_top {
+#usjpkslccn .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1477,11 +1482,11 @@ First 5 geometries:</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#arwzsotnhp .gt_striped {
+#usjpkslccn .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#arwzsotnhp .gt_table_body {
+#usjpkslccn .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1490,7 +1495,7 @@ First 5 geometries:</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#arwzsotnhp .gt_footnotes {
+#usjpkslccn .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1504,7 +1509,7 @@ First 5 geometries:</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#arwzsotnhp .gt_footnote {
+#usjpkslccn .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1513,7 +1518,7 @@ First 5 geometries:</code></pre>
   padding-right: 5px;
 }
 
-#arwzsotnhp .gt_sourcenotes {
+#usjpkslccn .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1527,7 +1532,7 @@ First 5 geometries:</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#arwzsotnhp .gt_sourcenote {
+#usjpkslccn .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1535,63 +1540,63 @@ First 5 geometries:</code></pre>
   padding-right: 5px;
 }
 
-#arwzsotnhp .gt_left {
+#usjpkslccn .gt_left {
   text-align: left;
 }
 
-#arwzsotnhp .gt_center {
+#usjpkslccn .gt_center {
   text-align: center;
 }
 
-#arwzsotnhp .gt_right {
+#usjpkslccn .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#arwzsotnhp .gt_font_normal {
+#usjpkslccn .gt_font_normal {
   font-weight: normal;
 }
 
-#arwzsotnhp .gt_font_bold {
+#usjpkslccn .gt_font_bold {
   font-weight: bold;
 }
 
-#arwzsotnhp .gt_font_italic {
+#usjpkslccn .gt_font_italic {
   font-style: italic;
 }
 
-#arwzsotnhp .gt_super {
+#usjpkslccn .gt_super {
   font-size: 65%;
 }
 
-#arwzsotnhp .gt_footnote_marks {
+#usjpkslccn .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#arwzsotnhp .gt_asterisk {
+#usjpkslccn .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#arwzsotnhp .gt_indent_1 {
+#usjpkslccn .gt_indent_1 {
   text-indent: 5px;
 }
 
-#arwzsotnhp .gt_indent_2 {
+#usjpkslccn .gt_indent_2 {
   text-indent: 10px;
 }
 
-#arwzsotnhp .gt_indent_3 {
+#usjpkslccn .gt_indent_3 {
   text-indent: 15px;
 }
 
-#arwzsotnhp .gt_indent_4 {
+#usjpkslccn .gt_indent_4 {
   text-indent: 20px;
 }
 
-#arwzsotnhp .gt_indent_5 {
+#usjpkslccn .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -1739,15 +1744,210 @@ First 5 geometries:</code></pre>
 </div>
 </div>
 </div>
-</div>
-</div>
-<p>Another package available is DT for interactive tables.</p>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
 <div class="cell">
-
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="fu">library</span>(DT)</span>
+<span id="cb39-2"><a href="#cb39-2"></a><span class="fu">datatable</span>(<span class="fu">head</span>(listings), <span class="at">class =</span> <span class="st">'cell-border stripe'</span>, <span class="at">options =</span> <span class="fu">list</span>(<span class="at">pageLength =</span> <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+</div>
+</div>
+<p>Two useful fields we need are <code>latitude</code> and <code>longitude</code> and they are in decimal degree format. As a best guess, we will assume that the data is in <strong>wgs84</strong> Geographic Coordinate System.</p>
+</section>
+<section id="creating-a-simple-feature-data-frame-from-an-aspatial-data-frame" class="level3">
+<h3 class="anchored" data-anchor-id="creating-a-simple-feature-data-frame-from-an-aspatial-data-frame">1.8.2 Creating a simple feature data frame from an aspatial data frame</h3>
+<p>The code chunk below converts <code>listing</code> data frame into a simple feature data frame by using <a href="https://r-spatial.github.io/sf/reference/st_as_sf.html"><em>st_as_sf()</em></a> of <strong>sf</strong> packages.</p>
+<p>EPSG 4326 is associated with WGS84.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a>listings_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(listings,</span>
+<span id="cb40-2"><a href="#cb40-2"></a>                        <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">'longitude'</span>,<span class="st">'latitude'</span>),</span>
+<span id="cb40-3"><a href="#cb40-3"></a>                        <span class="at">crs=</span><span class="dv">4326</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb40-4"><a href="#cb40-4"></a>  <span class="fu">st_transform</span>(<span class="at">crs=</span><span class="dv">3414</span>)</span>
+<span id="cb40-5"><a href="#cb40-5"></a></span>
+<span id="cb40-6"><a href="#cb40-6"></a><span class="fu">class</span>(listings_sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "sf"         "tbl_df"     "tbl"        "data.frame"</code></pre>
+</div>
+</div>
+<p>Things to learn from the arguments above:</p>
+<ul>
+<li><p><em>coords</em> argument requires you to provide the column name of the x-coordinates first then followed by the column name of the y-coordinates.</p></li>
+<li><p><em>crs</em> argument requires you to provide the coordinates system in epsg format. <a href="https://epsg.io/4326">EPSG: 4326</a> is wgs84 Geographic Coordinate System and <a href="https://epsg.io/3414">EPSG: 3414</a> is Singapore SVY21 Projected Coordinate System. You can search for other country’s epsg code by referring to <a href="https://epsg.io/">epsg.io</a>.</p></li>
+</ul>
+<p>Let us examine the content of our newly created sf dataframe</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a><span class="fu">glimpse</span>(listings_sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 4,161
+Columns: 17
+$ id                             &lt;dbl&gt; 50646, 71609, 71896, 71903, 275344, 289…
+$ name                           &lt;chr&gt; "Pleasant Room along Bukit Timah", "Ens…
+$ host_id                        &lt;dbl&gt; 227796, 367042, 367042, 367042, 1439258…
+$ host_name                      &lt;chr&gt; "Sujatha", "Belinda", "Belinda", "Belin…
+$ neighbourhood_group            &lt;chr&gt; "Central Region", "East Region", "East …
+$ neighbourhood                  &lt;chr&gt; "Bukit Timah", "Tampines", "Tampines", …
+$ room_type                      &lt;chr&gt; "Private room", "Private room", "Privat…
+$ price                          &lt;dbl&gt; 80, 145, 85, 85, 49, 184, 79, 49, 55, 5…
+$ minimum_nights                 &lt;dbl&gt; 92, 92, 92, 92, 60, 92, 92, 60, 60, 60,…
+$ number_of_reviews              &lt;dbl&gt; 18, 20, 24, 47, 14, 12, 133, 17, 12, 3,…
+$ last_review                    &lt;date&gt; 2014-12-26, 2020-01-17, 2019-10-13, 20…
+$ reviews_per_month              &lt;dbl&gt; 0.18, 0.15, 0.18, 0.34, 0.11, 0.10, 1.0…
+$ calculated_host_listings_count &lt;dbl&gt; 1, 6, 6, 6, 44, 6, 7, 44, 44, 44, 6, 7,…
+$ availability_365               &lt;dbl&gt; 365, 340, 265, 365, 296, 285, 365, 181,…
+$ number_of_reviews_ltm          &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 3, 2, 0, 1, 0, 0, …
+$ license                        &lt;chr&gt; NA, NA, NA, NA, "S0399", NA, NA, "S0399…
+$ geometry                       &lt;POINT [m]&gt; POINT (22646.02 35167.9), POINT (…</code></pre>
+</div>
+</div>
+<p>A new column <code>geometry</code> has been added at the back of the df. Additionally, lat long columns were both dropped from the df.</p>
+</section>
+</section>
+<section id="geoprocessing-with-sf-package" class="level2">
+<h2 class="anchored" data-anchor-id="geoprocessing-with-sf-package">1.9 Geoprocessing with sf package</h2>
+<p>Besides providing functions to handling (i.e.&nbsp;importing, exporting, assigning projection, transforming projection etc) geospatial data, <strong>sf</strong> package also offers a wide range of geoprocessing (also known as GIS analysis) functions.</p>
+<p>In this section, we will learn how to perform two commonly used geoprocessing functions, namely <a href="https://www.gislounge.com/buffers-in-gis/">buffering</a> and point in polygon count.</p>
+<section id="buffering" class="level3">
+<h3 class="anchored" data-anchor-id="buffering">1.9.1 Buffering</h3>
+<p>The scenario:</p>
+<p>The authority is planning to upgrade the exiting cycling path. To do so, they need to acquire 5 metres of reserved land on the both sides of the current cycling path. You are tasked to determine the extend of the land need to be acquired and their total area.</p>
+<p>The solution:</p>
+<p>Firstly, <a href="https://r-spatial.github.io/sf/reference/geos_unary.html"><em>st_buffer()</em></a> of <strong>sf</strong> package is used to compute the 5-meter buffers around <code>cyclingpath</code> . A buffer is a zone around a spatial object, recall that <code>cyclingpath</code> is a multiline-string sf object.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a><span class="fu">st_geometry</span>(cyclingpath)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Geometry set for 2248 features 
+Geometry type: MULTILINESTRING
+Dimension:     XY
+Bounding box:  xmin: 11854.32 ymin: 28347.98 xmax: 42626.09 ymax: 48948.15
+Projected CRS: SVY21
+First 5 geometries:</code></pre>
+</div>
 </div>
 <div class="cell">
-
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a>buffer_cycling <span class="ot">&lt;-</span> <span class="fu">st_buffer</span>(cyclingpath,</span>
+<span id="cb46-2"><a href="#cb46-2"></a>                            <span class="at">dist =</span> <span class="dv">5</span>,</span>
+<span id="cb46-3"><a href="#cb46-3"></a>                            <span class="at">nQuadSegs =</span> <span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a><span class="fu">plot</span>(buffer_cycling)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_1_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a><span class="fu">head</span>(buffer_cycling)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 6 features and 2 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: 15867.37 ymin: 36795.67 xmax: 16026.95 ymax: 36953.73
+Projected CRS: SVY21
+  PLANNING_A PLANNING_1                       geometry
+1       &lt;NA&gt;       &lt;NA&gt; POLYGON ((16004.15 36799.78...
+2       &lt;NA&gt;       &lt;NA&gt; POLYGON ((16013.15 36849.86...
+3       &lt;NA&gt;       &lt;NA&gt; POLYGON ((16016.91 36892.98...
+4       &lt;NA&gt;       &lt;NA&gt; POLYGON ((16017.59 36864, 1...
+5       &lt;NA&gt;       &lt;NA&gt; POLYGON ((16022.36 36900.57...
+6       &lt;NA&gt;       &lt;NA&gt; POLYGON ((15903.87 36941.12...</code></pre>
+</div>
+</div>
+<p>Now, we will calculate the area of the buffers as shown in the code chunk below.</p>
+<p>We are also adding a derived column to <code>buffer_cycling</code> too.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a>buffer_cycling<span class="sc">$</span>AREA <span class="ot">&lt;-</span> <span class="fu">st_area</span>(buffer_cycling)</span>
+<span id="cb50-2"><a href="#cb50-2"></a><span class="fu">kable</span>(<span class="fu">head</span>(buffer_cycling))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 45%">
+<col style="width: 22%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">PLANNING_A</th>
+<th style="text-align: left;">PLANNING_1</th>
+<th style="text-align: left;">geometry</th>
+<th style="text-align: right;">AREA</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">POLYGON ((16004.15 36799.78…</td>
+<td style="text-align: right;">186.2934 [m^2]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">POLYGON ((16013.15 36849.86…</td>
+<td style="text-align: right;">293.4840 [m^2]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">POLYGON ((16016.91 36892.98…</td>
+<td style="text-align: right;">284.8275 [m^2]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">POLYGON ((16017.59 36864, 1…</td>
+<td style="text-align: right;">144.8915 [m^2]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">POLYGON ((16022.36 36900.57…</td>
+<td style="text-align: right;">281.2016 [m^2]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">POLYGON ((15903.87 36941.12…</td>
+<td style="text-align: right;">398.7081 [m^2]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Lastly, sum() of Base R will be used to derive the total land involved</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a><span class="fu">sum</span>(buffer_cycling<span class="sc">$</span>AREA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>1556978 [m^2]</code></pre>
+</div>
+</div>
+<p><strong>Good Job!</strong></p>
 <div class="cell">
 
 </div>
@@ -1796,7 +1996,7 @@ First 5 geometries:</code></pre>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a>mpsz_tbl_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a>mpsz_tbl_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 
