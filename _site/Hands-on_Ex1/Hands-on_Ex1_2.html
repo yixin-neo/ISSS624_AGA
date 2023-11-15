@@ -400,14 +400,84 @@ $ SHAPE_Area &lt;dbl&gt; 1630379.27, 559816.25, 160807.50, 595428.89, 387429.44,
 $ geometry   &lt;MULTIPOLYGON [m]&gt; MULTIPOLYGON (((31495.56 30..., MULTIPOLYGON (…</code></pre>
 </div>
 </div>
+<p>Lets convert to EPSG3414 now.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>mpsz3414 <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(mpsz, <span class="dv">3414</span>)</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="fu">st_crs</span>(mpsz3414)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Coordinate Reference System:
+  User input: EPSG:3414 
+  wkt:
+PROJCRS["SVY21 / Singapore TM",
+    BASEGEOGCRS["SVY21",
+        DATUM["SVY21",
+            ELLIPSOID["WGS 84",6378137,298.257223563,
+                LENGTHUNIT["metre",1]]],
+        PRIMEM["Greenwich",0,
+            ANGLEUNIT["degree",0.0174532925199433]],
+        ID["EPSG",4757]],
+    CONVERSION["Singapore Transverse Mercator",
+        METHOD["Transverse Mercator",
+            ID["EPSG",9807]],
+        PARAMETER["Latitude of natural origin",1.36666666666667,
+            ANGLEUNIT["degree",0.0174532925199433],
+            ID["EPSG",8801]],
+        PARAMETER["Longitude of natural origin",103.833333333333,
+            ANGLEUNIT["degree",0.0174532925199433],
+            ID["EPSG",8802]],
+        PARAMETER["Scale factor at natural origin",1,
+            SCALEUNIT["unity",1],
+            ID["EPSG",8805]],
+        PARAMETER["False easting",28001.642,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8806]],
+        PARAMETER["False northing",38744.572,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8807]]],
+    CS[Cartesian,2],
+        AXIS["northing (N)",north,
+            ORDER[1],
+            LENGTHUNIT["metre",1]],
+        AXIS["easting (E)",east,
+            ORDER[2],
+            LENGTHUNIT["metre",1]],
+    USAGE[
+        SCOPE["Cadastre, engineering survey, topographic mapping."],
+        AREA["Singapore - onshore and offshore."],
+        BBOX[1.13,103.59,1.47,104.07]],
+    ID["EPSG",3414]]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">head</span>(mpsz3414,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 3 features and 15 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 28160.23 ymin: 28369.47 xmax: 32362.39 ymax: 30247.18
+Projected CRS: SVY21 / Singapore TM
+  OBJECTID SUBZONE_NO    SUBZONE_N SUBZONE_C CA_IND      PLN_AREA_N PLN_AREA_C
+1        1          1 MARINA SOUTH    MSSZ01      Y    MARINA SOUTH         MS
+2        2          1 PEARL'S HILL    OTSZ01      Y          OUTRAM         OT
+3        3          3    BOAT QUAY    SRSZ03      Y SINGAPORE RIVER         SR
+        REGION_N REGION_C          INC_CRC FMEL_UPD_D   X_ADDR   Y_ADDR
+1 CENTRAL REGION       CR 5ED7EB253F99252E 2014-12-05 31595.84 29220.19
+2 CENTRAL REGION       CR 8C7149B9EB32EEFC 2014-12-05 28679.06 29782.05
+3 CENTRAL REGION       CR C35FEFF02B13E0E5 2014-12-05 29654.96 29974.66
+  SHAPE_Leng SHAPE_Area                       geometry
+1   5267.381  1630379.3 MULTIPOLYGON (((31495.56 30...
+2   3506.107   559816.2 MULTIPOLYGON (((29092.28 30...
+3   1740.926   160807.5 MULTIPOLYGON (((29932.33 29...</code></pre>
+</div>
+</div>
 </section>
 <section id="importing-attribute-data-into-r" class="level3">
 <h3 class="anchored" data-anchor-id="importing-attribute-data-into-r">2.3.3 Importing Attribute Data into R</h3>
 <p>Next, we will import <em>respopagsex2000to2020.csv</em> file into RStudio and save the file into an R dataframe called <em>popagsex</em>.</p>
 <p>The task will be performed by using <em>read_csv()</em> function of <strong>readr</strong> package as shown in the code chunk below.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>popdata <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/aspatial/respopagesextod2011to2020.csv"</span>)</span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="fu">head</span>(popdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>popdata <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/aspatial/respopagesextod2011to2020.csv"</span>)</span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="fu">head</span>(popdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 7
   PA         SZ                     AG     Sex   TOD                   Pop  Time
@@ -422,8 +492,8 @@ $ geometry   &lt;MULTIPOLYGON [m]&gt; MULTIPOLYGON (((31495.56 30..., MULTIPOLYG
 </div>
 <p>Summary stats using skimr package.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">library</span>(skimr)</span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="fu">skim</span>(popdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">library</span>(skimr)</span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="fu">skim</span>(popdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped">
 <caption>Data summary</caption>
@@ -624,22 +694,22 @@ $ geometry   &lt;MULTIPOLYGON [m]&gt; MULTIPOLYGON (((31495.56 30..., MULTIPOLYG
 </ul>
 <p>The complete code chunk:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>popdata2020 <span class="ot">&lt;-</span> popdata <span class="sc">%&gt;%</span> </span>
-<span id="cb11-2"><a href="#cb11-2"></a>  <span class="fu">filter</span>(Time<span class="sc">==</span><span class="dv">2020</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-3"><a href="#cb11-3"></a>  <span class="fu">group_by</span>(PA,SZ,AG) <span class="sc">%&gt;%</span>   <span class="co">#&lt;&lt; for calculating POP column below</span></span>
-<span id="cb11-4"><a href="#cb11-4"></a>  <span class="fu">summarise</span>(<span class="st">`</span><span class="at">POP</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sum</span>(Pop)) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-5"><a href="#cb11-5"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb11-6"><a href="#cb11-6"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> AG,</span>
-<span id="cb11-7"><a href="#cb11-7"></a>              <span class="at">values_from =</span> POP) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-8"><a href="#cb11-8"></a>  <span class="fu">mutate</span>(<span class="at">YOUNG =</span> <span class="fu">rowSums</span>(.[<span class="dv">3</span><span class="sc">:</span><span class="dv">6</span>])</span>
-<span id="cb11-9"><a href="#cb11-9"></a>         <span class="sc">+</span><span class="fu">rowSums</span>(.[<span class="dv">14</span>])) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-10"><a href="#cb11-10"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">ECONOMY ACTIVE</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">rowSums</span>(.[<span class="dv">7</span><span class="sc">:</span><span class="dv">13</span>])<span class="sc">+</span><span class="fu">rowSums</span>(.[<span class="dv">15</span>])) <span class="sc">%&gt;%</span></span>
-<span id="cb11-11"><a href="#cb11-11"></a>  <span class="fu">mutate</span>(<span class="at">AGED =</span> <span class="fu">rowSums</span>(.[<span class="dv">16</span><span class="sc">:</span><span class="dv">21</span>])) <span class="sc">%&gt;%</span></span>
-<span id="cb11-12"><a href="#cb11-12"></a>  <span class="fu">mutate</span>(<span class="at">TOTAL =</span> <span class="fu">rowSums</span>(.[<span class="dv">3</span><span class="sc">:</span><span class="dv">21</span>])) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-13"><a href="#cb11-13"></a>  <span class="fu">mutate</span>(<span class="at">DEPENDENCY =</span> (YOUNG<span class="sc">+</span>AGED)<span class="sc">/</span><span class="st">`</span><span class="at">ECONOMY ACTIVE</span><span class="st">`</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-14"><a href="#cb11-14"></a>  <span class="fu">select</span>(PA, SZ,YOUNG,<span class="st">'ECONOMY ACTIVE'</span>, AGED, TOTAL, DEPENDENCY)</span>
-<span id="cb11-15"><a href="#cb11-15"></a></span>
-<span id="cb11-16"><a href="#cb11-16"></a><span class="fu">head</span>(popdata2020)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>popdata2020 <span class="ot">&lt;-</span> popdata <span class="sc">%&gt;%</span> </span>
+<span id="cb15-2"><a href="#cb15-2"></a>  <span class="fu">filter</span>(Time<span class="sc">==</span><span class="dv">2020</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-3"><a href="#cb15-3"></a>  <span class="fu">group_by</span>(PA,SZ,AG) <span class="sc">%&gt;%</span>   <span class="co">#&lt;&lt; for calculating POP column below</span></span>
+<span id="cb15-4"><a href="#cb15-4"></a>  <span class="fu">summarise</span>(<span class="st">`</span><span class="at">POP</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sum</span>(Pop)) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-5"><a href="#cb15-5"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb15-6"><a href="#cb15-6"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> AG,</span>
+<span id="cb15-7"><a href="#cb15-7"></a>              <span class="at">values_from =</span> POP) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-8"><a href="#cb15-8"></a>  <span class="fu">mutate</span>(<span class="at">YOUNG =</span> <span class="fu">rowSums</span>(.[<span class="dv">3</span><span class="sc">:</span><span class="dv">6</span>])</span>
+<span id="cb15-9"><a href="#cb15-9"></a>         <span class="sc">+</span><span class="fu">rowSums</span>(.[<span class="dv">14</span>])) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-10"><a href="#cb15-10"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">ECONOMY ACTIVE</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">rowSums</span>(.[<span class="dv">7</span><span class="sc">:</span><span class="dv">13</span>])<span class="sc">+</span><span class="fu">rowSums</span>(.[<span class="dv">15</span>])) <span class="sc">%&gt;%</span></span>
+<span id="cb15-11"><a href="#cb15-11"></a>  <span class="fu">mutate</span>(<span class="at">AGED =</span> <span class="fu">rowSums</span>(.[<span class="dv">16</span><span class="sc">:</span><span class="dv">21</span>])) <span class="sc">%&gt;%</span></span>
+<span id="cb15-12"><a href="#cb15-12"></a>  <span class="fu">mutate</span>(<span class="at">TOTAL =</span> <span class="fu">rowSums</span>(.[<span class="dv">3</span><span class="sc">:</span><span class="dv">21</span>])) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-13"><a href="#cb15-13"></a>  <span class="fu">mutate</span>(<span class="at">DEPENDENCY =</span> (YOUNG<span class="sc">+</span>AGED)<span class="sc">/</span><span class="st">`</span><span class="at">ECONOMY ACTIVE</span><span class="st">`</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-14"><a href="#cb15-14"></a>  <span class="fu">select</span>(PA, SZ,YOUNG,<span class="st">'ECONOMY ACTIVE'</span>, AGED, TOTAL, DEPENDENCY)</span>
+<span id="cb15-15"><a href="#cb15-15"></a></span>
+<span id="cb15-16"><a href="#cb15-16"></a><span class="fu">head</span>(popdata2020)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 7
   PA         SZ                    YOUNG `ECONOMY ACTIVE`  AGED TOTAL DEPENDENCY
@@ -652,7 +722,7 @@ $ geometry   &lt;MULTIPOLYGON [m]&gt; MULTIPOLYGON (((31495.56 30..., MULTIPOLYG
 6 Ang Mo Kio Shangri-La             3330             9050  3610 15990      0.767</code></pre>
 </div>
 </div>
-<p>To understand the first 6 lines of code in the code chunK above, print the output:</p>
+<p>To understand the first 6 lines of code in the code chunk above, print the output:</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 21
@@ -670,14 +740,139 @@ $ geometry   &lt;MULTIPOLYGON [m]&gt; MULTIPOLYGON (((31495.56 30..., MULTIPOLYG
 #   `85_to_89` &lt;dbl&gt;, `90_and_over` &lt;dbl&gt;</code></pre>
 </div>
 </div>
-<p><br>
-</p>
+<section id="joining-the-attribute-data-and-geospatial-data" class="level4">
+<h4 class="anchored" data-anchor-id="joining-the-attribute-data-and-geospatial-data">2.3.4.2 Joining the attribute data and geospatial data</h4>
+<p>Before we can perform the georelational join, one extra step is required to convert the values in PA and SZ fields to uppercase. This is because the values of PA and SZ fields are made up of upper- and lowercase. On the other, hand the SUBZONE_N and PLN_AREA_N are in uppercase.</p>
+<p>Since <code>mpsz</code>’s SUBZONE_N and PLN_AREA_N are in uppercase, we have to convert PA and SZ fields in <code>popdata2020</code> into all uppercase using:</p>
+<ol type="1">
+<li><p><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate.at()</a>&lt;- mutate multiple columns</p></li>
+<li><p>first argument of mutate_at(): .var &lt;- list of columns generated by vars()</p></li>
+<li><p>second argument: .funs &lt;- a function fun, a quosure style lambda. The function used in toupper() &lt;- to upper case</p></li>
+</ol>
+<p>There are many ways to achieve the final output</p>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">Prof’s book</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Alternative</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>mpsz_tbl_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>popdata2020 <span class="ot">&lt;-</span> popdata2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb18-2"><a href="#cb18-2"></a>  <span class="fu">mutate_at</span>(<span class="at">.vars=</span> <span class="fu">vars</span>(PA, SZ),</span>
+<span id="cb18-3"><a href="#cb18-3"></a>            <span class="at">.funs =</span> <span class="fu">funs</span>(toupper)) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-4"><a href="#cb18-4"></a>  <span class="fu">filter</span>(<span class="st">`</span><span class="at">ECONOMY ACTIVE</span><span class="st">`</span> <span class="sc">&gt;</span><span class="dv">0</span>)</span>
+<span id="cb18-5"><a href="#cb18-5"></a></span>
+<span id="cb18-6"><a href="#cb18-6"></a>popdata2020</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 234 × 7
+   PA         SZ                   YOUNG `ECONOMY ACTIVE`  AGED TOTAL DEPENDENCY
+   &lt;chr&gt;      &lt;chr&gt;                &lt;dbl&gt;            &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
+ 1 ANG MO KIO ANG MO KIO TOWN CEN…  1290             2760   760  4810      0.743
+ 2 ANG MO KIO CHENG SAN             5640            16460  6050 28150      0.710
+ 3 ANG MO KIO CHONG BOON            5100            15000  6470 26570      0.771
+ 4 ANG MO KIO KEBUN BAHRU           4620            13010  5120 22750      0.749
+ 5 ANG MO KIO SEMBAWANG HILLS       1880             3630  1310  6820      0.879
+ 6 ANG MO KIO SHANGRI-LA            3330             9050  3610 15990      0.767
+ 7 ANG MO KIO TAGORE                1940             4480  1530  7950      0.775
+ 8 ANG MO KIO TOWNSVILLE            4190            11950  5100 21240      0.777
+ 9 ANG MO KIO YIO CHU KANG EAST     1110             2410   750  4270      0.772
+10 ANG MO KIO YIO CHU KANG WEST     5690            13750  4680 24120      0.754
+# ℹ 224 more rows</code></pre>
+</div>
+</div>
+<p>The reason for filtering is because some subzones are not inhibited by residents as seen below.</p>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>popdata2020 <span class="sc">%&gt;%</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a>  <span class="fu">mutate</span>(<span class="at">PA =</span> <span class="fu">toupper</span>(PA),</span>
+<span id="cb20-3"><a href="#cb20-3"></a>         <span class="at">SZ =</span> <span class="fu">toupper</span>(SZ)) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-4"><a href="#cb20-4"></a>  <span class="fu">filter</span>(<span class="st">`</span><span class="at">ECONOMY ACTIVE</span><span class="st">`</span> <span class="sc">&gt;</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+<p>Next, <em>left_join()</em> of <strong>dplyr</strong> is used to join the geographical data and attribute table using planning subzone name e.g.&nbsp;<em>SUBZONE_N</em> and <em>SZ</em> as the common identifier.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>mpsz_pop2020 <span class="ot">&lt;-</span><span class="fu">left_join</span>(mpsz3414, popdata2020,</span>
+<span id="cb21-2"><a href="#cb21-2"></a>                         <span class="at">by =</span> <span class="fu">c</span>(<span class="st">'SUBZONE_N'</span> <span class="ot">=</span> <span class="st">'SZ'</span>))</span>
+<span id="cb21-3"><a href="#cb21-3"></a>mpsz_pop2020</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 323 features and 21 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 2667.538 ymin: 15748.72 xmax: 56396.44 ymax: 50256.33
+Projected CRS: SVY21 / Singapore TM
+First 10 features:
+   OBJECTID SUBZONE_NO       SUBZONE_N SUBZONE_C CA_IND      PLN_AREA_N
+1         1          1    MARINA SOUTH    MSSZ01      Y    MARINA SOUTH
+2         2          1    PEARL'S HILL    OTSZ01      Y          OUTRAM
+3         3          3       BOAT QUAY    SRSZ03      Y SINGAPORE RIVER
+4         4          8  HENDERSON HILL    BMSZ08      N     BUKIT MERAH
+5         5          3         REDHILL    BMSZ03      N     BUKIT MERAH
+6         6          7  ALEXANDRA HILL    BMSZ07      N     BUKIT MERAH
+7         7          9   BUKIT HO SWEE    BMSZ09      N     BUKIT MERAH
+8         8          2     CLARKE QUAY    SRSZ02      Y SINGAPORE RIVER
+9         9         13 PASIR PANJANG 1    QTSZ13      N      QUEENSTOWN
+10       10          7       QUEENSWAY    QTSZ07      N      QUEENSTOWN
+   PLN_AREA_C       REGION_N REGION_C          INC_CRC FMEL_UPD_D   X_ADDR
+1          MS CENTRAL REGION       CR 5ED7EB253F99252E 2014-12-05 31595.84
+2          OT CENTRAL REGION       CR 8C7149B9EB32EEFC 2014-12-05 28679.06
+3          SR CENTRAL REGION       CR C35FEFF02B13E0E5 2014-12-05 29654.96
+4          BM CENTRAL REGION       CR 3775D82C5DDBEFBD 2014-12-05 26782.83
+5          BM CENTRAL REGION       CR 85D9ABEF0A40678F 2014-12-05 26201.96
+6          BM CENTRAL REGION       CR 9D286521EF5E3B59 2014-12-05 25358.82
+7          BM CENTRAL REGION       CR 7839A8577144EFE2 2014-12-05 27680.06
+8          SR CENTRAL REGION       CR 48661DC0FBA09F7A 2014-12-05 29253.21
+9          QT CENTRAL REGION       CR 1F721290C421BFAB 2014-12-05 22077.34
+10         QT CENTRAL REGION       CR 3580D2AFFBEE914C 2014-12-05 24168.31
+     Y_ADDR SHAPE_Leng SHAPE_Area              PA YOUNG ECONOMY ACTIVE AGED
+1  29220.19   5267.381  1630379.3            &lt;NA&gt;    NA             NA   NA
+2  29782.05   3506.107   559816.2          OUTRAM   930           3130 2120
+3  29974.66   1740.926   160807.5 SINGAPORE RIVER     0             40   10
+4  29933.77   3313.625   595428.9     BUKIT MERAH  2600           7450 3320
+5  30005.70   2825.594   387429.4     BUKIT MERAH  2760           6160 1740
+6  29991.38   4428.913  1030378.8     BUKIT MERAH  2800           7340 3420
+7  30230.86   3275.312   551732.0     BUKIT MERAH  2750           8080 3610
+8  30222.86   2208.619   290184.7 SINGAPORE RIVER     0             50   10
+9  29893.78   6571.323  1084792.3      QUEENSTOWN  1120           2770  610
+10 30104.18   3454.239   631644.3      QUEENSTOWN    30            160   60
+   TOTAL DEPENDENCY                       geometry
+1     NA         NA MULTIPOLYGON (((31495.56 30...
+2   6180  0.9744409 MULTIPOLYGON (((29092.28 30...
+3     50  0.2500000 MULTIPOLYGON (((29932.33 29...
+4  13370  0.7946309 MULTIPOLYGON (((27131.28 30...
+5  10660  0.7305195 MULTIPOLYGON (((26451.03 30...
+6  13560  0.8474114 MULTIPOLYGON (((25899.7 297...
+7  14440  0.7871287 MULTIPOLYGON (((27746.95 30...
+8     60  0.2000000 MULTIPOLYGON (((29351.26 29...
+9   4500  0.6245487 MULTIPOLYGON (((20996.49 30...
+10   250  0.5625000 MULTIPOLYGON (((24472.11 29...</code></pre>
+</div>
+</div>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><em>left_join()</em> of <strong>dplyr</strong> package is used with <code>mpsz</code> simple feature data frame as the left data table is to ensure that the output will be a simple features data frame.</p>
+</div>
+</div>
+<p>Original # rows in <code>mpsz3414</code> = 323</p>
+<p>Original # of rows in <code>popdata2022</code> = 234</p>
+<p>Final # of rows in mpsz_pop2020 = 323</p>
+<p>Write the data as rds, can preserve the format of data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="co"># write_rds(mpsz_pop2020, 'data/rds/mpszpop2020.rds')</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="co"># mpsz_pop2020 &lt;- readRDS('data/rds/mpszpop2020.rds')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 
 </div>
+</section>
 </section>
 </section>
 <section id="theories" class="level2">
