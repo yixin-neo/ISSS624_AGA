@@ -51,7 +51,7 @@ The Two datasets will be used to create the choropleth map are:
 
 -   Master Plan 2014 Subzone Boundary (Web) (i.e. `MP14_SUBZONE_WEB_PL`) in ESRI shapefile format.
 
--   Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2011-2020 in csv format (i.e. `respopagesextod2011to2020.csv`). This is an aspatial data fie. It can be downloaded at [Department of Statistics, Singapore](https://www.singstat.gov.sg/), the specific link can be found [here](https://www.singstat.gov.sg/find-data/search-by-theme/population/geographic-distribution/latest-data). Although it does not contain any coordinates values, but it\'s PA and SZ fields can be used as unique identifiers to geocode to `MP14_SUBZONE_WEB_PL` shapefile.
+-   Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2011-2020 in csv format (i.e. `respopagesextod2011to2020.csv`). This is an aspatial data fie. It can be downloaded at [Department of Statistics, Singapore](https://www.singstat.gov.sg/), the specific link can be found [here](https://www.singstat.gov.sg/find-data/search-by-theme/population/geographic-distribution/latest-data). Although it does not contain any coordinates values, but it's PA and SZ fields can be used as unique identifiers to geocode to `MP14_SUBZONE_WEB_PL` shapefile.
 
 ### 2.3.2 Importing Geospatial Data into R
 
@@ -219,6 +219,237 @@ Write the data as rds, can preserve the format of data.
 ```{r}
 # write_rds(mpsz_pop2020, 'data/rds/mpszpop2020.rds')
 # mpsz_pop2020 <- readRDS('data/rds/mpszpop2020.rds')
+```
+
+Lets take a look at the df mpsz_pop2020
+
+## 2.4 Choropleth Mapping Geospatial Data Using *tmap*
+
+Two approaches can be used to prepare thematic map using *tmap*, they are:
+
+-   Plotting a thematic map quickly by using *qtm()*.
+
+-   Plotting highly customisable thematic map by using tmap elements.
+
+### 2.4.1 Plotting a choropleth map quickly by using *qtm()*
+
+The easiest and quickest to draw a choropleth map using **tmap** is using *qtm()*. It is concise and provides a good default visualisation in many cases.
+
+```{r}
+tmap_mode('plot')
+#tmap_mode('view')
+#ttm()
+#last_map()
+#tmap_options(check.and.fix = TRUE)
+
+qtm(mpsz_pop2020,
+    fill='DEPENDENCY')
+```
+
+Things to learn from the code chunk above:
+
+-   *tmap_mode()* with "plot" option is used to produce a static map. For interactive mode, "view" option should be used.
+
+-   *fill* argument is used to map the attribute (i.e. DEPENDENCY)
+
+### 2.4.2 Creating a Choropleth map by using [tmap's elements](https://www.rdocumentation.org/packages/tmap/versions/3.3-3/topics/tmap-element)
+
+tmap' drawing elements (unlike qtm() ) is able to give us finer control over our chloropleth map.
+
+[tm_shape()](https://www.rdocumentation.org/packages/tmap/versions/3.3-3/topics/tm_shape) \<- define input data and specify the shape object / spatial data object
+
+[tm_fill()](https://www.rdocumentation.org/packages/tmap/versions/3.3-3/topics/tm_fill) \<- fills polygons (no border)
+
+-   style: method to process the color scale when **`col (data variable)`** is a numeric variable. To process numeric and categorical use "cat"
+
+-   [palette](https://renenyffenegger.ch/notes/development/languages/R/packages/tmaptools/index) : palettes names or vectors of colors. default is taken from tm_layout's aes.paletttes argument. To reverse the colour scheme , add a "-" prefix.
+
+[tm_borders()]{.underline} \<- draws the borders of polygons (alpha is 0-1, transparency)
+
+[tm_polygons()]{.underline} (= tm_fill() + tm_borders() )\<- fills the polygon and draws the polygon borders
+
+***\*qtm = shape + polygon or \* qtm = shape + fill + border***
+
+[tm_layout()](https://www.rdocumentation.org/packages/tmap/versions/3.3-3/topics/tm_layout) \<- specify map layout
+
+-   aes.palette \<- 'seq' (sequential palettes), 'div' (diverging palettes) , 'cat' (categorical palettes)
+
+[tm_compass()](https://www.rdocumentation.org/packages/tmap/versions/3.3-3/topics/tm_compass) \<- create map compass
+
+[tm_scale_bar()]{.underline} \<- creates scale bar
+
+[tm_grid()]{.underline} \<- creates grid lines (alpha is 0-1, transparency of grid lines)
+
+[tm_credits()]{.underline} \<- create a text for credits
+
+::: panel-tabset
+## High quality graph
+
+```{r}
+#| code-fold: true
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY", 
+          style = "quantile", 
+          palette = "Reds",
+          title = "Dependency ratio") +
+  tm_layout(main.title = "Distribution of Dependency Ratio by planning subzone",
+            main.title.position = "center",
+            main.title.size = 1.2,
+            legend.height = 0.45, 
+            legend.width = 0.35,
+            frame = TRUE) +
+  tm_borders(alpha = 0.5) +
+  tm_compass(type="8star", size = 2) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2) +
+  tm_credits("Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)\n and Population data from Department of Statistics DOS", 
+             position = c("left", "bottom"))
+```
+
+## mpsz_pop2020 table
+
+```{r}
+library(knitr)
+kable(head(mpsz_pop2020,3))
+```
+:::
+
+#### 2.4.2.1 Drawing a base map
+
+Basic building blocks are *tm_fill()* and *tm_polygons().*
+
+*tm_polygons() = fill + borders*
+
+::: panel-tabset
+## tm_borders()
+
+Base Map
+
+```{r}
+tm_shape(mpsz_pop2020) +
+  tm_borders(lwd = 0.1,  alpha = 1)
+```
+
+## tm_fill()
+
+To show the geographical distribution of a selected **variable** by planning subzone, we just need to assign the target variable such as *Dependency* to *tm_polygons()*.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill('DEPENDENCY')
+```
+:::
+
+#### 2.4.2.2 Drawing a choropleth map using *tm_polygons()*
+
+To draw a choropleth map showing the geographical distribution of a selected variable by planning subzone, we just need to assign the target variable such as *Dependency* to *tm_polygons()*.
+
+::: panel-tabset
+## No variable
+
+```{r}
+tm_shape(mpsz_pop2020) +
+  tm_polygons()
+```
+
+## With variable
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_polygons("DEPENDENCY")
+```
+:::
+
+Things to learn from *tm_polygons()*:
+
+-   The default interval binning used to draw the choropleth map is called \"**pretty**\". A detailed discussion of the data classification methods supported by **tmap** will be provided in sub-section 4.3.
+
+-   The default colour scheme used is `YlOrRd` of **ColorBrewer**. You will learn more about the color scheme in sub-section 4.4.
+
+-   By default, Missing value will be shaded in grey.
+
+#### 2.4.2.3 Drawing a choropleth map using *tm_fill()* + \*tm_border()\*\*
+
+Actually, *tm_polygons()* is a wraper of *tm_fill()* and *tm_border()*. *tm_fill()* shades the polygons by using the default colour scheme and *tm_borders()* adds the borders of the shapefile onto the choropleth map.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY") +
+  tm_borders(lwd = 0.1,  alpha = 1)
+```
+
+Apart from alpha (transparency number 0 - 1), other arguments are
+
+-   *col* = border colour,
+
+-   *lwd* = border line width. The default is 1, and
+
+-   *lty* = border line type. The default is \"solid\".
+
+### 2.4.3 Data classification methods of **tmap**
+
+Most choropleth maps employ some methods of data classification. The point of classification is to take a large number of observations and group them into data ranges or classes.
+
+**tmap** provides a total ten data classification methods, namely: *fixed*, *sd*, *equal*, *pretty* (default), *quantile*, *kmeans*, *hclust*, *bclust*, *fisher*, and *jenks*.
+
+To define a data classification method, the ***style*** argument of *tm_fill()* **or** *tm_polygons()* will be used.
+
+#### 2.4.3.1 Plotting choropleth maps with built-in classification methods
+
+The codes below uses quantile classification with 5 classes.
+
+::: panel-tabset
+## fill + border
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 5,
+          style = "jenks") +
+  tm_borders(alpha = 0.5)
+```
+
+Using equal classification method
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 5,
+          style = "equal") +
+  tm_borders(alpha = 0.5)
+```
+
+Distribution of quantile data classification method are more evenly distributed then equal data classification method.
+
+## polygons
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_polygons("DEPENDENCY",n = 5,
+          style = "jenks" )
+```
+:::
+
+> **Warning: Maps Lie!**
+
+> DIY: Using what you had learned, prepare choropleth maps by using different classification methods supported by tmap and compare their differences.
+
+> DIY: Preparing choropleth maps by using similar classification method but with different numbers of classes (i.e. 2, 6, 10, 20). Compare the output maps, what observation can you draw?
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
 ```
 
 ```{r}
