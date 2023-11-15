@@ -123,6 +123,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     "search-submit-button-title": "Submit"
   }
 }</script>
+<script src="../site_libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
+<script src="../site_libs/plotly-binding-4.10.3/plotly.js"></script>
+<script src="../site_libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="../site_libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="../site_libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet">
+<script src="../site_libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="../site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="../site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
 
 
 <link rel="stylesheet" href="../styles.css">
@@ -258,6 +266,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#buffering" id="toc-buffering" class="nav-link" data-scroll-target="#buffering">1.9.1 Buffering</a></li>
   <li><a href="#point-in-polygon-count" id="toc-point-in-polygon-count" class="nav-link" data-scroll-target="#point-in-polygon-count">1.9.2 Point-in-polygon count</a></li>
   </ul></li>
+  <li><a href="#explorotary-data-analysis-eda" id="toc-explorotary-data-analysis-eda" class="nav-link" data-scroll-target="#explorotary-data-analysis-eda">1.10 Explorotary Data Analysis (EDA)</a></li>
   <li><a href="#theories" id="toc-theories" class="nav-link" data-scroll-target="#theories">Theories</a>
   <ul class="collapse">
   <li><a href="#kml-and-shapefiles" id="toc-kml-and-shapefiles" class="nav-link" data-scroll-target="#kml-and-shapefiles">KML and shapefiles</a></li>
@@ -1161,23 +1170,23 @@ First 5 geometries:</code></pre>
 </details>
 <div class="cell-output-display">
 
-<div id="rtslpjzipt" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#rtslpjzipt table {
+<div id="jdcnqqjaxb" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#jdcnqqjaxb table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#rtslpjzipt thead, #rtslpjzipt tbody, #rtslpjzipt tfoot, #rtslpjzipt tr, #rtslpjzipt td, #rtslpjzipt th {
+#jdcnqqjaxb thead, #jdcnqqjaxb tbody, #jdcnqqjaxb tfoot, #jdcnqqjaxb tr, #jdcnqqjaxb td, #jdcnqqjaxb th {
   border-style: none;
 }
 
-#rtslpjzipt p {
+#jdcnqqjaxb p {
   margin: 0;
   padding: 0;
 }
 
-#rtslpjzipt .gt_table {
+#jdcnqqjaxb .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1203,12 +1212,12 @@ First 5 geometries:</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#rtslpjzipt .gt_caption {
+#jdcnqqjaxb .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#rtslpjzipt .gt_title {
+#jdcnqqjaxb .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1220,7 +1229,7 @@ First 5 geometries:</code></pre>
   border-bottom-width: 0;
 }
 
-#rtslpjzipt .gt_subtitle {
+#jdcnqqjaxb .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1232,7 +1241,7 @@ First 5 geometries:</code></pre>
   border-top-width: 0;
 }
 
-#rtslpjzipt .gt_heading {
+#jdcnqqjaxb .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1244,13 +1253,13 @@ First 5 geometries:</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#rtslpjzipt .gt_bottom_border {
+#jdcnqqjaxb .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#rtslpjzipt .gt_col_headings {
+#jdcnqqjaxb .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1265,7 +1274,7 @@ First 5 geometries:</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#rtslpjzipt .gt_col_heading {
+#jdcnqqjaxb .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1285,7 +1294,7 @@ First 5 geometries:</code></pre>
   overflow-x: hidden;
 }
 
-#rtslpjzipt .gt_column_spanner_outer {
+#jdcnqqjaxb .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1297,15 +1306,15 @@ First 5 geometries:</code></pre>
   padding-right: 4px;
 }
 
-#rtslpjzipt .gt_column_spanner_outer:first-child {
+#jdcnqqjaxb .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#rtslpjzipt .gt_column_spanner_outer:last-child {
+#jdcnqqjaxb .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#rtslpjzipt .gt_column_spanner {
+#jdcnqqjaxb .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1317,11 +1326,11 @@ First 5 geometries:</code></pre>
   width: 100%;
 }
 
-#rtslpjzipt .gt_spanner_row {
+#jdcnqqjaxb .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#rtslpjzipt .gt_group_heading {
+#jdcnqqjaxb .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1347,7 +1356,7 @@ First 5 geometries:</code></pre>
   text-align: left;
 }
 
-#rtslpjzipt .gt_empty_group_heading {
+#jdcnqqjaxb .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1362,15 +1371,15 @@ First 5 geometries:</code></pre>
   vertical-align: middle;
 }
 
-#rtslpjzipt .gt_from_md > :first-child {
+#jdcnqqjaxb .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#rtslpjzipt .gt_from_md > :last-child {
+#jdcnqqjaxb .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#rtslpjzipt .gt_row {
+#jdcnqqjaxb .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1389,7 +1398,7 @@ First 5 geometries:</code></pre>
   overflow-x: hidden;
 }
 
-#rtslpjzipt .gt_stub {
+#jdcnqqjaxb .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1402,7 +1411,7 @@ First 5 geometries:</code></pre>
   padding-right: 5px;
 }
 
-#rtslpjzipt .gt_stub_row_group {
+#jdcnqqjaxb .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1416,15 +1425,15 @@ First 5 geometries:</code></pre>
   vertical-align: top;
 }
 
-#rtslpjzipt .gt_row_group_first td {
+#jdcnqqjaxb .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#rtslpjzipt .gt_row_group_first th {
+#jdcnqqjaxb .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#rtslpjzipt .gt_summary_row {
+#jdcnqqjaxb .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1434,16 +1443,16 @@ First 5 geometries:</code></pre>
   padding-right: 5px;
 }
 
-#rtslpjzipt .gt_first_summary_row {
+#jdcnqqjaxb .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#rtslpjzipt .gt_first_summary_row.thick {
+#jdcnqqjaxb .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#rtslpjzipt .gt_last_summary_row {
+#jdcnqqjaxb .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1453,7 +1462,7 @@ First 5 geometries:</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#rtslpjzipt .gt_grand_summary_row {
+#jdcnqqjaxb .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1463,7 +1472,7 @@ First 5 geometries:</code></pre>
   padding-right: 5px;
 }
 
-#rtslpjzipt .gt_first_grand_summary_row {
+#jdcnqqjaxb .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1473,7 +1482,7 @@ First 5 geometries:</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#rtslpjzipt .gt_last_grand_summary_row_top {
+#jdcnqqjaxb .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1483,11 +1492,11 @@ First 5 geometries:</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#rtslpjzipt .gt_striped {
+#jdcnqqjaxb .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#rtslpjzipt .gt_table_body {
+#jdcnqqjaxb .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1496,7 +1505,7 @@ First 5 geometries:</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#rtslpjzipt .gt_footnotes {
+#jdcnqqjaxb .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1510,7 +1519,7 @@ First 5 geometries:</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#rtslpjzipt .gt_footnote {
+#jdcnqqjaxb .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1519,7 +1528,7 @@ First 5 geometries:</code></pre>
   padding-right: 5px;
 }
 
-#rtslpjzipt .gt_sourcenotes {
+#jdcnqqjaxb .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1533,7 +1542,7 @@ First 5 geometries:</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#rtslpjzipt .gt_sourcenote {
+#jdcnqqjaxb .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1541,63 +1550,63 @@ First 5 geometries:</code></pre>
   padding-right: 5px;
 }
 
-#rtslpjzipt .gt_left {
+#jdcnqqjaxb .gt_left {
   text-align: left;
 }
 
-#rtslpjzipt .gt_center {
+#jdcnqqjaxb .gt_center {
   text-align: center;
 }
 
-#rtslpjzipt .gt_right {
+#jdcnqqjaxb .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#rtslpjzipt .gt_font_normal {
+#jdcnqqjaxb .gt_font_normal {
   font-weight: normal;
 }
 
-#rtslpjzipt .gt_font_bold {
+#jdcnqqjaxb .gt_font_bold {
   font-weight: bold;
 }
 
-#rtslpjzipt .gt_font_italic {
+#jdcnqqjaxb .gt_font_italic {
   font-style: italic;
 }
 
-#rtslpjzipt .gt_super {
+#jdcnqqjaxb .gt_super {
   font-size: 65%;
 }
 
-#rtslpjzipt .gt_footnote_marks {
+#jdcnqqjaxb .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#rtslpjzipt .gt_asterisk {
+#jdcnqqjaxb .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#rtslpjzipt .gt_indent_1 {
+#jdcnqqjaxb .gt_indent_1 {
   text-indent: 5px;
 }
 
-#rtslpjzipt .gt_indent_2 {
+#jdcnqqjaxb .gt_indent_2 {
   text-indent: 10px;
 }
 
-#rtslpjzipt .gt_indent_3 {
+#jdcnqqjaxb .gt_indent_3 {
   text-indent: 15px;
 }
 
-#rtslpjzipt .gt_indent_4 {
+#jdcnqqjaxb .gt_indent_4 {
   text-indent: 20px;
 }
 
-#rtslpjzipt .gt_indent_5 {
+#jdcnqqjaxb .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -2291,6 +2300,100 @@ Projected CRS: SVY21
 </div>
 </section>
 </section>
+<section id="explorotary-data-analysis-eda" class="level2">
+<h2 class="anchored" data-anchor-id="explorotary-data-analysis-eda">1.10 Explorotary Data Analysis (EDA)</h2>
+<p>In practice, many geospatial analytics start with Exploratory Data Analysis. In this section, wewill learn how to use appropriate <a href="https://ggplot2.tidyverse.org/">ggplot2</a> functions to create functional and yet truthful statistical graphs for EDA purposes.</p>
+<p>Firstly, we will plot a histogram to reveal the distribution of <code>PreSch Density</code>. Conventionally, <em>hist()</em> of R Graphics will be used as shown in the code chunk below.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1"></a><span class="fu">hist</span>(mpsz3414<span class="sc">$</span>DENSITY)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_1_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Although the syntax is very easy to use however the output is far from meeting publication quality. Furthermore, the function has limited room for further customisation.</p>
+<p>In the code chunk below, appropriate <strong>ggplot2</strong> functions will be used.</p>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Static</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Interactive (plotly)</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a>q <span class="ot">&lt;-</span> <span class="fu">quantile</span>(<span class="fu">as.numeric</span>(mpsz3414<span class="sc">$</span>DENSITY), <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>))</span>
+<span id="cb60-2"><a href="#cb60-2"></a></span>
+<span id="cb60-3"><a href="#cb60-3"></a><span class="fu">ggplot</span>(<span class="at">data=</span>mpsz3414, </span>
+<span id="cb60-4"><a href="#cb60-4"></a>       <span class="fu">aes</span>(<span class="at">x=</span> <span class="fu">as.numeric</span>(DENSITY)))<span class="sc">+</span></span>
+<span id="cb60-5"><a href="#cb60-5"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins=</span><span class="dv">20</span>, </span>
+<span id="cb60-6"><a href="#cb60-6"></a>                 <span class="at">color=</span><span class="st">"black"</span>, </span>
+<span id="cb60-7"><a href="#cb60-7"></a>                 <span class="at">fill=</span><span class="st">"light blue"</span>) <span class="sc">+</span></span>
+<span id="cb60-8"><a href="#cb60-8"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> q[<span class="dv">2</span>]<span class="sc">+</span><span class="dv">1</span>, <span class="at">linetype=</span><span class="st">'dashed'</span>, <span class="at">size =</span> <span class="fl">0.5</span>, <span class="at">color=</span><span class="st">'blue'</span>) <span class="sc">+</span></span>
+<span id="cb60-9"><a href="#cb60-9"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> q[<span class="dv">3</span>]<span class="sc">+</span><span class="dv">1</span>, <span class="at">linetype=</span><span class="st">'dashed'</span>, <span class="at">size =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb60-10"><a href="#cb60-10"></a>  <span class="fu">annotate</span>(<span class="st">'text'</span> , <span class="at">x=</span> <span class="dv">4</span>, <span class="at">y=</span><span class="dv">75</span>, <span class="at">label=</span><span class="st">'50th </span><span class="sc">\n</span><span class="st">percentile'</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb60-11"><a href="#cb60-11"></a>  <span class="fu">annotate</span>(<span class="st">'text'</span> , <span class="at">x=</span> <span class="dv">9</span>, <span class="at">y=</span><span class="dv">75</span>, <span class="at">label=</span><span class="st">'75th </span><span class="sc">\n</span><span class="st">percentile'</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb60-12"><a href="#cb60-12"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Are pre-school even distributed in Singapore?"</span>,</span>
+<span id="cb60-13"><a href="#cb60-13"></a>       <span class="at">subtitle=</span> <span class="st">"There are many planning sub-zones with a single pre-school, on the other hand, </span><span class="sc">\n</span><span class="st">there are two planning sub-zones with at least 20 pre-schools"</span>,</span>
+<span id="cb60-14"><a href="#cb60-14"></a>      <span class="at">x =</span> <span class="st">"Pre-school density (per km sq)"</span>,</span>
+<span id="cb60-15"><a href="#cb60-15"></a>      <span class="at">y =</span> <span class="st">"Frequency"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_1_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb61-2"><a href="#cb61-2"></a>q <span class="ot">&lt;-</span> <span class="fu">quantile</span>(<span class="fu">as.numeric</span>(mpsz3414<span class="sc">$</span>DENSITY), <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>))</span>
+<span id="cb61-3"><a href="#cb61-3"></a></span>
+<span id="cb61-4"><a href="#cb61-4"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data=</span>mpsz3414, </span>
+<span id="cb61-5"><a href="#cb61-5"></a>       <span class="fu">aes</span>(<span class="at">x=</span> <span class="fu">as.numeric</span>(DENSITY)))<span class="sc">+</span></span>
+<span id="cb61-6"><a href="#cb61-6"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins=</span><span class="dv">20</span>, </span>
+<span id="cb61-7"><a href="#cb61-7"></a>                 <span class="at">color=</span><span class="st">"black"</span>, </span>
+<span id="cb61-8"><a href="#cb61-8"></a>                 <span class="at">fill=</span><span class="st">"light blue"</span>) <span class="sc">+</span></span>
+<span id="cb61-9"><a href="#cb61-9"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> q[<span class="dv">2</span>]<span class="sc">+</span><span class="dv">1</span>, <span class="at">linetype=</span><span class="st">'dashed'</span>, <span class="at">size =</span> <span class="fl">0.5</span>, <span class="at">color=</span><span class="st">'blue'</span>) <span class="sc">+</span></span>
+<span id="cb61-10"><a href="#cb61-10"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> q[<span class="dv">3</span>]<span class="sc">+</span><span class="dv">1</span>, <span class="at">linetype=</span><span class="st">'dashed'</span>, <span class="at">size =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb61-11"><a href="#cb61-11"></a>  <span class="fu">annotate</span>(<span class="st">'text'</span> , <span class="at">x=</span> <span class="dv">4</span>, <span class="at">y=</span><span class="dv">75</span>, <span class="at">label=</span><span class="st">'50th </span><span class="sc">\n</span><span class="st">percentile'</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb61-12"><a href="#cb61-12"></a>  <span class="fu">annotate</span>(<span class="st">'text'</span> , <span class="at">x=</span> <span class="dv">9</span>, <span class="at">y=</span><span class="dv">75</span>, <span class="at">label=</span><span class="st">'75th </span><span class="sc">\n</span><span class="st">percentile'</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb61-13"><a href="#cb61-13"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Are pre-school even distributed in Singapore?"</span>,</span>
+<span id="cb61-14"><a href="#cb61-14"></a>       <span class="at">subtitle=</span> <span class="st">"There are many planning sub-zones with a single pre-school, on the other hand, </span><span class="sc">\n</span><span class="st">there are two planning sub-zones with at least 20 pre-schools"</span>,</span>
+<span id="cb61-15"><a href="#cb61-15"></a>      <span class="at">x =</span> <span class="st">"Pre-school density (per km sq)"</span>,</span>
+<span id="cb61-16"><a href="#cb61-16"></a>      <span class="at">y =</span> <span class="st">"Frequency"</span>)</span>
+<span id="cb61-17"><a href="#cb61-17"></a></span>
+<span id="cb61-18"><a href="#cb61-18"></a><span class="fu">ggplotly</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-d7f27b1848bd3806cccc" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-d7f27b1848bd3806cccc">{"x":{"data":[{"orientation":"v","width":[1.873773313947583,1.8737733139475834,1.8737733139475834,1.8737733139475825,1.8737733139475807,1.8737733139475843,1.8737733139475807,1.8737733139475807,1.8737733139475843,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807,1.8737733139475807],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[0,1.873773313947583,3.7475466278951663,5.6213199418427493,7.4950932557903318,9.3688665697379143,11.242639883685499,13.116413197633079,14.990186511580664,16.863959825528248,18.737733139475829,20.611506453423416,22.485279767370997,24.359053081318578,26.232826395266162,28.106599709213747,29.980373023161327,31.854146337108915,33.727919651056496,35.601692965004077],"y":[104,33,34,29,23,33,33,8,12,6,2,1,1,1,1,0,0,0,0,2],"text":["count: 104<br />as.numeric(DENSITY):  0.000000","count:  33<br />as.numeric(DENSITY):  1.873773","count:  34<br />as.numeric(DENSITY):  3.747547","count:  29<br />as.numeric(DENSITY):  5.621320","count:  23<br />as.numeric(DENSITY):  7.495093","count:  33<br />as.numeric(DENSITY):  9.368867","count:  33<br />as.numeric(DENSITY): 11.242640","count:   8<br />as.numeric(DENSITY): 13.116413","count:  12<br />as.numeric(DENSITY): 14.990187","count:   6<br />as.numeric(DENSITY): 16.863960","count:   2<br />as.numeric(DENSITY): 18.737733","count:   1<br />as.numeric(DENSITY): 20.611506","count:   1<br />as.numeric(DENSITY): 22.485280","count:   1<br />as.numeric(DENSITY): 24.359053","count:   1<br />as.numeric(DENSITY): 26.232826","count:   0<br />as.numeric(DENSITY): 28.106600","count:   0<br />as.numeric(DENSITY): 29.980373","count:   0<br />as.numeric(DENSITY): 31.854146","count:   0<br />as.numeric(DENSITY): 33.727920","count:   2<br />as.numeric(DENSITY): 35.601693"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(173,216,230,1)","line":{"width":1.8897637795275593,"color":"rgba(0,0,0,1)"}},"showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[5.2028611308114519,5.2028611308114519],"y":[-5.2000000000000002,109.2],"text":"xintercept: 5.202861","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(0,0,255,1)","dash":"dash"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[10.379927815404336,10.379927815404336],"y":[-5.2000000000000002,109.2],"text":"xintercept: 10.37993","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(0,0,0,1)","dash":"dash"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4],"y":[75],"text":"50th <br />percentile","hovertext":"x: 4<br />y: 75","textfont":{"size":7.559055118110237,"color":"rgba(0,0,0,1)"},"type":"scatter","mode":"text","hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[9],"y":[75],"text":"75th <br />percentile","hovertext":"x: 9<br />y: 75","textfont":{"size":7.559055118110237,"color":"rgba(0,0,0,1)"},"type":"scatter","mode":"text","hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.762557077625573,"r":7.3059360730593621,"b":40.182648401826491,"l":43.105022831050235},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"Are pre-school even distributed in Singapore?","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-2.8106599709213747,38.412352935925448],"tickmode":"array","ticktext":["0","10","20","30"],"tickvals":[-4.4408920985006262e-16,9.9999999999999982,20,30.000000000000004],"categoryorder":"array","categoryarray":["0","10","20","30"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y","title":{"text":"Pre-school density (per km sq)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-5.2000000000000002,109.2],"tickmode":"array","ticktext":["0","25","50","75","100"],"tickvals":[0,25,50,75,100],"categoryorder":"array","categoryarray":["0","25","50","75","100"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":{"text":"Frequency","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"662446315670":{"x":{},"type":"bar"},"662448a55815":{"xintercept":{}},"662452086731":{"xintercept":{}},"662460d33880":{"x":{},"y":{}},"66243372299":{"x":{},"y":{}}},"cur_data":"662446315670","visdat":{"662446315670":["function (y) ","x"],"662448a55815":["function (y) ","x"],"662452086731":["function (y) ","x"],"662460d33880":["function (y) ","x"],"66243372299":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p><strong>DIY: Using ggplot2 method, plot a scatterplot showing the relationship between Pre-school Density and Pre-school Count.</strong></p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>mpsz3414, </span>
+<span id="cb62-2"><a href="#cb62-2"></a>       <span class="fu">aes</span>(<span class="at">y =</span> <span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span>, </span>
+<span id="cb62-3"><a href="#cb62-3"></a>           <span class="at">x=</span> <span class="fu">as.numeric</span>(DENSITY)))<span class="sc">+</span></span>
+<span id="cb62-4"><a href="#cb62-4"></a>  <span class="fu">geom_point</span>(<span class="at">color=</span><span class="st">"black"</span>, </span>
+<span id="cb62-5"><a href="#cb62-5"></a>             <span class="at">fill=</span><span class="st">"light blue"</span>) <span class="sc">+</span></span>
+<span id="cb62-6"><a href="#cb62-6"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb62-7"><a href="#cb62-7"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb62-8"><a href="#cb62-8"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">""</span>,</span>
+<span id="cb62-9"><a href="#cb62-9"></a>      <span class="at">x =</span> <span class="st">"Pre-school density (per km sq)"</span>,</span>
+<span id="cb62-10"><a href="#cb62-10"></a>      <span class="at">y =</span> <span class="st">"Pre-school count"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_1_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
 <section id="theories" class="level2">
 <h2 class="anchored" data-anchor-id="theories">Theories</h2>
 <section id="kml-and-shapefiles" class="level3">
@@ -2331,7 +2434,7 @@ Projected CRS: SVY21
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1"></a>mpsz_tbl_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1"></a>mpsz_tbl_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 

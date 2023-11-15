@@ -457,6 +457,80 @@ The table above shows the top 6 highest density subzones .
 #| echo: false
 ```
 
+## 1.10 Explorotary Data Analysis (EDA)
+
+In practice, many geospatial analytics start with Exploratory Data Analysis. In this section, wewill learn how to use appropriate [ggplot2](https://ggplot2.tidyverse.org/) functions to create functional and yet truthful statistical graphs for EDA purposes.
+
+Firstly, we will plot a histogram to reveal the distribution of `PreSch Density`. Conventionally, *hist()* of R Graphics will be used as shown in the code chunk below.
+
+```{r}
+hist(mpsz3414$DENSITY)
+```
+
+Although the syntax is very easy to use however the output is far from meeting publication quality. Furthermore, the function has limited room for further customisation.
+
+In the code chunk below, appropriate **ggplot2** functions will be used.
+
+::: panel-tabset
+## Static
+
+```{r}
+q <- quantile(as.numeric(mpsz3414$DENSITY), probs = c(0.25, 0.5, 0.75))
+
+ggplot(data=mpsz3414, 
+       aes(x= as.numeric(DENSITY)))+
+  geom_histogram(bins=20, 
+                 color="black", 
+                 fill="light blue") +
+  geom_vline(xintercept = q[2]+1, linetype='dashed', size = 0.5, color='blue') +
+  geom_vline(xintercept = q[3]+1, linetype='dashed', size = 0.5) +
+  annotate('text' , x= 4, y=75, label='50th \npercentile', size = 2) +
+  annotate('text' , x= 9, y=75, label='75th \npercentile', size = 2) +
+  labs(title = "Are pre-school even distributed in Singapore?",
+       subtitle= "There are many planning sub-zones with a single pre-school, on the other hand, \nthere are two planning sub-zones with at least 20 pre-schools",
+      x = "Pre-school density (per km sq)",
+      y = "Frequency")
+```
+
+## Interactive (plotly)
+
+```{r}
+library(plotly)
+q <- quantile(as.numeric(mpsz3414$DENSITY), probs = c(0.25, 0.5, 0.75))
+
+p <- ggplot(data=mpsz3414, 
+       aes(x= as.numeric(DENSITY)))+
+  geom_histogram(bins=20, 
+                 color="black", 
+                 fill="light blue") +
+  geom_vline(xintercept = q[2]+1, linetype='dashed', size = 0.5, color='blue') +
+  geom_vline(xintercept = q[3]+1, linetype='dashed', size = 0.5) +
+  annotate('text' , x= 4, y=75, label='50th \npercentile', size = 2) +
+  annotate('text' , x= 9, y=75, label='75th \npercentile', size = 2) +
+  labs(title = "Are pre-school even distributed in Singapore?",
+       subtitle= "There are many planning sub-zones with a single pre-school, on the other hand, \nthere are two planning sub-zones with at least 20 pre-schools",
+      x = "Pre-school density (per km sq)",
+      y = "Frequency")
+
+ggplotly(p)
+```
+:::
+
+**DIY: Using ggplot2 method, plot a scatterplot showing the relationship between Pre-school Density and Pre-school Count.**
+
+```{r}
+ggplot(data=mpsz3414, 
+       aes(y = `PreSch Count`, 
+           x= as.numeric(DENSITY)))+
+  geom_point(color="black", 
+             fill="light blue") +
+  xlim(0, 40) +
+  ylim(0, 40) +
+  labs(title = "",
+      x = "Pre-school density (per km sq)",
+      y = "Pre-school count")
+```
+
 ## Theories
 
 ### KML and shapefiles
