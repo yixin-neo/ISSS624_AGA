@@ -99,7 +99,7 @@ mpsz <- st_read(dsn="data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
 
 -   geospatial objects are multipolygon features
 
--    total of 323 multipolygon features and 15 fields in `mpsz` simple feature data frame.
+-   total of 323 multipolygon features and 15 fields in `mpsz` simple feature data frame.
 
 -   `mpsz` is in **svy21** projected coordinates systems
 
@@ -164,6 +164,158 @@ Sometimes we would like to reveal complete information of a feature object, this
 
 ```{r}
 head(mpsz,3)
+```
+
+## 1.6 Plotting the Geospatial Data
+
+In geospatial data science, by looking at the feature information is not enough. We are also interested to **visualise** the geospatial features. One of the ways is to use the *plot()* of R Graphic.
+
+```{r}
+plot(mpsz)
+```
+
+The default plot of an sf object is a multi-plot of all attributes, up to a reasonable maximum as shown above. We can, however, choose to plot only the geometry (multi-polygon) by using the code chunk below.
+
+```{r}
+plot(st_geometry(mpsz))
+```
+
+Alternatively, we can also choose the plot the `sf` object by using a specific attribute as shown in the code chunk below.
+
+```{r}
+plot(mpsz["REGION_N"])
+```
+
+::: {.callout-note appearance="minimal"}
+Note: *plot()* is mean for plotting the geospatial object for quick look. For high cartographic quality plot, other R package such as tmap should be used.
+:::
+
+## 1.7 Working with Projection
+
+Map projection is an important property of a geospatial data. In order to perform geoprocessing using two geospatial data, we need to ensure that both geospatial data are projected using similar coordinate system.
+
+In this section, you will learn how to project a simple feature data frame from one coordinate system to another coordinate system. The technical term of this process is called **projection transformation**.
+
+### 1.7.1 Assigning EPSG code to a simple feature data frame
+
+Common issues:
+
+1.  coordinate system of the source data was missing (such as due to missing .proj for ESRI shapefile)
+
+2.  wrongly assigned during the importing process
+
+Using the st_crs() to check in detail of the `mpsz`reveals that although it claims to be in svy21 (singapore proj sys), reading until end of print shows that it is wrongly in EPSG9001 (singapore uses epsg3414)
+
+```{r}
+st_crs(mpsz)
+```
+
+In order to assign the correct EPSG code to `mpsz` data frame, *st_set_crs()* of **sf** package is used as shown in the code chunk below.
+
+```{r}
+mpsz3414 <- st_transform(mpsz, 3414)
+```
+
+Recheck
+
+```{r}
+st_crs(mpsz3414)
+```
+
+Notice that the EPSG code is 3414 now.
+
+### 1.7.2 Transforming the projection of preschool from wgs84 to svy21 (EPSG3414).
+
+In geospatial analytics, it is very common for us to transform the original data from **geographic** coordinate system (3D) to **projected** coordinate system (2D). This is because geographic coordinate system is not appropriate if the analysis need to use **distance** or/and **area** measurements.
+
+Let us take preschool simple feature data frame as an example. The print below reveals that it is in wgs84 coordinate system (3D).
+
+```{r}
+st_geometry(preschool)
+```
+
+```{r}
+st_crs(preschool)
+```
+
+Note that *`st_set_crs()`* is not appropriate and *`st_transform()`* of sf package should be used. This is because we need to reproject `preschool` from one coordinate system to another coordinate system **mathemetically**.
+
+Let us perform the projection transformation by using the code chunk below.
+
+```{r}
+preschool3414 <- st_transform(preschool, crs=3414)
+```
+
+Recheck
+
+```{r}
+#| echo: false
+st_geometry(preschool3414)
+```
+
+Notice that it is in svy21 projected coordinate system now. Furthermore, if we refer to *Bounding box:*, the values are greater than 0-360 range of decimal degree commonly used by most of the geographic coordinate systems.
+
+## 1.8 Importing and Converting An Aspatial Data
+
+In practice, it is not unusual that we will come across data such as `listing` of Inside Airbnb. We call this kind of data aspatial data. This is because it is not a geospatial data but among the data fields, there are two fields that capture the x- (**long**) and y-coordinates (**lat**) of the data points.
+
+In this section, we will learn how to
+
+1.  import an aspatial data into R environment and save it as a tibble data frame
+
+2.  convert it into a simple feature data frame.
+
+The `listings.csv` data downloaded from AirBnb will be used.
+
+### 1.8.1 Importing the aspatial data
+
+Since `listings` data set is in csv file format, we will use [*read_csv()*](https://readr.tidyverse.org/reference/read_delim.html) of **readr** package to import `listing.csv` as shown the code chunk below. The output R object is called `listings` and it is a [tibble data frame](https://r4ds.had.co.nz/tibbles.html).
+
+```{r}
+listings <- read_csv('data/aspatial/listings.csv')
+class(listings)
+```
+
+After importing the data file into R, it is important for us to examine if the data file has been imported correctly.
+
+The code chunk below shows *list()* of Base R instead of *glimpse()* is used to do the job.
+
+```{r}
+list(listings)
+```
+
+Other ways of displaying tabular data in R:
+
+::: panel-tabset
+## kable
+
+```{r}
+kable(head(listings))
+```
+
+## gt
+
+```{r}
+library(gt)
+head(listings) %>% gt() %>% tab_header(title = "AirBnB listings")
+```
+:::
+
+Another package available is DT for interactive tables.
+
+```{r}
+#| echo: false
+#| eval: false
+library(DT)
+datatable(head(listings), class = 'cell-border stripe')#, options = list(pageLength = 5))
+```
+
+```{r}
+
+```
+
+```{r}
+
 ```
 
 ```{r}

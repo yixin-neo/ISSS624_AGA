@@ -242,6 +242,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#working-with-glimpse" id="toc-working-with-glimpse" class="nav-link" data-scroll-target="#working-with-glimpse">1.5.2 Working with glimpse()</a></li>
   <li><a href="#working-with-head" id="toc-working-with-head" class="nav-link" data-scroll-target="#working-with-head">1.5.3 Working with <em>head()</em></a></li>
   </ul></li>
+  <li><a href="#plotting-the-geospatial-data" id="toc-plotting-the-geospatial-data" class="nav-link" data-scroll-target="#plotting-the-geospatial-data">1.6 Plotting the Geospatial Data</a></li>
+  <li><a href="#working-with-projection" id="toc-working-with-projection" class="nav-link" data-scroll-target="#working-with-projection">1.7 Working with Projection</a>
+  <ul class="collapse">
+  <li><a href="#assigning-epsg-code-to-a-simple-feature-data-frame" id="toc-assigning-epsg-code-to-a-simple-feature-data-frame" class="nav-link" data-scroll-target="#assigning-epsg-code-to-a-simple-feature-data-frame">1.7.1 Assigning EPSG code to a simple feature data frame</a></li>
+  <li><a href="#transforming-the-projection-of-preschool-from-wgs84-to-svy21-epsg3414." id="toc-transforming-the-projection-of-preschool-from-wgs84-to-svy21-epsg3414." class="nav-link" data-scroll-target="#transforming-the-projection-of-preschool-from-wgs84-to-svy21-epsg3414.">1.7.2 Transforming the projection of preschool from wgs84 to svy21 (EPSG3414).</a></li>
+  </ul></li>
+  <li><a href="#importing-and-converting-an-aspatial-data" id="toc-importing-and-converting-an-aspatial-data" class="nav-link" data-scroll-target="#importing-and-converting-an-aspatial-data">1.8 Importing and Converting An Aspatial Data</a>
+  <ul class="collapse">
+  <li><a href="#importing-the-aspatial-data" id="toc-importing-the-aspatial-data" class="nav-link" data-scroll-target="#importing-the-aspatial-data">1.8.1 Importing the aspatial data</a></li>
+  </ul></li>
   <li><a href="#theories" id="toc-theories" class="nav-link" data-scroll-target="#theories">Theories</a>
   <ul class="collapse">
   <li><a href="#kml-and-shapefiles" id="toc-kml-and-shapefiles" class="nav-link" data-scroll-target="#kml-and-shapefiles">KML and shapefiles</a></li>
@@ -676,6 +686,1071 @@ Projected CRS: SVY21
 3   1740.926   160807.5 MULTIPOLYGON (((29932.33 29...</code></pre>
 </div>
 </div>
+</section>
+</section>
+<section id="plotting-the-geospatial-data" class="level2">
+<h2 class="anchored" data-anchor-id="plotting-the-geospatial-data">1.6 Plotting the Geospatial Data</h2>
+<p>In geospatial data science, by looking at the feature information is not enough. We are also interested to <strong>visualise</strong> the geospatial features. One of the ways is to use the <em>plot()</em> of R Graphic.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="fu">plot</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_1_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The default plot of an sf object is a multi-plot of all attributes, up to a reasonable maximum as shown above. We can, however, choose to plot only the geometry (multi-polygon) by using the code chunk below.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(mpsz))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_1_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Alternatively, we can also choose the plot the <code>sf</code> object by using a specific attribute as shown in the code chunk below.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="fu">plot</span>(mpsz[<span class="st">"REGION_N"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex1_1_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout-note callout callout-style-simple no-icon">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>Note: <em>plot()</em> is mean for plotting the geospatial object for quick look. For high cartographic quality plot, other R package such as tmap should be used.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="working-with-projection" class="level2">
+<h2 class="anchored" data-anchor-id="working-with-projection">1.7 Working with Projection</h2>
+<p>Map projection is an important property of a geospatial data. In order to perform geoprocessing using two geospatial data, we need to ensure that both geospatial data are projected using similar coordinate system.</p>
+<p>In this section, you will learn how to project a simple feature data frame from one coordinate system to another coordinate system. The technical term of this process is called <strong>projection transformation</strong>.</p>
+<section id="assigning-epsg-code-to-a-simple-feature-data-frame" class="level3">
+<h3 class="anchored" data-anchor-id="assigning-epsg-code-to-a-simple-feature-data-frame">1.7.1 Assigning EPSG code to a simple feature data frame</h3>
+<p>Common issues:</p>
+<ol type="1">
+<li><p>coordinate system of the source data was missing (such as due to missing .proj for ESRI shapefile)</p></li>
+<li><p>wrongly assigned during the importing process</p></li>
+</ol>
+<p>Using the st_crs() to check in detail of the <code>mpsz</code>reveals that although it claims to be in svy21 (singapore proj sys), reading until end of print shows that it is wrongly in EPSG9001 (singapore uses epsg3414)</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="fu">st_crs</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Coordinate Reference System:
+  User input: SVY21 
+  wkt:
+PROJCRS["SVY21",
+    BASEGEOGCRS["SVY21[WGS84]",
+        DATUM["World Geodetic System 1984",
+            ELLIPSOID["WGS 84",6378137,298.257223563,
+                LENGTHUNIT["metre",1]],
+            ID["EPSG",6326]],
+        PRIMEM["Greenwich",0,
+            ANGLEUNIT["Degree",0.0174532925199433]]],
+    CONVERSION["unnamed",
+        METHOD["Transverse Mercator",
+            ID["EPSG",9807]],
+        PARAMETER["Latitude of natural origin",1.36666666666667,
+            ANGLEUNIT["Degree",0.0174532925199433],
+            ID["EPSG",8801]],
+        PARAMETER["Longitude of natural origin",103.833333333333,
+            ANGLEUNIT["Degree",0.0174532925199433],
+            ID["EPSG",8802]],
+        PARAMETER["Scale factor at natural origin",1,
+            SCALEUNIT["unity",1],
+            ID["EPSG",8805]],
+        PARAMETER["False easting",28001.642,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8806]],
+        PARAMETER["False northing",38744.572,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8807]]],
+    CS[Cartesian,2],
+        AXIS["(E)",east,
+            ORDER[1],
+            LENGTHUNIT["metre",1,
+                ID["EPSG",9001]]],
+        AXIS["(N)",north,
+            ORDER[2],
+            LENGTHUNIT["metre",1,
+                ID["EPSG",9001]]]]</code></pre>
+</div>
+</div>
+<p>In order to assign the correct EPSG code to <code>mpsz</code> data frame, <em>st_set_crs()</em> of <strong>sf</strong> package is used as shown in the code chunk below.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>mpsz3414 <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(mpsz, <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Recheck</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="fu">st_crs</span>(mpsz3414)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Coordinate Reference System:
+  User input: EPSG:3414 
+  wkt:
+PROJCRS["SVY21 / Singapore TM",
+    BASEGEOGCRS["SVY21",
+        DATUM["SVY21",
+            ELLIPSOID["WGS 84",6378137,298.257223563,
+                LENGTHUNIT["metre",1]]],
+        PRIMEM["Greenwich",0,
+            ANGLEUNIT["degree",0.0174532925199433]],
+        ID["EPSG",4757]],
+    CONVERSION["Singapore Transverse Mercator",
+        METHOD["Transverse Mercator",
+            ID["EPSG",9807]],
+        PARAMETER["Latitude of natural origin",1.36666666666667,
+            ANGLEUNIT["degree",0.0174532925199433],
+            ID["EPSG",8801]],
+        PARAMETER["Longitude of natural origin",103.833333333333,
+            ANGLEUNIT["degree",0.0174532925199433],
+            ID["EPSG",8802]],
+        PARAMETER["Scale factor at natural origin",1,
+            SCALEUNIT["unity",1],
+            ID["EPSG",8805]],
+        PARAMETER["False easting",28001.642,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8806]],
+        PARAMETER["False northing",38744.572,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8807]]],
+    CS[Cartesian,2],
+        AXIS["northing (N)",north,
+            ORDER[1],
+            LENGTHUNIT["metre",1]],
+        AXIS["easting (E)",east,
+            ORDER[2],
+            LENGTHUNIT["metre",1]],
+    USAGE[
+        SCOPE["Cadastre, engineering survey, topographic mapping."],
+        AREA["Singapore - onshore and offshore."],
+        BBOX[1.13,103.59,1.47,104.07]],
+    ID["EPSG",3414]]</code></pre>
+</div>
+</div>
+<p>Notice that the EPSG code is 3414 now.</p>
+</section>
+<section id="transforming-the-projection-of-preschool-from-wgs84-to-svy21-epsg3414." class="level3">
+<h3 class="anchored" data-anchor-id="transforming-the-projection-of-preschool-from-wgs84-to-svy21-epsg3414.">1.7.2 Transforming the projection of preschool from wgs84 to svy21 (EPSG3414).</h3>
+<p>In geospatial analytics, it is very common for us to transform the original data from <strong>geographic</strong> coordinate system (3D) to <strong>projected</strong> coordinate system (2D). This is because geographic coordinate system is not appropriate if the analysis need to use <strong>distance</strong> or/and <strong>area</strong> measurements.</p>
+<p>Let us take preschool simple feature data frame as an example. The print below reveals that it is in wgs84 coordinate system (3D).</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="fu">st_geometry</span>(preschool)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Geometry set for 1925 features 
+Geometry type: POINT
+Dimension:     XYZ
+Bounding box:  xmin: 103.6824 ymin: 1.247759 xmax: 103.9897 ymax: 1.462134
+z_range:       zmin: 0 zmax: 0
+Geodetic CRS:  WGS 84
+First 5 geometries:</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="fu">st_crs</span>(preschool)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Coordinate Reference System:
+  User input: WGS 84 
+  wkt:
+GEOGCRS["WGS 84",
+    DATUM["World Geodetic System 1984",
+        ELLIPSOID["WGS 84",6378137,298.257223563,
+            LENGTHUNIT["metre",1]]],
+    PRIMEM["Greenwich",0,
+        ANGLEUNIT["degree",0.0174532925199433]],
+    CS[ellipsoidal,2],
+        AXIS["geodetic latitude (Lat)",north,
+            ORDER[1],
+            ANGLEUNIT["degree",0.0174532925199433]],
+        AXIS["geodetic longitude (Lon)",east,
+            ORDER[2],
+            ANGLEUNIT["degree",0.0174532925199433]],
+    ID["EPSG",4326]]</code></pre>
+</div>
+</div>
+<p>Note that <em><code>st_set_crs()</code></em> is not appropriate and <em><code>st_transform()</code></em> of sf package should be used. This is because we need to reproject <code>preschool</code> from one coordinate system to another coordinate system <strong>mathemetically</strong>.</p>
+<p>Let us perform the projection transformation by using the code chunk below.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a>preschool3414 <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(preschool, <span class="at">crs=</span><span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Recheck</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Geometry set for 1925 features 
+Geometry type: POINT
+Dimension:     XYZ
+Bounding box:  xmin: 11203.01 ymin: 25596.33 xmax: 45404.24 ymax: 49300.88
+z_range:       zmin: 0 zmax: 0
+Projected CRS: SVY21 / Singapore TM
+First 5 geometries:</code></pre>
+</div>
+</div>
+<p>Notice that it is in svy21 projected coordinate system now. Furthermore, if we refer to <em>Bounding box:</em>, the values are greater than 0-360 range of decimal degree commonly used by most of the geographic coordinate systems.</p>
+</section>
+</section>
+<section id="importing-and-converting-an-aspatial-data" class="level2">
+<h2 class="anchored" data-anchor-id="importing-and-converting-an-aspatial-data">1.8 Importing and Converting An Aspatial Data</h2>
+<p>In practice, it is not unusual that we will come across data such as <code>listing</code> of Inside Airbnb. We call this kind of data aspatial data. This is because it is not a geospatial data but among the data fields, there are two fields that capture the x- (<strong>long</strong>) and y-coordinates (<strong>lat</strong>) of the data points.</p>
+<p>In this section, we will learn how to</p>
+<ol type="1">
+<li><p>import an aspatial data into R environment and save it as a tibble data frame</p></li>
+<li><p>convert it into a simple feature data frame.</p></li>
+</ol>
+<p>The <code>listings.csv</code> data downloaded from AirBnb will be used.</p>
+<section id="importing-the-aspatial-data" class="level3">
+<h3 class="anchored" data-anchor-id="importing-the-aspatial-data">1.8.1 Importing the aspatial data</h3>
+<p>Since <code>listings</code> data set is in csv file format, we will use <a href="https://readr.tidyverse.org/reference/read_delim.html"><em>read_csv()</em></a> of <strong>readr</strong> package to import <code>listing.csv</code> as shown the code chunk below. The output R object is called <code>listings</code> and it is a <a href="https://r4ds.had.co.nz/tibbles.html">tibble data frame</a>.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>listings <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'data/aspatial/listings.csv'</span>)</span>
+<span id="cb33-2"><a href="#cb33-2"></a><span class="fu">class</span>(listings)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "spec_tbl_df" "tbl_df"      "tbl"         "data.frame" </code></pre>
+</div>
+</div>
+<p>After importing the data file into R, it is important for us to examine if the data file has been imported correctly.</p>
+<p>The code chunk below shows <em>list()</em> of Base R instead of <em>glimpse()</em> is used to do the job.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="fu">list</span>(listings)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+# A tibble: 4,161 × 18
+       id name      host_id host_name neighbourhood_group neighbourhood latitude
+    &lt;dbl&gt; &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;               &lt;chr&gt;            &lt;dbl&gt;
+ 1  50646 Pleasant…  227796 Sujatha   Central Region      Bukit Timah       1.33
+ 2  71609 Ensuite …  367042 Belinda   East Region         Tampines          1.35
+ 3  71896 B&amp;B  Roo…  367042 Belinda   East Region         Tampines          1.35
+ 4  71903 Room 2-n…  367042 Belinda   East Region         Tampines          1.35
+ 5 275344 15 mins … 1439258 Kay       Central Region      Bukit Merah       1.29
+ 6 289234 Booking …  367042 Belinda   East Region         Tampines          1.34
+ 7 294281 5 mins w… 1521514 Elizabeth Central Region      Newton            1.31
+ 8 324945 Cozy Blu… 1439258 Kay       Central Region      Bukit Merah       1.29
+ 9 330089 Cozy Blu… 1439258 Kay       Central Region      Bukit Merah       1.29
+10 330095 10 mins … 1439258 Kay       Central Region      Bukit Merah       1.29
+# ℹ 4,151 more rows
+# ℹ 11 more variables: longitude &lt;dbl&gt;, room_type &lt;chr&gt;, price &lt;dbl&gt;,
+#   minimum_nights &lt;dbl&gt;, number_of_reviews &lt;dbl&gt;, last_review &lt;date&gt;,
+#   reviews_per_month &lt;dbl&gt;, calculated_host_listings_count &lt;dbl&gt;,
+#   availability_365 &lt;dbl&gt;, number_of_reviews_ltm &lt;dbl&gt;, license &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>Other ways of displaying tabular data in R:</p>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">kable</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">gt</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(listings))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 2%">
+<col style="width: 13%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 7%">
+<col style="width: 5%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 4%">
+<col style="width: 2%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 4%">
+<col style="width: 6%">
+<col style="width: 11%">
+<col style="width: 6%">
+<col style="width: 8%">
+<col style="width: 2%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">id</th>
+<th style="text-align: left;">name</th>
+<th style="text-align: right;">host_id</th>
+<th style="text-align: left;">host_name</th>
+<th style="text-align: left;">neighbourhood_group</th>
+<th style="text-align: left;">neighbourhood</th>
+<th style="text-align: right;">latitude</th>
+<th style="text-align: right;">longitude</th>
+<th style="text-align: left;">room_type</th>
+<th style="text-align: right;">price</th>
+<th style="text-align: right;">minimum_nights</th>
+<th style="text-align: right;">number_of_reviews</th>
+<th style="text-align: left;">last_review</th>
+<th style="text-align: right;">reviews_per_month</th>
+<th style="text-align: right;">calculated_host_listings_count</th>
+<th style="text-align: right;">availability_365</th>
+<th style="text-align: right;">number_of_reviews_ltm</th>
+<th style="text-align: left;">license</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">50646</td>
+<td style="text-align: left;">Pleasant Room along Bukit Timah</td>
+<td style="text-align: right;">227796</td>
+<td style="text-align: left;">Sujatha</td>
+<td style="text-align: left;">Central Region</td>
+<td style="text-align: left;">Bukit Timah</td>
+<td style="text-align: right;">1.33432</td>
+<td style="text-align: right;">103.7852</td>
+<td style="text-align: left;">Private room</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: left;">2014-12-26</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">365</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">71609</td>
+<td style="text-align: left;">Ensuite Room (Room 1 &amp; 2) near EXPO</td>
+<td style="text-align: right;">367042</td>
+<td style="text-align: left;">Belinda</td>
+<td style="text-align: left;">East Region</td>
+<td style="text-align: left;">Tampines</td>
+<td style="text-align: right;">1.34537</td>
+<td style="text-align: right;">103.9589</td>
+<td style="text-align: left;">Private room</td>
+<td style="text-align: right;">145</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: left;">2020-01-17</td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">340</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">71896</td>
+<td style="text-align: left;">B&amp;B Room 1 near Airport &amp; EXPO</td>
+<td style="text-align: right;">367042</td>
+<td style="text-align: left;">Belinda</td>
+<td style="text-align: left;">East Region</td>
+<td style="text-align: left;">Tampines</td>
+<td style="text-align: right;">1.34754</td>
+<td style="text-align: right;">103.9596</td>
+<td style="text-align: left;">Private room</td>
+<td style="text-align: right;">85</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: left;">2019-10-13</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">265</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">71903</td>
+<td style="text-align: left;">Room 2-near Airport &amp; EXPO</td>
+<td style="text-align: right;">367042</td>
+<td style="text-align: left;">Belinda</td>
+<td style="text-align: left;">East Region</td>
+<td style="text-align: left;">Tampines</td>
+<td style="text-align: right;">1.34531</td>
+<td style="text-align: right;">103.9610</td>
+<td style="text-align: left;">Private room</td>
+<td style="text-align: right;">85</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: left;">2020-01-09</td>
+<td style="text-align: right;">0.34</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">365</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">275344</td>
+<td style="text-align: left;">15 mins to Outram MRT Single Room</td>
+<td style="text-align: right;">1439258</td>
+<td style="text-align: left;">Kay</td>
+<td style="text-align: left;">Central Region</td>
+<td style="text-align: left;">Bukit Merah</td>
+<td style="text-align: right;">1.28836</td>
+<td style="text-align: right;">103.8114</td>
+<td style="text-align: left;">Private room</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: left;">2022-07-09</td>
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">296</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">S0399</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">289234</td>
+<td style="text-align: left;">Booking for 3 bedrooms</td>
+<td style="text-align: right;">367042</td>
+<td style="text-align: left;">Belinda</td>
+<td style="text-align: left;">East Region</td>
+<td style="text-align: left;">Tampines</td>
+<td style="text-align: right;">1.34490</td>
+<td style="text-align: right;">103.9598</td>
+<td style="text-align: left;">Private room</td>
+<td style="text-align: right;">184</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: left;">2019-01-01</td>
+<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">285</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a><span class="fu">library</span>(gt)</span>
+<span id="cb38-2"><a href="#cb38-2"></a><span class="fu">head</span>(listings) <span class="sc">%&gt;%</span> <span class="fu">gt</span>() <span class="sc">%&gt;%</span> <span class="fu">tab_header</span>(<span class="at">title =</span> <span class="st">"AirBnB listings"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div id="arwzsotnhp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#arwzsotnhp table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#arwzsotnhp thead, #arwzsotnhp tbody, #arwzsotnhp tfoot, #arwzsotnhp tr, #arwzsotnhp td, #arwzsotnhp th {
+  border-style: none;
+}
+
+#arwzsotnhp p {
+  margin: 0;
+  padding: 0;
+}
+
+#arwzsotnhp .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#arwzsotnhp .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#arwzsotnhp .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#arwzsotnhp .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#arwzsotnhp .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#arwzsotnhp .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#arwzsotnhp .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#arwzsotnhp .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#arwzsotnhp .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#arwzsotnhp .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#arwzsotnhp .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#arwzsotnhp .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#arwzsotnhp .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#arwzsotnhp .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#arwzsotnhp .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#arwzsotnhp .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#arwzsotnhp .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#arwzsotnhp .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#arwzsotnhp .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#arwzsotnhp .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#arwzsotnhp .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#arwzsotnhp .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#arwzsotnhp .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#arwzsotnhp .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#arwzsotnhp .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#arwzsotnhp .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#arwzsotnhp .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#arwzsotnhp .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#arwzsotnhp .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#arwzsotnhp .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#arwzsotnhp .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#arwzsotnhp .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#arwzsotnhp .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#arwzsotnhp .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#arwzsotnhp .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#arwzsotnhp .gt_left {
+  text-align: left;
+}
+
+#arwzsotnhp .gt_center {
+  text-align: center;
+}
+
+#arwzsotnhp .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#arwzsotnhp .gt_font_normal {
+  font-weight: normal;
+}
+
+#arwzsotnhp .gt_font_bold {
+  font-weight: bold;
+}
+
+#arwzsotnhp .gt_font_italic {
+  font-style: italic;
+}
+
+#arwzsotnhp .gt_super {
+  font-size: 65%;
+}
+
+#arwzsotnhp .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#arwzsotnhp .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#arwzsotnhp .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#arwzsotnhp .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#arwzsotnhp .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#arwzsotnhp .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#arwzsotnhp .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_heading">
+      <td colspan="18" class="gt_heading gt_title gt_font_normal gt_bottom_border" style="">AirBnB listings</td>
+    </tr>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="id">id</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="name">name</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="host_id">host_id</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="host_name">host_name</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="neighbourhood_group">neighbourhood_group</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="neighbourhood">neighbourhood</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="latitude">latitude</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="longitude">longitude</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="room_type">room_type</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="price">price</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="minimum_nights">minimum_nights</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="number_of_reviews">number_of_reviews</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="last_review">last_review</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="reviews_per_month">reviews_per_month</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="calculated_host_listings_count">calculated_host_listings_count</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="availability_365">availability_365</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="number_of_reviews_ltm">number_of_reviews_ltm</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="license">license</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="id" class="gt_row gt_right">50646</td>
+<td headers="name" class="gt_row gt_left">Pleasant Room along Bukit Timah</td>
+<td headers="host_id" class="gt_row gt_right">227796</td>
+<td headers="host_name" class="gt_row gt_left">Sujatha</td>
+<td headers="neighbourhood_group" class="gt_row gt_left">Central Region</td>
+<td headers="neighbourhood" class="gt_row gt_left">Bukit Timah</td>
+<td headers="latitude" class="gt_row gt_right">1.33432</td>
+<td headers="longitude" class="gt_row gt_right">103.7852</td>
+<td headers="room_type" class="gt_row gt_left">Private room</td>
+<td headers="price" class="gt_row gt_right">80</td>
+<td headers="minimum_nights" class="gt_row gt_right">92</td>
+<td headers="number_of_reviews" class="gt_row gt_right">18</td>
+<td headers="last_review" class="gt_row gt_right">2014-12-26</td>
+<td headers="reviews_per_month" class="gt_row gt_right">0.18</td>
+<td headers="calculated_host_listings_count" class="gt_row gt_right">1</td>
+<td headers="availability_365" class="gt_row gt_right">365</td>
+<td headers="number_of_reviews_ltm" class="gt_row gt_right">0</td>
+<td headers="license" class="gt_row gt_left">NA</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">71609</td>
+<td headers="name" class="gt_row gt_left">Ensuite Room (Room 1 &amp; 2) near EXPO</td>
+<td headers="host_id" class="gt_row gt_right">367042</td>
+<td headers="host_name" class="gt_row gt_left">Belinda</td>
+<td headers="neighbourhood_group" class="gt_row gt_left">East Region</td>
+<td headers="neighbourhood" class="gt_row gt_left">Tampines</td>
+<td headers="latitude" class="gt_row gt_right">1.34537</td>
+<td headers="longitude" class="gt_row gt_right">103.9589</td>
+<td headers="room_type" class="gt_row gt_left">Private room</td>
+<td headers="price" class="gt_row gt_right">145</td>
+<td headers="minimum_nights" class="gt_row gt_right">92</td>
+<td headers="number_of_reviews" class="gt_row gt_right">20</td>
+<td headers="last_review" class="gt_row gt_right">2020-01-17</td>
+<td headers="reviews_per_month" class="gt_row gt_right">0.15</td>
+<td headers="calculated_host_listings_count" class="gt_row gt_right">6</td>
+<td headers="availability_365" class="gt_row gt_right">340</td>
+<td headers="number_of_reviews_ltm" class="gt_row gt_right">0</td>
+<td headers="license" class="gt_row gt_left">NA</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">71896</td>
+<td headers="name" class="gt_row gt_left">B&amp;B  Room 1 near Airport &amp; EXPO</td>
+<td headers="host_id" class="gt_row gt_right">367042</td>
+<td headers="host_name" class="gt_row gt_left">Belinda</td>
+<td headers="neighbourhood_group" class="gt_row gt_left">East Region</td>
+<td headers="neighbourhood" class="gt_row gt_left">Tampines</td>
+<td headers="latitude" class="gt_row gt_right">1.34754</td>
+<td headers="longitude" class="gt_row gt_right">103.9596</td>
+<td headers="room_type" class="gt_row gt_left">Private room</td>
+<td headers="price" class="gt_row gt_right">85</td>
+<td headers="minimum_nights" class="gt_row gt_right">92</td>
+<td headers="number_of_reviews" class="gt_row gt_right">24</td>
+<td headers="last_review" class="gt_row gt_right">2019-10-13</td>
+<td headers="reviews_per_month" class="gt_row gt_right">0.18</td>
+<td headers="calculated_host_listings_count" class="gt_row gt_right">6</td>
+<td headers="availability_365" class="gt_row gt_right">265</td>
+<td headers="number_of_reviews_ltm" class="gt_row gt_right">0</td>
+<td headers="license" class="gt_row gt_left">NA</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">71903</td>
+<td headers="name" class="gt_row gt_left">Room 2-near Airport &amp; EXPO</td>
+<td headers="host_id" class="gt_row gt_right">367042</td>
+<td headers="host_name" class="gt_row gt_left">Belinda</td>
+<td headers="neighbourhood_group" class="gt_row gt_left">East Region</td>
+<td headers="neighbourhood" class="gt_row gt_left">Tampines</td>
+<td headers="latitude" class="gt_row gt_right">1.34531</td>
+<td headers="longitude" class="gt_row gt_right">103.9610</td>
+<td headers="room_type" class="gt_row gt_left">Private room</td>
+<td headers="price" class="gt_row gt_right">85</td>
+<td headers="minimum_nights" class="gt_row gt_right">92</td>
+<td headers="number_of_reviews" class="gt_row gt_right">47</td>
+<td headers="last_review" class="gt_row gt_right">2020-01-09</td>
+<td headers="reviews_per_month" class="gt_row gt_right">0.34</td>
+<td headers="calculated_host_listings_count" class="gt_row gt_right">6</td>
+<td headers="availability_365" class="gt_row gt_right">365</td>
+<td headers="number_of_reviews_ltm" class="gt_row gt_right">0</td>
+<td headers="license" class="gt_row gt_left">NA</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">275344</td>
+<td headers="name" class="gt_row gt_left">15 mins to Outram MRT Single Room</td>
+<td headers="host_id" class="gt_row gt_right">1439258</td>
+<td headers="host_name" class="gt_row gt_left">Kay</td>
+<td headers="neighbourhood_group" class="gt_row gt_left">Central Region</td>
+<td headers="neighbourhood" class="gt_row gt_left">Bukit Merah</td>
+<td headers="latitude" class="gt_row gt_right">1.28836</td>
+<td headers="longitude" class="gt_row gt_right">103.8114</td>
+<td headers="room_type" class="gt_row gt_left">Private room</td>
+<td headers="price" class="gt_row gt_right">49</td>
+<td headers="minimum_nights" class="gt_row gt_right">60</td>
+<td headers="number_of_reviews" class="gt_row gt_right">14</td>
+<td headers="last_review" class="gt_row gt_right">2022-07-09</td>
+<td headers="reviews_per_month" class="gt_row gt_right">0.11</td>
+<td headers="calculated_host_listings_count" class="gt_row gt_right">44</td>
+<td headers="availability_365" class="gt_row gt_right">296</td>
+<td headers="number_of_reviews_ltm" class="gt_row gt_right">1</td>
+<td headers="license" class="gt_row gt_left">S0399</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">289234</td>
+<td headers="name" class="gt_row gt_left">Booking for 3 bedrooms</td>
+<td headers="host_id" class="gt_row gt_right">367042</td>
+<td headers="host_name" class="gt_row gt_left">Belinda</td>
+<td headers="neighbourhood_group" class="gt_row gt_left">East Region</td>
+<td headers="neighbourhood" class="gt_row gt_left">Tampines</td>
+<td headers="latitude" class="gt_row gt_right">1.34490</td>
+<td headers="longitude" class="gt_row gt_right">103.9598</td>
+<td headers="room_type" class="gt_row gt_left">Private room</td>
+<td headers="price" class="gt_row gt_right">184</td>
+<td headers="minimum_nights" class="gt_row gt_right">92</td>
+<td headers="number_of_reviews" class="gt_row gt_right">12</td>
+<td headers="last_review" class="gt_row gt_right">2019-01-01</td>
+<td headers="reviews_per_month" class="gt_row gt_right">0.10</td>
+<td headers="calculated_host_listings_count" class="gt_row gt_right">6</td>
+<td headers="availability_365" class="gt_row gt_right">285</td>
+<td headers="number_of_reviews_ltm" class="gt_row gt_right">0</td>
+<td headers="license" class="gt_row gt_left">NA</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Another package available is DT for interactive tables.</p>
+<div class="cell">
+
+</div>
+<div class="cell">
+
+</div>
+<div class="cell">
+
+</div>
 <div class="cell">
 
 </div>
@@ -721,7 +1796,7 @@ Projected CRS: SVY21
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>mpsz_tbl_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a>mpsz_tbl_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 
