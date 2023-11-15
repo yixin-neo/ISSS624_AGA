@@ -11,33 +11,144 @@ execute:
   #message: false
 format: 
   html:
-    code-fold: True
+    code-fold: false
     code-overflow: scroll
     code-summary: "Show the code"
     code-line-numbers: true
 ---
 
-## Overview
+## 2.1 Overview
 
-## Getting Started
+Choropleth mapping involves the symbolisation of enumeration units, such as countries, provinces, states, counties or census units, using area patterns or graduated colors. For example, a social scientist may need to use a choropleth map to portray the spatial distribution of aged population of Singapore by Master Plan 2014 Subzone Boundary.
+
+## 2.2 Getting Started
+
+In this hands-on exercise, we learn how to plot functional and truthful choropleth maps by using r packages called **tmap** package.
+
+Beside **tmap** package, four other R packages will be used. They are:
+
+-   [**readr**](https://readr.tidyverse.org/) for importing delimited text file,
+
+-   [**tidyr**](https://tidyr.tidyverse.org/) for tidying data,
+
+-   [**dplyr**](https://dplyr.tidyverse.org/) for wrangling data and
+
+-   [**sf**](https://cran.r-project.org/web/packages/sf/) for handling geospatial data.
+
+Among the four packages, **readr**, **tidyr** and **dplyr** are part of **tidyverse** package.
+
+Lets us first load all the required libraries.
 
 ```{r}
-pacman::p_load(sf, tidyverse)
+pacman::p_load(sf, tmap, tidyverse)
 ```
 
-## 1.1 Learning Outcome
+## 2.3 Importing Data into R
 
-## Importing Geospatial data
+### 2.3.1 The Data
 
-### Importing polygon feature data
+The Two datasets will be used to create the choropleth map are:
 
-st_read() is a func from `sf` package, used to read files in shapefile format.
+-   Master Plan 2014 Subzone Boundary (Web) (i.e. `MP14_SUBZONE_WEB_PL`) in ESRI shapefile format.
 
-dsn- data source name
+-   Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2011-2020 in csv format (i.e. `respopagesextod2011to2020.csv`). This is an aspatial data fie. It can be downloaded at [Department of Statistics, Singapore](https://www.singstat.gov.sg/), the specific link can be found [here](https://www.singstat.gov.sg/find-data/search-by-theme/population/geographic-distribution/latest-data). Although it does not contain any coordinates values, but it\'s PA and SZ fields can be used as unique identifiers to geocode to `MP14_SUBZONE_WEB_PL` shapefile.
+
+### 2.3.2 Importing Geospatial Data into R
 
 ```{r}
-mpsz <- st_read(dsn="data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
+mpsz <- st_read(dsn='data/geospatial',
+                layer = 'MP14_SUBZONE_WEB_PL')
 ```
+
+Check the projection system of mpsz. It is not in svy21 or epsg3414. We will need to convert it later.
+
+```{r}
+st_crs(mpsz)
+```
+
+Take a look at first few records of data
+
+```{r}
+glimpse(mpsz)
+```
+
+### 2.3.3 Importing Attribute Data into R
+
+Next, we will import *respopagsex2000to2020.csv* file into RStudio and save the file into an R dataframe called *popagsex*.
+
+The task will be performed by using *read_csv()* function of **readr** package as shown in the code chunk below.
+
+```{r}
+popdata <- read_csv("data/aspatial/respopagesextod2011to2020.csv")
+head(popdata)
+```
+
+Summary stats using skimr package.
+
+```{r}
+library(skimr)
+skim(popdata)
+```
+
+## 2.3.4 Data preparation
+
+Prepare a data table with year **2020** values. The data table should include the variables PA, SZ, YOUNG, ECONOMY ACTIVE, AGED, TOTAL, DEPENDENCY.
+
+-   YOUNG: age group 0 to 4 until age group 20 to 24,
+
+-   ECONOMY ACTIVE: age group 25-29 until age group 60-64,
+
+-   AGED: age group 65 and above,
+
+-   TOTAL: all age group, and
+
+-   DEPENDENCY: the ratio between young and aged against economy active group
+
+### 2.3.4.1 Data Wrangling
+
+-   *pivot_wider()* (rows to column headers) of **tidyr** package, and
+
+-   *mutate() (create new cal col)*, *filter() (subset rows)*, *group_by()* and *select() (select cols)* of **dplyr** package
+
+The complete code chunk:
+
+```{r}
+popdata2020 <- popdata %>% 
+  filter(Time==2020) %>% 
+  group_by(PA,SZ,AG) %>%   #<< for calculating POP column below
+  summarise(`POP` = sum(Pop)) %>% 
+  ungroup() %>%
+  pivot_wider(names_from = AG,
+              values_from = POP) %>% 
+  mutate(YOUNG = rowSums(.[3:6])
+         +rowSums(.[14])) %>% 
+  mutate(`ECONOMY ACTIVE` = rowSums(.[7:13])+rowSums(.[15])) %>%
+  mutate(AGED = rowSums(.[16:21])) %>%
+  mutate(TOTAL = rowSums(.[3:21])) %>% 
+  mutate(DEPENDENCY = (YOUNG+AGED)/`ECONOMY ACTIVE`) %>% 
+  select(PA, SZ,YOUNG,'ECONOMY ACTIVE', AGED, TOTAL, DEPENDENCY)
+
+head(popdata2020)
+```
+
+To understand the first 6 lines of code in the code chunK above, print the output:
+
+```{r}
+#| echo: false
+popdata2020 <- popdata %>% 
+  filter(Time==2020) %>% 
+  group_by(PA,SZ,AG) %>%   #<< for calculating POP column below
+  summarise(`POP` = sum(Pop)) %>% 
+  ungroup() %>%
+  pivot_wider(names_from = AG,
+              values_from = POP)
+
+head(popdata2020)
+```
+
+\
+
+
 
 ```{r}
 #| eval: false
