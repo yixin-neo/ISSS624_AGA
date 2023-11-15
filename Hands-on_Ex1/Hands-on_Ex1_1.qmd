@@ -9,6 +9,7 @@ execute:
   warning: false
   #echo: false
   #message: false
+format: 
   html:
     code-fold: True
     code-overflow: scroll
@@ -16,55 +17,153 @@ execute:
     code-line-numbers: true
 ---
 
-## Overview
+## 1.1 Overview
 
-In this hands-on exercise, I will learn how to import and wrangle geospatial data using appropriate R packages.
+In this hands-on exercise, I will learn how to import and wrangle geospatial data using appropriate R packages:
 
-## Getting Started
+-   installing and loading [sf](https://r-spatial.github.io/sf/) and [tidyverse](https://www.tidyverse.org/) packages into R environment,
 
-The code chunk below install and load sf and tidyverse packages into R environment.
+-   importing geospatial data by using appropriate functions of **sf** package,
 
-The `sp` package provides classes and methods for spatial data types in 2005. The [`sf`](https://r-spatial.github.io/sf/) package was released in 2016 to give standardise support for vector data in R. It is also coherent with [tidyverse](https://www.tidyverse.org/).
+-   importing aspatial data by using appropriate function of **readr** package,
+
+-   exploring the content of simple feature data frame by using appropriate **Base R** and **sf** functions,
+
+-   assigning or transforming coordinate systems by using appropriate *sf* functions,
+
+-   converting an aspatial data into a sf data frame by using appropriate function of **sf** package,
+
+-   performing geoprocessing tasks by using appropriate functions of **sf** package,
+
+-   performing data wrangling tasks by using appropriate functions of **dplyr** package and
+
+-   performing Exploratory Data Analysis (EDA) by using appropriate functions from **ggplot2** package.
+
+## 1.2 Data Acquisition
+
+In this hands-on exercise, data is acquired from the following sources:
+
+-   Master Plan 2014 Subzone Boundary (Web) from [data.gov.sg](https://data.gov.sg/)
+
+-   Pre-Schools Location from [data.gov.sg](https://data.gov.sg/)
+
+-   Cycling Path from [LTADataMall](https://www.mytransport.sg/content/mytransport/home/dataMall.html)
+
+-   Latest version of Singapore Airbnb listing data from [Inside Airbnb](http://insideairbnb.com/get-the-data.html)
+
+## 1.3 Getting Started
+
+The code chunk below install and load sf and tidyverse packages into R environment:
 
 ```{r}
 pacman::p_load(sf, tidyverse)
 ```
 
-## 1.1 Learning Outcome
+-   **sf** for importing, managing, and processing geospatial data, and
 
-## Importing Geospatial data
+-   **tidyverse** for performing data science tasks such as importing, wrangling and visualising data.
 
-### Importing polygon feature data
+The `sp` package provides classes and methods for spatial data types in 2005. The `sf` package was released in 2016 to give standardise support for vector data in R. It is also coherent with tidyverse, that consists of the following (not exhaustive):
+
+-   **readr** for importing csv data,
+
+-   **readxl** for importing Excel worksheet,
+
+-   **tidyr** for manipulating data,
+
+-   **dplyr** for transforming data, and
+
+-   **ggplot2** for visualising data
+
+## 1.4 Importing Geospatial data
+
+The data that we will be importing takes the following forms:
+
+-   `MP14_SUBZONE_WEB_PL`, a [polygon]{.underline} feature layer in ESRI shapefile format,
+
+-   `CyclingPath`, a [line]{.underline} feature layer in ESRI shapefile format, and
+
+-   `PreSchool`, a [point]{.underline} feature layer in kml file format.
+
+### 1.4.1 Importing polygon feature data in shapefile format
 
 st_read() is a func from `sf` package, used to read files in shapefile format.
 
-dsn- data source name
+dsn- data source name (aka data path)
+
+layer - shapefile name. No extensions like .shp, .dbf, .prj and .shx are needed.
 
 ```{r}
 mpsz <- st_read(dsn="data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
 ```
 
-### Geospatial data handling functions
+-   geospatial objects are multipolygon features
 
-·       st_read & read sf: read simple features from file or database, or retrieve layer names and their geometry type(s)
+-    total of 323 multipolygon features and 15 fields in `mpsz` simple feature data frame.
 
-·       st write &write_sf: write simple features object to file or database
+-   `mpsz` is in **svy21** projected coordinates systems
 
-·       st_as_sf: convert a sf object from a non-geospatial tabular data frame
-
-·       st as_text: convert to Well Known Text(WKT)
-
-·       st as_binary: convert to Well Known Binary(WKB)
-
-·       st_as_sfc: convert geometries to sfc (e.g., from WKT, WKB) as(x, "Spatial"): convert to Spatial\*
-
-·       st transform(x, crs, \...): convert coordinates of x to a different coordinate reference system
-
-The code chunk below allows us to unsf the mpsz and work tbl_df or data.frame.
+-   x extend and y extend of the data are given
 
 ```{r}
-#| eval: false
-mpsz_tbl_df <- as_tibble(mpsz)
+library(knitr)
+kable(head(mpsz, n = 3))
+```
+
+### 1.4.2 Importing polyline feature data in shapefile form
+
+The code chunk below uses *st_read()* function of **sf** package to import `CyclingPath` shapefile into R as line feature data frame.
+
+```{r}
+cyclingpath = st_read(dsn='data/geospatial', layer='CyclingPathGazette')
+```
+
+```{r}
+kable(head(cyclingpath, n = 3))
+```
+
+### 1.4.3 Importing GIS data in kml format
+
+The `pre-schools-location-kml` is in kml format.
+
+```{r}
+preschool = st_read('data/geospatial/pre-schools-location-kml.kml')
+```
+
+Note that preschool is in WSG84 coordinates system (3D).
+
+```{r}
+kable(head(preschool, n = 3))
+```
+
+### 1.5.1 Working with *st_geometry()*
+
+The column in the sf data.frame that contains the geometries is a list, of class `sfc`. We can retrieve the geometry list-column in this case by mpsz\$geom or mpsz\[\[1\]\], but the more general way uses *st_geometry()* as shown in the code chunk below.
+
+```{r}
+class(mpsz)
+```
+
+```{r}
+st_geometry(mpsz)
+```
+
+### 1.5.2 Working with glimpse()
+
+Beside the basic feature information, we also would like to learn more about the associated **attribute** information in the data frame. This is the time you will find *glimpse()* of **dplyr**. very handy as shown in the code chunk below.
+
+```{r}
+glimpse(head(mpsz))
+```
+
+*glimpse()* report reveals the data type of each fields. For example `FMEL-UPD_D` field is in **date** data type and `X_ADDR`, `Y_ADDR`, `SHAPE_L` and `SHAPE_AREA` fields are all in **double-precision values**.
+
+### 1.5.3 Working with *head()*
+
+Sometimes we would like to reveal complete information of a feature object, this is the job of [*head()*](https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/head) of Base R
+
+```{r}
+head(mpsz,3)
 ```
 
 ```{r}
@@ -112,3 +211,26 @@ Preserve:
 Google maps uses Mercator projection system. It is chosen as it preserves direction and angles. It is useful for navigation (google map) . It is originally created for sea navigation in older days. The cons are that this projection does not preserve area and shape.
 
 Singapore uses **SVY21** or the **EPSG:3414** projected coordinate system.
+
+### Geospatial data handling functions
+
+-   st_read & read sf: read simple features from file or database, or retrieve layer names and their geometry type(s)
+
+-   st write &write_sf: write simple features object to file or database
+
+-   st_as_sf: convert a sf object from a non-geospatial tabular data frame
+
+-   st as_text: convert to Well Known Text(WKT)
+
+-   st as_binary: convert to Well Known Binary(WKB)
+
+-   st_as_sfc: convert geometries to sfc (e.g., from WKT, WKB) as(x, "Spatial"): convert to Spatial\*
+
+-   st transform(x, crs, ...): convert coordinates of x to a different coordinate reference system
+
+The code chunk below allows us to unsf the mpsz and work tbl_df or data.frame.
+
+```{r}
+#| eval: false
+mpsz_tbl_df <- as_tibble(mpsz)
+```

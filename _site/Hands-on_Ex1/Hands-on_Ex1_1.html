@@ -230,18 +230,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
-  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">Getting Started</a></li>
-  <li><a href="#learning-outcome" id="toc-learning-outcome" class="nav-link" data-scroll-target="#learning-outcome">1.1 Learning Outcome</a></li>
-  <li><a href="#importing-geospatial-data" id="toc-importing-geospatial-data" class="nav-link" data-scroll-target="#importing-geospatial-data">Importing Geospatial data</a>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">1.1 Overview</a></li>
+  <li><a href="#data-acquisition" id="toc-data-acquisition" class="nav-link" data-scroll-target="#data-acquisition">1.2 Data Acquisition</a></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">1.3 Getting Started</a></li>
+  <li><a href="#importing-geospatial-data" id="toc-importing-geospatial-data" class="nav-link" data-scroll-target="#importing-geospatial-data">1.4 Importing Geospatial data</a>
   <ul class="collapse">
-  <li><a href="#importing-polygon-feature-data" id="toc-importing-polygon-feature-data" class="nav-link" data-scroll-target="#importing-polygon-feature-data">Importing polygon feature data</a></li>
-  <li><a href="#geospatial-data-handling-functions" id="toc-geospatial-data-handling-functions" class="nav-link" data-scroll-target="#geospatial-data-handling-functions">Geospatial data handling functions</a></li>
+  <li><a href="#importing-polygon-feature-data-in-shapefile-format" id="toc-importing-polygon-feature-data-in-shapefile-format" class="nav-link" data-scroll-target="#importing-polygon-feature-data-in-shapefile-format">1.4.1 Importing polygon feature data in shapefile format</a></li>
+  <li><a href="#importing-polyline-feature-data-in-shapefile-form" id="toc-importing-polyline-feature-data-in-shapefile-form" class="nav-link" data-scroll-target="#importing-polyline-feature-data-in-shapefile-form">1.4.2 Importing polyline feature data in shapefile form</a></li>
+  <li><a href="#importing-gis-data-in-kml-format" id="toc-importing-gis-data-in-kml-format" class="nav-link" data-scroll-target="#importing-gis-data-in-kml-format">1.4.3 Importing GIS data in kml format</a></li>
+  <li><a href="#working-with-st_geometry" id="toc-working-with-st_geometry" class="nav-link" data-scroll-target="#working-with-st_geometry">1.5.1 Working with <em>st_geometry()</em></a></li>
+  <li><a href="#working-with-glimpse" id="toc-working-with-glimpse" class="nav-link" data-scroll-target="#working-with-glimpse">1.5.2 Working with glimpse()</a></li>
+  <li><a href="#working-with-head" id="toc-working-with-head" class="nav-link" data-scroll-target="#working-with-head">1.5.3 Working with <em>head()</em></a></li>
   </ul></li>
   <li><a href="#theories" id="toc-theories" class="nav-link" data-scroll-target="#theories">Theories</a>
   <ul class="collapse">
   <li><a href="#kml-and-shapefiles" id="toc-kml-and-shapefiles" class="nav-link" data-scroll-target="#kml-and-shapefiles">KML and shapefiles</a></li>
   <li><a href="#gcs-geographic-coordinate-system-3d-and-pcs-projected-coordinate-system-2d" id="toc-gcs-geographic-coordinate-system-3d-and-pcs-projected-coordinate-system-2d" class="nav-link" data-scroll-target="#gcs-geographic-coordinate-system-3d-and-pcs-projected-coordinate-system-2d">GCS [Geographic Coordinate System] (3D) and PCS [Projected Coordinate System ] (2D)</a></li>
+  <li><a href="#geospatial-data-handling-functions" id="toc-geospatial-data-handling-functions" class="nav-link" data-scroll-target="#geospatial-data-handling-functions">Geospatial data handling functions</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -285,28 +290,70 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </header>
 
 <section id="overview" class="level2">
-<h2 class="anchored" data-anchor-id="overview">Overview</h2>
-<p>In this hands-on exercise, I will learn how to import and wrangle geospatial data using appropriate R packages.</p>
+<h2 class="anchored" data-anchor-id="overview">1.1 Overview</h2>
+<p>In this hands-on exercise, I will learn how to import and wrangle geospatial data using appropriate R packages:</p>
+<ul>
+<li><p>installing and loading <a href="https://r-spatial.github.io/sf/">sf</a> and <a href="https://www.tidyverse.org/">tidyverse</a> packages into R environment,</p></li>
+<li><p>importing geospatial data by using appropriate functions of <strong>sf</strong> package,</p></li>
+<li><p>importing aspatial data by using appropriate function of <strong>readr</strong> package,</p></li>
+<li><p>exploring the content of simple feature data frame by using appropriate <strong>Base R</strong> and <strong>sf</strong> functions,</p></li>
+<li><p>assigning or transforming coordinate systems by using appropriate <em>sf</em> functions,</p></li>
+<li><p>converting an aspatial data into a sf data frame by using appropriate function of <strong>sf</strong> package,</p></li>
+<li><p>performing geoprocessing tasks by using appropriate functions of <strong>sf</strong> package,</p></li>
+<li><p>performing data wrangling tasks by using appropriate functions of <strong>dplyr</strong> package and</p></li>
+<li><p>performing Exploratory Data Analysis (EDA) by using appropriate functions from <strong>ggplot2</strong> package.</p></li>
+</ul>
+</section>
+<section id="data-acquisition" class="level2">
+<h2 class="anchored" data-anchor-id="data-acquisition">1.2 Data Acquisition</h2>
+<p>In this hands-on exercise, data is acquired from the following sources:</p>
+<ul>
+<li><p>Master Plan 2014 Subzone Boundary (Web) from <a href="https://data.gov.sg/">data.gov.sg</a></p></li>
+<li><p>Pre-Schools Location from <a href="https://data.gov.sg/">data.gov.sg</a></p></li>
+<li><p>Cycling Path from <a href="https://www.mytransport.sg/content/mytransport/home/dataMall.html">LTADataMall</a></p></li>
+<li><p>Latest version of Singapore Airbnb listing data from <a href="http://insideairbnb.com/get-the-data.html">Inside Airbnb</a></p></li>
+</ul>
 </section>
 <section id="getting-started" class="level2">
-<h2 class="anchored" data-anchor-id="getting-started">Getting Started</h2>
-<p>The code chunk below install and load sf and tidyverse packages into R environment.</p>
-<p>The <code>sp</code> package provides classes and methods for spatial data types in 2005. The <a href="https://r-spatial.github.io/sf/"><code>sf</code></a> package was released in 2016 to give standardise support for vector data in R. It is also coherent with <a href="https://www.tidyverse.org/">tidyverse</a>.</p>
+<h2 class="anchored" data-anchor-id="getting-started">1.3 Getting Started</h2>
+<p>The code chunk below install and load sf and tidyverse packages into R environment:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
-</section>
-<section id="learning-outcome" class="level2">
-<h2 class="anchored" data-anchor-id="learning-outcome">1.1 Learning Outcome</h2>
+<ul>
+<li><p><strong>sf</strong> for importing, managing, and processing geospatial data, and</p></li>
+<li><p><strong>tidyverse</strong> for performing data science tasks such as importing, wrangling and visualising data.</p></li>
+</ul>
+<p>The <code>sp</code> package provides classes and methods for spatial data types in 2005. The <code>sf</code> package was released in 2016 to give standardise support for vector data in R. It is also coherent with tidyverse, that consists of the following (not exhaustive):</p>
+<ul>
+<li><p><strong>readr</strong> for importing csv data,</p></li>
+<li><p><strong>readxl</strong> for importing Excel worksheet,</p></li>
+<li><p><strong>tidyr</strong> for manipulating data,</p></li>
+<li><p><strong>dplyr</strong> for transforming data, and</p></li>
+<li><p><strong>ggplot2</strong> for visualising data</p></li>
+</ul>
 </section>
 <section id="importing-geospatial-data" class="level2">
-<h2 class="anchored" data-anchor-id="importing-geospatial-data">Importing Geospatial data</h2>
-<section id="importing-polygon-feature-data" class="level3">
-<h3 class="anchored" data-anchor-id="importing-polygon-feature-data">Importing polygon feature data</h3>
+<h2 class="anchored" data-anchor-id="importing-geospatial-data">1.4 Importing Geospatial data</h2>
+<p>The data that we will be importing takes the following forms:</p>
+<ul>
+<li><p><code>MP14_SUBZONE_WEB_PL</code>, a <u>polygon</u> feature layer in ESRI shapefile format,</p></li>
+<li><p><code>CyclingPath</code>, a <u>line</u> feature layer in ESRI shapefile format, and</p></li>
+<li><p><code>PreSchool</code>, a <u>point</u> feature layer in kml file format.</p></li>
+</ul>
+<section id="importing-polygon-feature-data-in-shapefile-format" class="level3">
+<h3 class="anchored" data-anchor-id="importing-polygon-feature-data-in-shapefile-format">1.4.1 Importing polygon feature data in shapefile format</h3>
 <p>st_read() is a func from <code>sf</code> package, used to read files in shapefile format.</p>
-<p>dsn- data source name</p>
+<p>dsn- data source name (aka data path)</p>
+<p>layer - shapefile name. No extensions like .shp, .dbf, .prj and .shx are needed.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mpsz <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn=</span><span class="st">"data/geospatial"</span>, <span class="at">layer =</span> <span class="st">"MP14_SUBZONE_WEB_PL"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>mpsz <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn=</span><span class="st">"data/geospatial"</span>, <span class="at">layer =</span> <span class="st">"MP14_SUBZONE_WEB_PL"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Reading layer `MP14_SUBZONE_WEB_PL' from data source 
   `C:\yixin-neo\ISSS624_AGA\Hands-on_Ex1\data\geospatial' using driver `ESRI Shapefile'
@@ -317,19 +364,317 @@ Bounding box:  xmin: 2667.538 ymin: 15748.72 xmax: 56396.44 ymax: 50256.33
 Projected CRS: SVY21</code></pre>
 </div>
 </div>
-</section>
-<section id="geospatial-data-handling-functions" class="level3">
-<h3 class="anchored" data-anchor-id="geospatial-data-handling-functions">Geospatial data handling functions</h3>
-<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; st_read &amp; read sf: read simple features from file or database, or retrieve layer names and their geometry type(s)</p>
-<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; st write &amp;write_sf: write simple features object to file or database</p>
-<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; st_as_sf: convert a sf object from a non-geospatial tabular data frame</p>
-<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; st as_text: convert to Well Known Text(WKT)</p>
-<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; st as_binary: convert to Well Known Binary(WKB)</p>
-<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; st_as_sfc: convert geometries to sfc (e.g., from WKT, WKB) as(x, “Spatial”): convert to Spatial*</p>
-<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; st transform(x, crs, ...): convert coordinates of x to a different coordinate reference system</p>
-<p>The code chunk below allows us to unsf the mpsz and work tbl_df or data.frame.</p>
+<ul>
+<li><p>geospatial objects are multipolygon features</p></li>
+<li><p>total of 323 multipolygon features and 15 fields in <code>mpsz</code> simple feature data frame.</p></li>
+<li><p><code>mpsz</code> is in <strong>svy21</strong> projected coordinates systems</p></li>
+<li><p>x extend and y extend of the data are given</p></li>
+</ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mpsz_tbl_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">kable</span>(<span class="fu">head</span>(mpsz, <span class="at">n =</span> <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 4%">
+<col style="width: 3%">
+<col style="width: 7%">
+<col style="width: 5%">
+<col style="width: 7%">
+<col style="width: 4%">
+<col style="width: 8%">
+<col style="width: 5%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">OBJECTID</th>
+<th style="text-align: right;">SUBZONE_NO</th>
+<th style="text-align: left;">SUBZONE_N</th>
+<th style="text-align: left;">SUBZONE_C</th>
+<th style="text-align: left;">CA_IND</th>
+<th style="text-align: left;">PLN_AREA_N</th>
+<th style="text-align: left;">PLN_AREA_C</th>
+<th style="text-align: left;">REGION_N</th>
+<th style="text-align: left;">REGION_C</th>
+<th style="text-align: left;">INC_CRC</th>
+<th style="text-align: left;">FMEL_UPD_D</th>
+<th style="text-align: right;">X_ADDR</th>
+<th style="text-align: right;">Y_ADDR</th>
+<th style="text-align: right;">SHAPE_Leng</th>
+<th style="text-align: right;">SHAPE_Area</th>
+<th style="text-align: left;">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">MARINA SOUTH</td>
+<td style="text-align: left;">MSSZ01</td>
+<td style="text-align: left;">Y</td>
+<td style="text-align: left;">MARINA SOUTH</td>
+<td style="text-align: left;">MS</td>
+<td style="text-align: left;">CENTRAL REGION</td>
+<td style="text-align: left;">CR</td>
+<td style="text-align: left;">5ED7EB253F99252E</td>
+<td style="text-align: left;">2014-12-05</td>
+<td style="text-align: right;">31595.84</td>
+<td style="text-align: right;">29220.19</td>
+<td style="text-align: right;">5267.381</td>
+<td style="text-align: right;">1630379.3</td>
+<td style="text-align: left;">MULTIPOLYGON (((31495.56 30…</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">PEARL’S HILL</td>
+<td style="text-align: left;">OTSZ01</td>
+<td style="text-align: left;">Y</td>
+<td style="text-align: left;">OUTRAM</td>
+<td style="text-align: left;">OT</td>
+<td style="text-align: left;">CENTRAL REGION</td>
+<td style="text-align: left;">CR</td>
+<td style="text-align: left;">8C7149B9EB32EEFC</td>
+<td style="text-align: left;">2014-12-05</td>
+<td style="text-align: right;">28679.06</td>
+<td style="text-align: right;">29782.05</td>
+<td style="text-align: right;">3506.107</td>
+<td style="text-align: right;">559816.2</td>
+<td style="text-align: left;">MULTIPOLYGON (((29092.28 30…</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">BOAT QUAY</td>
+<td style="text-align: left;">SRSZ03</td>
+<td style="text-align: left;">Y</td>
+<td style="text-align: left;">SINGAPORE RIVER</td>
+<td style="text-align: left;">SR</td>
+<td style="text-align: left;">CENTRAL REGION</td>
+<td style="text-align: left;">CR</td>
+<td style="text-align: left;">C35FEFF02B13E0E5</td>
+<td style="text-align: left;">2014-12-05</td>
+<td style="text-align: right;">29654.96</td>
+<td style="text-align: right;">29974.66</td>
+<td style="text-align: right;">1740.926</td>
+<td style="text-align: right;">160807.5</td>
+<td style="text-align: left;">MULTIPOLYGON (((29932.33 29…</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="importing-polyline-feature-data-in-shapefile-form" class="level3">
+<h3 class="anchored" data-anchor-id="importing-polyline-feature-data-in-shapefile-form">1.4.2 Importing polyline feature data in shapefile form</h3>
+<p>The code chunk below uses <em>st_read()</em> function of <strong>sf</strong> package to import <code>CyclingPath</code> shapefile into R as line feature data frame.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>cyclingpath <span class="ot">=</span> <span class="fu">st_read</span>(<span class="at">dsn=</span><span class="st">'data/geospatial'</span>, <span class="at">layer=</span><span class="st">'CyclingPathGazette'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `CyclingPathGazette' from data source 
+  `C:\yixin-neo\ISSS624_AGA\Hands-on_Ex1\data\geospatial' using driver `ESRI Shapefile'
+Simple feature collection with 2248 features and 2 fields
+Geometry type: MULTILINESTRING
+Dimension:     XY
+Bounding box:  xmin: 11854.32 ymin: 28347.98 xmax: 42626.09 ymax: 48948.15
+Projected CRS: SVY21</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(cyclingpath, <span class="at">n =</span> <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;">PLANNING_A</th>
+<th style="text-align: left;">PLANNING_1</th>
+<th style="text-align: left;">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">MULTILINESTRING ((16001.13 …</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">MULTILINESTRING ((16012.86 …</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">MULTILINESTRING ((16021.49 …</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="importing-gis-data-in-kml-format" class="level3">
+<h3 class="anchored" data-anchor-id="importing-gis-data-in-kml-format">1.4.3 Importing GIS data in kml format</h3>
+<p>The <code>pre-schools-location-kml</code> is in kml format.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>preschool <span class="ot">=</span> <span class="fu">st_read</span>(<span class="st">'data/geospatial/pre-schools-location-kml.kml'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `PRESCHOOLS_LOCATION' from data source 
+  `C:\yixin-neo\ISSS624_AGA\Hands-on_Ex1\data\geospatial\pre-schools-location-kml.kml' 
+  using driver `KML'
+Simple feature collection with 1925 features and 2 fields
+Geometry type: POINT
+Dimension:     XYZ
+Bounding box:  xmin: 103.6824 ymin: 1.247759 xmax: 103.9897 ymax: 1.462134
+z_range:       zmin: 0 zmax: 0
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+</div>
+<p>Note that preschool is in WSG84 coordinates system (3D).</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(preschool, <span class="at">n =</span> <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 1%">
+<col style="width: 93%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">kml_1</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">POINT Z (103.7009 1.338325 0)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">kml_2</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">POINT Z (103.8987 1.39044 0)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">kml_3</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">POINT Z (103.8068 1.438017 0)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="working-with-st_geometry" class="level3">
+<h3 class="anchored" data-anchor-id="working-with-st_geometry">1.5.1 Working with <em>st_geometry()</em></h3>
+<p>The column in the sf data.frame that contains the geometries is a list, of class <code>sfc</code>. We can retrieve the geometry list-column in this case by mpsz$geom or mpsz[[1]], but the more general way uses <em>st_geometry()</em> as shown in the code chunk below.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">class</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "sf"         "data.frame"</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="fu">st_geometry</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Geometry set for 323 features 
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 2667.538 ymin: 15748.72 xmax: 56396.44 ymax: 50256.33
+Projected CRS: SVY21
+First 5 geometries:</code></pre>
+</div>
+</div>
+</section>
+<section id="working-with-glimpse" class="level3">
+<h3 class="anchored" data-anchor-id="working-with-glimpse">1.5.2 Working with glimpse()</h3>
+<p>Beside the basic feature information, we also would like to learn more about the associated <strong>attribute</strong> information in the data frame. This is the time you will find <em>glimpse()</em> of <strong>dplyr</strong>. very handy as shown in the code chunk below.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">glimpse</span>(<span class="fu">head</span>(mpsz))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 6
+Columns: 16
+$ OBJECTID   &lt;int&gt; 1, 2, 3, 4, 5, 6
+$ SUBZONE_NO &lt;int&gt; 1, 1, 3, 8, 3, 7
+$ SUBZONE_N  &lt;chr&gt; "MARINA SOUTH", "PEARL'S HILL", "BOAT QUAY", "HENDERSON HIL…
+$ SUBZONE_C  &lt;chr&gt; "MSSZ01", "OTSZ01", "SRSZ03", "BMSZ08", "BMSZ03", "BMSZ07"
+$ CA_IND     &lt;chr&gt; "Y", "Y", "Y", "N", "N", "N"
+$ PLN_AREA_N &lt;chr&gt; "MARINA SOUTH", "OUTRAM", "SINGAPORE RIVER", "BUKIT MERAH",…
+$ PLN_AREA_C &lt;chr&gt; "MS", "OT", "SR", "BM", "BM", "BM"
+$ REGION_N   &lt;chr&gt; "CENTRAL REGION", "CENTRAL REGION", "CENTRAL REGION", "CENT…
+$ REGION_C   &lt;chr&gt; "CR", "CR", "CR", "CR", "CR", "CR"
+$ INC_CRC    &lt;chr&gt; "5ED7EB253F99252E", "8C7149B9EB32EEFC", "C35FEFF02B13E0E5",…
+$ FMEL_UPD_D &lt;date&gt; 2014-12-05, 2014-12-05, 2014-12-05, 2014-12-05, 2014-12-05,…
+$ X_ADDR     &lt;dbl&gt; 31595.84, 28679.06, 29654.96, 26782.83, 26201.96, 25358.82
+$ Y_ADDR     &lt;dbl&gt; 29220.19, 29782.05, 29974.66, 29933.77, 30005.70, 29991.38
+$ SHAPE_Leng &lt;dbl&gt; 5267.381, 3506.107, 1740.926, 3313.625, 2825.594, 4428.913
+$ SHAPE_Area &lt;dbl&gt; 1630379.3, 559816.2, 160807.5, 595428.9, 387429.4, 1030378.8
+$ geometry   &lt;MULTIPOLYGON [m]&gt; MULTIPOLYGON (((31495.56 30..., MULTIPOLYGON (((29092.28 30…</code></pre>
+</div>
+</div>
+<p><em>glimpse()</em> report reveals the data type of each fields. For example <code>FMEL-UPD_D</code> field is in <strong>date</strong> data type and <code>X_ADDR</code>, <code>Y_ADDR</code>, <code>SHAPE_L</code> and <code>SHAPE_AREA</code> fields are all in <strong>double-precision values</strong>.</p>
+</section>
+<section id="working-with-head" class="level3">
+<h3 class="anchored" data-anchor-id="working-with-head">1.5.3 Working with <em>head()</em></h3>
+<p>Sometimes we would like to reveal complete information of a feature object, this is the job of <a href="https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/head"><em>head()</em></a> of Base R</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="fu">head</span>(mpsz,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 3 features and 15 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 28160.23 ymin: 28369.47 xmax: 32362.39 ymax: 30247.18
+Projected CRS: SVY21
+  OBJECTID SUBZONE_NO    SUBZONE_N SUBZONE_C CA_IND      PLN_AREA_N PLN_AREA_C
+1        1          1 MARINA SOUTH    MSSZ01      Y    MARINA SOUTH         MS
+2        2          1 PEARL'S HILL    OTSZ01      Y          OUTRAM         OT
+3        3          3    BOAT QUAY    SRSZ03      Y SINGAPORE RIVER         SR
+        REGION_N REGION_C          INC_CRC FMEL_UPD_D   X_ADDR   Y_ADDR
+1 CENTRAL REGION       CR 5ED7EB253F99252E 2014-12-05 31595.84 29220.19
+2 CENTRAL REGION       CR 8C7149B9EB32EEFC 2014-12-05 28679.06 29782.05
+3 CENTRAL REGION       CR C35FEFF02B13E0E5 2014-12-05 29654.96 29974.66
+  SHAPE_Leng SHAPE_Area                       geometry
+1   5267.381  1630379.3 MULTIPOLYGON (((31495.56 30...
+2   3506.107   559816.2 MULTIPOLYGON (((29092.28 30...
+3   1740.926   160807.5 MULTIPOLYGON (((29932.33 29...</code></pre>
+</div>
 </div>
 <div class="cell">
 
@@ -360,6 +705,25 @@ Projected CRS: SVY21</code></pre>
 <p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Azimuthal or True-direction projections minimize distortion in <strong>direction</strong>.</p>
 <p>Google maps uses Mercator projection system. It is chosen as it preserves direction and angles. It is useful for navigation (google map) . It is originally created for sea navigation in older days. The cons are that this projection does not&nbsp;preserve&nbsp;area and shape.</p>
 <p>Singapore uses <strong>SVY21</strong> or the <strong>EPSG:3414</strong> projected coordinate system.</p>
+</section>
+<section id="geospatial-data-handling-functions" class="level3">
+<h3 class="anchored" data-anchor-id="geospatial-data-handling-functions">Geospatial data handling functions</h3>
+<ul>
+<li><p>st_read &amp; read sf: read simple features from file or database, or retrieve layer names and their geometry type(s)</p></li>
+<li><p>st write &amp;write_sf: write simple features object to file or database</p></li>
+<li><p>st_as_sf: convert a sf object from a non-geospatial tabular data frame</p></li>
+<li><p>st as_text: convert to Well Known Text(WKT)</p></li>
+<li><p>st as_binary: convert to Well Known Binary(WKB)</p></li>
+<li><p>st_as_sfc: convert geometries to sfc (e.g., from WKT, WKB) as(x, “Spatial”): convert to Spatial*</p></li>
+<li><p>st transform(x, crs, …): convert coordinates of x to a different coordinate reference system</p></li>
+</ul>
+<p>The code chunk below allows us to unsf the mpsz and work tbl_df or data.frame.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>mpsz_tbl_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 
 
 </section>

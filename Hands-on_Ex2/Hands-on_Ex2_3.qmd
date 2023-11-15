@@ -9,6 +9,7 @@ execute:
   warning: false
   #echo: false
   #message: false
+format: 
   html:
     code-fold: True
     code-overflow: scroll
