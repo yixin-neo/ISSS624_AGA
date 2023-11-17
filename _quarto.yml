@@ -22,6 +22,16 @@ website:
         menu: 
           - text: "Take-home Exercise 1"
           - text: "Take-home Exercise 2"
+ 
+            
+      - text: "In-class Exercises"      
+        menu: 
+          - text: "In-class Exercise 1"
+            href: "In-class_Ex1/In-class_Ex1.qmd"
+          #- text: "In-class Exercise 2"
+          #- text: "In-class Exercise 3"
+          #- text: "In-class Exercise 4"
+          #- text: "In-class Exercise 5"
 
     right:
       - href: index.qmd
@@ -39,6 +49,11 @@ website:
           #- Hands-on_Ex2/Hands-on_Ex2_1.qmd
           #- Hands-on_Ex2/Hands-on_Ex2_2.qmd
           #- Hands-on_Ex2/Hands-on_Ex2_2.qmd
+          
+      - section: "Take-home Exercise"
+        contents:
+          #- Take-home_Ex1/Take-home_Ex1.qmd
+          #- Take-home_Ex2/Take-home_Ex2.qmd
           
 
 format:

@@ -1,0 +1,29 @@
+---
+title: "In-class Exercise 3:"
+author: "NeoYX"
+date: '2 Dec 2023'
+date-modified: "`r Sys.Date()`"
+editor: visual
+execute: 
+  freeze: auto
+  warning: false
+  #echo: false
+  #message: false
+format: 
+  html:
+    code-fold: false
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
+---
+
+```{r}
+#pacman::p_load(sf, tmap, tidyverse)
+```
+
+```{r}
+#| code-fold: True
+#| eval: false
+#| echo: false
+
+```

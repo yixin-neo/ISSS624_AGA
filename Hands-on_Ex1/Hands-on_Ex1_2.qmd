@@ -283,7 +283,7 @@ tmap' drawing elements (unlike qtm() ) is able to give us finer control over our
 [tm_credits()]{.underline} \<- create a text for credits
 
 ::: panel-tabset
-## High quality graph
+#### High quality graph
 
 ```{r}
 #| code-fold: true
@@ -306,7 +306,7 @@ tm_shape(mpsz_pop2020)+
              position = c("left", "bottom"))
 ```
 
-## mpsz_pop2020 table
+#### mpsz_pop2020 table
 
 ```{r}
 library(knitr)
@@ -321,7 +321,7 @@ Basic building blocks are *tm_fill()* and *tm_polygons().*
 *tm_polygons() = fill + borders*
 
 ::: panel-tabset
-## tm_borders()
+##### tm_borders()
 
 Base Map
 
@@ -330,7 +330,7 @@ tm_shape(mpsz_pop2020) +
   tm_borders(lwd = 0.1,  alpha = 1)
 ```
 
-## tm_fill()
+##### tm_fill()
 
 To show the geographical distribution of a selected **variable** by planning subzone, we just need to assign the target variable such as *Dependency* to *tm_polygons()*.
 
@@ -345,14 +345,14 @@ tm_shape(mpsz_pop2020)+
 To draw a choropleth map showing the geographical distribution of a selected variable by planning subzone, we just need to assign the target variable such as *Dependency* to *tm_polygons()*.
 
 ::: panel-tabset
-## No variable
+##### No variable
 
 ```{r}
 tm_shape(mpsz_pop2020) +
   tm_polygons()
 ```
 
-## With variable
+##### With variable
 
 ```{r}
 tm_shape(mpsz_pop2020)+
@@ -362,7 +362,7 @@ tm_shape(mpsz_pop2020)+
 
 Things to learn from *tm_polygons()*:
 
--   The default interval binning used to draw the choropleth map is called \"**pretty**\". A detailed discussion of the data classification methods supported by **tmap** will be provided in sub-section 4.3.
+-   The default interval binning used to draw the choropleth map is called "**pretty**". A detailed discussion of the data classification methods supported by **tmap** will be provided in sub-section 4.3.
 
 -   The default colour scheme used is `YlOrRd` of **ColorBrewer**. You will learn more about the color scheme in sub-section 4.4.
 
@@ -384,7 +384,7 @@ Apart from alpha (transparency number 0 - 1), other arguments are
 
 -   *lwd* = border line width. The default is 1, and
 
--   *lty* = border line type. The default is \"solid\".
+-   *lty* = border line type. The default is "solid".
 
 ### 2.4.3 Data classification methods of **tmap**
 
@@ -399,7 +399,7 @@ To define a data classification method, the ***style*** argument of *tm_fill()* 
 The codes below uses quantile classification with 5 classes.
 
 ::: panel-tabset
-## fill + border
+##### fill + border
 
 ```{r}
 tm_shape(mpsz_pop2020)+
@@ -421,7 +421,7 @@ tm_shape(mpsz_pop2020)+
 
 Distribution of quantile data classification method are more evenly distributed then equal data classification method.
 
-## polygons
+##### polygons
 
 ```{r}
 tm_shape(mpsz_pop2020)+
@@ -501,12 +501,16 @@ tm_shape(mpsz_pop2020)+
 
 ### 2.4.4 Colour scheme
 
-#### 2.4.4.1 Using ColourBrewer palette (predefined)
+#### 2.4.4.1 Using [ColourBrewer](https://r-graph-gallery.com/38-rcolorbrewers-palettes.html) palette (predefined)
+
+(YIOrRd, YIORrBr, YIGnBu, YIGn, Reds, RdPu, Purples, PuRd, PuBuGn, PuBu, OrRd, Oranges, Greys, Greens, GnBu, BuPu, BuGn, Blues)
+
+![](images/colorbrewer.png){fig-align="center" width="200"}
 
 Assign the preferred colour to *palette* argument of *tm_fill()*
 
 ::: panel-tabset
-## normal
+##### normal
 
 ```{r}
 tm_shape(mpsz_pop2020)+
@@ -517,9 +521,9 @@ tm_shape(mpsz_pop2020)+
   tm_borders(alpha = 0.5)
 ```
 
-## reverse
+##### reverse
 
-Reverse the colour scheme by adding \"-\"
+Reverse the colour scheme by adding "-"
 
 ```{r}
 tm_shape(mpsz_pop2020)+
@@ -562,9 +566,24 @@ tm_shape(mpsz_pop2020)+
 
 **tmap** allows a wide variety of layout settings to be changed. They can be called by using [tmap_style()](https://www.rdocumentation.org/packages/tmap/versions/3.3-3/topics/tm_layout)
 
-Predefined styles: \'white\', \'gray\', \'natural\', \'bw\', \'classic\', \'cobalt\', albatross\', \'beaver\', \'col_blind\', \'watercolor\'
+Predefined styles: 'white', 'gray', 'natural', 'bw', 'classic', 'cobalt', albatross', 'beaver', 'col_blind', 'watercolor'
 
 Below is an example of *classic* style
+
+::: panel-tabset
+##### gray
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 6,
+          style = "quantile",
+          palette = "-Greens") +
+  tm_borders(alpha = 0.5)+
+  tmap_style('gray')
+```
+
+##### natural
 
 ```{r}
 tm_shape(mpsz_pop2020)+
@@ -574,7 +593,58 @@ tm_shape(mpsz_pop2020)+
           palette = "-Greens") +
   tm_borders(alpha = 0.5)+
   tmap_style('natural')
+
 ```
+
+##### bw
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 6,
+          style = "quantile",
+          palette = "-Greens") +
+  tm_borders(alpha = 0.5)+
+  tmap_style('bw')
+```
+
+##### classic
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 6,
+          style = "quantile",
+          palette = "-Greens") +
+  tm_borders(alpha = 0.5)+
+  tmap_style('classic')
+
+```
+
+##### cobalt
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 6,
+          style = "quantile",
+          palette = "-RdPu") +
+  tm_borders(alpha = 0.5)+
+  tmap_style('cobalt')
+```
+
+##### beaver
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 6,
+          style = "quantile",
+          palette = "-Purples") +
+  tm_borders(alpha = 0.5)+
+  tmap_style('beaver')
+```
+:::
 
 #### 2.4.5.3 Cartographic Furniture
 
@@ -590,7 +660,7 @@ tm_shape(mpsz_pop2020)+
           title = "No. of persons") +
   tm_layout(main.title = "Distribution of Dependency Ratio \nby planning subzone",
             main.title.position = "center",
-            main.title.size = 1.2,
+            main.title.size = 1.0,
             legend.height = 0.45, 
             legend.width = 0.35,
             frame = TRUE) +
@@ -609,12 +679,176 @@ To reset the default style, refer below
 tmap_style("white")
 ```
 
-```{r}
+### 2.4.6 Drawing Small Multiple Choropleth Maps
 
+**Small multiple maps**, also referred to as **facet maps**, are composed of many maps arrange side-by-side, and sometimes stacked vertically. Small multiple maps enable the visualisation of how spatial relationships change with respect to another variable, such as time.
+
+In **tmap**, small multiple maps can be plotted in three ways:
+
+-   by assigning multiple values to at least one of the asthetic arguments,
+
+-   by defining a group-by variable in *tm_facets()*, and
+
+-   by creating multiple stand-alone maps with *tmap_arrange()*.
+
+#### 2.4.6.1 By assigning multiple values to at least one of the aesthetic arguments
+
+Small multiple choropleth maps are created by
+
+##### 2.4.6.1.1 Defining ***ncols*** in **tm_fill()** : c(\'YOUNG\', \'AGED\')
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill(c("YOUNG", "AGED"),
+          style = "equal", 
+          palette = "Blues") +
+  tm_layout(legend.position = c("right", "bottom"),
+            legend.height = 0.35, 
+            legend.width = 0.35) +
+  tm_borders(alpha = 0.5) +
+  tmap_style("white")
+```
+
+##### 2.4.6.1.2 Assigning multiple values to at least one of the aesthetic arguments
+
+1.  shape + polygon method (Prof\'s)
+
+```{r}
+tm_shape(mpsz_pop2020)+ 
+  tm_polygons(c("DEPENDENCY","AGED"),
+          style = c("equal", "quantile"), 
+          palette = list("Blues","Greens")) +
+  tm_layout(legend.position = c("right", "bottom"),
+            legend.height = 0.35, 
+            legend.width = 0.35) +
+  tmap_style('white')
 ```
 
 ```{r}
+#| echo: false
+#| eval: false
+#from hands- on 5
+tm_shape(shan_sf) +
+    tm_polygons(c("TT_HOUSEHOLDS", "RADIO_PR"),
+                style="jenks") +
+    tm_facets(sync = TRUE, ncol = 2) +
+  tm_legend(legend.position = c("right", "bottom"))+
+  tm_layout(outer.margins=0, asp=0)
+```
 
+2.  shape + fill + borders method (NYX\'s)
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill(c('YOUNG', 'AGED','TOTAL'),
+          style=c('equal', 'quantile', 'equal'),
+          palette= list('Blues', 'Greens', 'Reds')) +
+  tm_borders(alpha = 0.5) +
+  tm_layout(legend.position = c('right','bottom'),
+            legend.height = 0.35, 
+            legend.width = 0.35)
+```
+
+#### 2.4.6.2 By defining a group-by variable in tm_facets()
+
+In this example, multiple small choropleth maps are created by using **tm_facets()**.
+
+**thres.poly**: number that specifies the threshold at which polygons are taken into account. The number itself corresponds to the proportion of the area sizes of the polygons to the total polygon size. By default, all polygons are drawn.
+
+```{r}
+tm_shape(mpsz_pop2020) +
+  tm_fill("DEPENDENCY",
+          style = "quantile",
+          palette = "Blues",
+          thres.poly = 0) + 
+  tm_facets(by="REGION_N", 
+            free.coords=TRUE, 
+            drop.shapes=TRUE) +
+  tm_layout(legend.show = FALSE,
+            title.position = c("center", "center"), 
+            title.size = 20) +
+  tm_borders(alpha = 0.5)
+```
+
+#### 2.4.6.3 By creating multiple stand-alone maps with *tmap_arrange()*
+
+Creating multiple stand-alone maps with *tmap_arrange()* asp : aspect ratio
+
+nrow : number of rows (ncols)
+
+```{r}
+youngmap <- tm_shape(mpsz_pop2020)+ 
+  tm_polygons("YOUNG", 
+              style = "quantile", 
+              palette = "Blues") +
+  tm_layout(legend.position = c('right','bottom'),
+          legend.height = 0.5, 
+          legend.width = 0.35)
+
+agedmap <- tm_shape(mpsz_pop2020)+ 
+  tm_polygons("AGED", 
+              style = "quantile", 
+              palette = "Blues") +
+  tm_layout(legend.position = c('right','bottom'),
+        legend.height = 0.5, 
+        legend.width = 0.35)
+
+tmap_arrange(youngmap, agedmap, asp=3, ncol=1, nrow=2)
+```
+
+### 2.4.7 Mappping Spatial Object Meeting a Selection Criterion
+
+Use selection funtion to map spatial objects meeting the selection criterion.
+The comma **`,`** is used to indicate that we want to select all columns for the rows that meet the condition.
+
+```{r}
+tm_shape(mpsz_pop2020[mpsz_pop2020$REGION_N=="CENTRAL REGION", ])+
+  tm_fill("DEPENDENCY", 
+          style = "quantile", 
+          palette = "Blues", 
+          legend.hist = TRUE, 
+          legend.is.portrait = TRUE,
+          legend.hist.z = 0.3) +
+  tm_layout(main.title = "Mapping spatial obj with conditions \n(Central Region)",
+            main.title.position = "center",
+            main.title.size = 1,
+            legend.outside = TRUE,
+            legend.height = 0.3, 
+            legend.width = 0.3,
+            legend.title.size= 0.8,
+            legend.text.size= 0.6,
+            legend.position = c("right", "bottom"),
+            frame = FALSE,
+            bg.color = "mintcream") + #call colors()
+  tm_borders(alpha = 0.5)
+```
+
+1.  What to do if legend overlaps with map?
+
+-   reduce legend.text.size or legend.height and legend.width
+
+-   adjust inner.margin
+
+2.  Adjust background colours with its corresponding text colours.
+
+```{r}
+tm_shape(mpsz_pop2020[mpsz_pop2020$REGION_N=="CENTRAL REGION", ])+
+  tm_polygons("DEPENDENCY") +
+    tm_layout(main.title = "Mapping spatial obj with conditions \n(Central Region)",
+            main.title.position = "center",
+            main.title.size = 1,
+            #legend.outside = TRUE,
+            legend.height = 0.3, 
+            legend.width = 0.3,
+            legend.title.size= 0.8,
+            legend.text.size= 0.6,
+            inner.margins = c(0.01, 0.01, 0, .15), # ensures legend does not overlap with chart c(bottom,top,left,right)
+            frame = FALSE,
+            legend.position = c("right", "top"),
+            bg.color = "black",
+            main.title.color = 'white',
+            legend.title.color = 'white',
+            legend.text.color= 'white')
 ```
 
 ```{r}
@@ -623,6 +857,74 @@ tmap_style("white")
 #| echo: false
 ```
 
-## Theories
+### 2.4.8. Tmap summary
+
+From chap 2, using **tmap package** to plot
+
+1\. tm_shape+ tm_polygon
+
+2\. tm_shape+ tm_fill + tm_borders \_ tm_layout
+
+3\. qtm
+
+Chap 2: To plot **small multiple** chloroplath maps via **qtm or tmap element**s:
+
+1\. Add multiple values to tm_polygon or tm_fill
+
+2\. Tm_facets
+
+3\. Tm_arrange
+
+Chap 3: To plot **small multiple** layered chloroplath maps via **plot() method**:
+
+ 4. To arrange the maps via plot(),
+
+par(mfrow=c(2,2)) \<- 2x2 layout
+
+From chap 3: to **add layers** to a plot
+
+1\. just keep repeating plot(weight matrix ,coords,add=TRUE)
+
+https://rstudio-pubs-static.s3.amazonaws.com/730482_d7889d9c65c8422f843b3d4e0196633c.html
+
+## 2.5 Reference
+
+### 2.5.1 All about **tmap** package
+
+-   [tmp arguments and defaults](https://www.r-bloggers.com/2021/12/introduction-to-geospatial-visualization-with-the-tmap-package/) : Introduction to Geospatial Visualization with the tmap package
+
+-   [tmap: Thematic Maps in R](https://www.jstatsoft.org/article/view/v084i06)
+
+-   [tmap](https://cran.r-project.org/web/packages/tmap/)
+
+-   [tmap: get started!](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html)
+
+-   [tmap: changes in version 2.0](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-changes-v2.html)
+
+-   [tmap: creating thematic maps in a flexible way (useR!2015)](http://von-tijn.nl/tijn/research/presentations/tmap_user2015.pdf)
+
+-   [Exploring and presenting maps with tmap (useR!2017)](http://von-tijn.nl/tijn/research/presentations/tmap_user2017.pdf)
+
+### 2.5.2 Geospatial data wrangling
+
+-   [sf: Simple Features for R](https://cran.r-project.org/web/packages/sf/)
+
+-   [Simple Features for R: StandardizedSupport for Spatial Vector Data](https://journal.r-project.org/archive/2018/RJ-2018-009/RJ-2018-009.pdf)
+
+-   [Reading, Writing and Converting Simple Features](https://cran.r-project.org/web/packages/sf/vignettes/sf2.html)
+
+### 2.5.3 Data wrangling
+
+-   [dplyr](https://dplyr.tidyverse.org/)
+
+-   [Tidy data](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html)
+
+-   [tidyr: Easily Tidy Data with \'spread()\' and \'gather()\' Functions](https://cran.r-project.org/web/packages/tidyr/tidyr.pdf)
+
+```{r}
+#| eval: false
+# there are 111 arguments, run the code below to see the defaults
+tmap_options()
+```
 
 ### 
