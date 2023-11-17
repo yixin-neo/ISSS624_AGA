@@ -911,7 +911,7 @@ Important
 <section id="plotting-a-choropleth-map-quickly-by-using-qtm" class="level3">
 <h3 class="anchored" data-anchor-id="plotting-a-choropleth-map-quickly-by-using-qtm">2.4.1 Plotting a choropleth map quickly by using <em>qtm()</em></h3>
 <p>The easiest and quickest to draw a choropleth map using <strong>tmap</strong> is using <em>qtm()</em>. It is concise and provides a good default visualisation in many cases.</p>
-<div class="cell">
+<div class="cell" data-fig.asp="0.68">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="fu">tmap_mode</span>(<span class="st">'plot'</span>)</span>
 <span id="cb24-2"><a href="#cb24-2"></a><span class="co">#tmap_mode('view')</span></span>
 <span id="cb24-3"><a href="#cb24-3"></a><span class="co">#ttm()</span></span>
@@ -921,7 +921,7 @@ Important
 <span id="cb24-7"><a href="#cb24-7"></a><span class="fu">qtm</span>(mpsz_pop2020,</span>
 <span id="cb24-8"><a href="#cb24-8"></a>    <span class="at">fill=</span><span class="st">'DEPENDENCY'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+<p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="1344"></p>
 </div>
 </div>
 <p>Things to learn from the code chunk above:</p>
@@ -1538,7 +1538,7 @@ Important
 <h4 class="anchored" data-anchor-id="by-assigning-multiple-values-to-at-least-one-of-the-aesthetic-arguments">2.4.6.1 By assigning multiple values to at least one of the aesthetic arguments</h4>
 <p>Small multiple choropleth maps are created by</p>
 <section id="defining-ncols-in-tm_fill-cyoung-aged" class="level5">
-<h5 class="anchored" data-anchor-id="defining-ncols-in-tm_fill-cyoung-aged">2.4.6.1.1 Defining <strong><em>ncols</em></strong> in <strong>tm_fill()</strong> : c('YOUNG', 'AGED')</h5>
+<h5 class="anchored" data-anchor-id="defining-ncols-in-tm_fill-cyoung-aged">2.4.6.1.1 Defining <strong><em>ncols</em></strong> in <strong>tm_fill()</strong> : c(‘YOUNG’, ‘AGED’)</h5>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
 <span id="cb51-2"><a href="#cb51-2"></a>  <span class="fu">tm_fill</span>(<span class="fu">c</span>(<span class="st">"YOUNG"</span>, <span class="st">"AGED"</span>),</span>
@@ -1557,7 +1557,7 @@ Important
 <section id="assigning-multiple-values-to-at-least-one-of-the-aesthetic-arguments" class="level5">
 <h5 class="anchored" data-anchor-id="assigning-multiple-values-to-at-least-one-of-the-aesthetic-arguments">2.4.6.1.2 Assigning multiple values to at least one of the aesthetic arguments</h5>
 <ol type="1">
-<li>shape + polygon method (Prof's)</li>
+<li>shape + polygon method (Prof’s)</li>
 </ol>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span> </span>
@@ -1576,7 +1576,7 @@ Important
 
 </div>
 <ol start="2" type="1">
-<li>shape + fill + borders method (NYX's)</li>
+<li>shape + fill + borders method (NYX’s)</li>
 </ol>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
@@ -1680,7 +1680,7 @@ Important
 <ol start="2" type="1">
 <li>Adjust background colours with its corresponding text colours.</li>
 </ol>
-<div class="cell">
+<div class="cell" data-fig.asp="0.68">
 <div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020[mpsz_pop2020<span class="sc">$</span>REGION_N<span class="sc">==</span><span class="st">"CENTRAL REGION"</span>, ])<span class="sc">+</span></span>
 <span id="cb57-2"><a href="#cb57-2"></a>  <span class="fu">tm_polygons</span>(<span class="st">"DEPENDENCY"</span>) <span class="sc">+</span></span>
 <span id="cb57-3"><a href="#cb57-3"></a>    <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Mapping spatial obj with conditions </span><span class="sc">\n</span><span class="st">(Central Region)"</span>,</span>
@@ -1699,10 +1699,10 @@ Important
 <span id="cb57-16"><a href="#cb57-16"></a>            <span class="at">legend.title.color =</span> <span class="st">'white'</span>,</span>
 <span id="cb57-17"><a href="#cb57-17"></a>            <span class="at">legend.text.color=</span> <span class="st">'white'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-48-1.png" class="img-fluid" width="672"></p>
+<p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-48-1.png" class="img-fluid" width="1344"></p>
 </div>
 </div>
-<div class="cell">
+<div class="cell" data-fig.asp="0.68">
 
 </div>
 </section>
@@ -1751,7 +1751,7 @@ Important
 <ul>
 <li><p><a href="https://dplyr.tidyverse.org/">dplyr</a></p></li>
 <li><p><a href="https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html">Tidy data</a></p></li>
-<li><p><a href="https://cran.r-project.org/web/packages/tidyr/tidyr.pdf">tidyr: Easily Tidy Data with 'spread()' and 'gather()' Functions</a></p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/tidyr/tidyr.pdf">tidyr: Easily Tidy Data with ‘spread()’ and ‘gather()’ Functions</a></p></li>
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a><span class="co"># there are 111 arguments, run the code below to see the defaults</span></span>

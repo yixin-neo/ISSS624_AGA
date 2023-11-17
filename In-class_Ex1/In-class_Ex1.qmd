@@ -25,5 +25,7 @@ format:
 #| code-fold: True
 #| eval: false
 #| echo: false
+#| fig-width: 14
+#| fig-asp: 0.68
 
 ```
