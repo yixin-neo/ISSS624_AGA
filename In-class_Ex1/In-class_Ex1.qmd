@@ -1,8 +1,9 @@
 ---
-title: "In-class Exercise 1:"
+title: "In-class Exercise 1"
+#subtitle:
 author: "NeoYX"
 date: '18 Nov 2023'
-date-modified: "`r Sys.Date()`"
+date-modified: "`r Sys.Date()`" #last-modified"
 editor: visual
 execute: 
   freeze: auto
@@ -17,8 +18,75 @@ format:
     code-line-numbers: true
 ---
 
+## Getting started
+
+The code chunk below loads the following packages:
+
+-   tmap: for thematic mapping
+
+-   sf: for geospatial data handling
+
+-   tidyverse: for non spatial data handling
+
 ```{r}
-#pacman::p_load(sf, tmap, tidyverse)
+pacman::p_load(sf, tmap, tidyverse, knitr)
+```
+
+### Importing the OD data
+
+Firstly we will import the *Passenger volume by Origin Destination Bus Stops* dataset downloaded from the LTA Datamall by using the read_csv() of the **readr** package (to read text data).
+
+```{r}
+odbus_aug <- read_csv("data\\aspatial\\origin_destination_bus_202308.csv")
+```
+
+Converting character data type to factor data type.
+
+```{r}
+odbus_aug$ORIGIN_PT_CODE <- as.factor(odbus_aug$ORIGIN_PT_CODE)
+odbus_aug$DESTINATION_PT_CODE <- as.factor(odbus_aug$DESTINATION_PT_CODE)
+```
+
+Derive a new field called `TRIPS` .
+
+22009: Boon Lay
+
+46009: Woodlands interchange
+
+75009: Tampines interchange
+
+Better to have a map
+
+```{r}
+origtrip_7_9 <- odbus_aug %>% 
+  filter(DAY_TYPE == 'WEEKDAY') %>% 
+  filter(TIME_PER_HOUR >= 7 &
+           TIME_PER_HOUR <= 9) %>% 
+  group_by(ORIGIN_PT_CODE) %>% 
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+
+origtrip_7_9 %>% arrange(desc(TRIPS))
+```
+
+### Importing the geospatial data
+
+Two geospatial data will be used in this exercise.
+
+#### Load the geospatial bustop kml file and immediately transform to Singapore projection system (EPSG 3414)
+
+```{r}
+bustop <- st_read(dsn="data\\geospatial\\BusStopLocation\\BusStopLocation_Jul2023", layer = "BusStop") %>% 
+  st_transform(crs = 3414)
+```
+
+#### 
+Load the geospatial data of basemap from gov.sg , usually in WSG84 format
+
+```{r}
+mpsz <- st_read(dsn="data\\geospatial\\MPSZ-2019", layer='MPSZ-2019')  %>% 
+  st_transform(crs = 3414)
+
+mpsz
 ```
 
 ```{r}
