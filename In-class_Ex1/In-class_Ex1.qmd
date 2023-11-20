@@ -80,6 +80,7 @@ bustop <- st_read(dsn="data\\geospatial\\BusStopLocation\\BusStopLocation_Jul202
 ```
 
 #### 
+
 Load the geospatial data of basemap from gov.sg , usually in WSG84 format
 
 ```{r}

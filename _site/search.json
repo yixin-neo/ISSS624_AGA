@@ -119,25 +119,39 @@
     "text": "2.5 Reference\n\n2.5.1 All about tmap package\n\ntmp arguments and defaults : Introduction to Geospatial Visualization with the tmap package\ntmap: Thematic Maps in R\ntmap\ntmap: get started!\ntmap: changes in version 2.0\ntmap: creating thematic maps in a flexible way (useR!2015)\nExploring and presenting maps with tmap (useR!2017)\n\n\n\n2.5.2 Geospatial data wrangling\n\nsf: Simple Features for R\nSimple Features for R: StandardizedSupport for Spatial Vector Data\nReading, Writing and Converting Simple Features\n\n\n\n2.5.3 Data wrangling\n\ndplyr\nTidy data\ntidyr: Easily Tidy Data with ‘spread()’ and ‘gather()’ Functions\n\n\n# there are 111 arguments, run the code below to see the defaults\ntmap_options()"
   },
   {
-    "objectID": "Hands-on_Ex2/Hands-on_Ex2_1.html#getting-started",
-    "href": "Hands-on_Ex2/Hands-on_Ex2_1.html#getting-started",
+    "objectID": "Hands-on_Ex2/Hands-on_Ex2_1.html",
+    "href": "Hands-on_Ex2/Hands-on_Ex2_1.html",
     "title": "Hands-on Exercise 2.1: Spatial Weights and Applications",
-    "section": "Getting Started",
-    "text": "Getting Started\n\n\nShow the code\npacman::p_load(sf, tidyverse)"
+    "section": "",
+    "text": "In this hands-on exercise, we will learn how to compute spatial weights using R. By the end to this hands-on exercise, we will be able to:\n\nimport geospatial data using appropriate function(s) of sf package,\nimport csv file using appropriate function of readr package,\nperform relational join using appropriate join function of dplyr package,\ncompute spatial weights using appropriate functions of spdep package, and\ncalculate spatially lagged variables using appropriate functions of spdep package."
   },
   {
-    "objectID": "Hands-on_Ex2/Hands-on_Ex2_1.html#learning-outcome",
-    "href": "Hands-on_Ex2/Hands-on_Ex2_1.html#learning-outcome",
+    "objectID": "Hands-on_Ex2/Hands-on_Ex2_1.html#the-study-area-and-data",
+    "href": "Hands-on_Ex2/Hands-on_Ex2_1.html#the-study-area-and-data",
     "title": "Hands-on Exercise 2.1: Spatial Weights and Applications",
-    "section": "1.1 Learning Outcome",
-    "text": "1.1 Learning Outcome"
+    "section": "8.2 The Study Area and Data",
+    "text": "8.2 The Study Area and Data\nTwo data sets will be used in this hands-on exercise, they are:\n\nHunan county boundary layer. This is a geospatial data set in ESRI shapefile format.\nHunan_2012.csv: This csv file (aspatial) contains selected Hunan’s local development indicators in 2012.\n\n\n8.2.1 Getting Started\n\npacman::p_load(sf, spdep, tmap, tidyverse, knitr)"
   },
   {
-    "objectID": "Hands-on_Ex2/Hands-on_Ex2_1.html#importing-geospatial-data",
-    "href": "Hands-on_Ex2/Hands-on_Ex2_1.html#importing-geospatial-data",
+    "objectID": "Hands-on_Ex2/Hands-on_Ex2_1.html#getting-the-data-into-r-environment",
+    "href": "Hands-on_Ex2/Hands-on_Ex2_1.html#getting-the-data-into-r-environment",
     "title": "Hands-on Exercise 2.1: Spatial Weights and Applications",
-    "section": "Importing Geospatial data",
-    "text": "Importing Geospatial data"
+    "section": "8.3 Getting the Data Into R Environment",
+    "text": "8.3 Getting the Data Into R Environment\n8.3.1 Import shapefile into r environment\nThe code chunk below uses st_read() of sf package to import Hunan shapefile into R. The imported shapefile will be simple features Object of sf.\n\nhunan <- st_read(dsn='data/geospatial',\n                 layer = 'Hunan')\n\nReading layer `Hunan' from data source \n  `C:\\yixin-neo\\ISSS624_AGA\\Hands-on_Ex2\\data\\geospatial' using driver `ESRI Shapefile'\nSimple feature collection with 88 features and 7 fields\nGeometry type: POLYGON\nDimension:     XY\nBounding box:  xmin: 108.7831 ymin: 24.6342 xmax: 114.2544 ymax: 30.12812\nGeodetic CRS:  WGS 84\n\nclass(hunan)\n\n[1] \"sf\"         \"data.frame\"\n\n\nhunan is in WSG84 coordinate system.\n\nhead(hunan,3) %>% kable()\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNAME_2\nID_3\nNAME_3\nENGTYPE_3\nShape_Leng\nShape_Area\nCounty\ngeometry\n\n\n\n\nChangde\n21098\nAnxiang\nCounty\n1.869074\n0.1005619\nAnxiang\nPOLYGON ((112.0625 29.75523…\n\n\nChangde\n21100\nHanshou\nCounty\n2.360691\n0.1997875\nHanshou\nPOLYGON ((112.2288 29.11684…\n\n\nChangde\n21101\nJinshi\nCounty City\n1.425620\n0.0530241\nJinshi\nPOLYGON ((111.8927 29.6013,…\n\n\n\n\n\n\n8.3.2 Import csv file into r environment\nNext, we will import Hunan_2012.csv into R by using read_csv() of readr package. The output is R dataframe class.\n\nhunan2012 <- read_csv('data/aspatial/Hunan_2012.csv')\nhead(hunan2012,3) %>% kable()\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCounty\nCity\navg_wage\ndeposite\nFAI\nGov_Rev\nGov_Exp\nGDP\nGDPPC\nGIO\nLoan\nNIPCR\nBed\nEmp\nEmpR\nEmpRT\nPri_Stu\nSec_Stu\nHousehold\nHousehold_R\nNOIP\nPop_R\nRSCG\nPop_T\nAgri\nService\nDisp_Inc\nRORP\nROREmp\n\n\n\n\nAnhua\nYiyang\n30544\n10967.0\n6831.7\n456.72\n2703.0\n13225.0\n14567\n9276.9\n3954.9\n3528.3\n2718\n494.31\n441.4\n338.0\n54.175\n32.830\n290.4\n234.5\n101\n670.3\n5760.6\n910.8\n4942.253\n5414.5\n12373\n0.7359464\n0.8929619\n\n\nAnren\nChenzhou\n28058\n4598.9\n6386.1\n220.57\n1454.7\n4941.2\n12761\n4189.2\n2555.3\n3271.8\n970\n290.82\n255.4\n99.4\n33.171\n17.505\n104.6\n121.9\n34\n243.2\n2386.4\n388.7\n2357.764\n3814.1\n16072\n0.6256753\n0.8782065\n\n\nAnxiang\nChangde\n31935\n5517.2\n3541.0\n243.64\n1779.5\n12482.0\n23667\n5108.9\n2806.9\n7693.7\n1931\n336.39\n270.5\n205.9\n19.584\n17.819\n148.1\n135.4\n53\n346.0\n3957.9\n528.3\n4524.410\n14100.0\n16610\n0.6549309\n0.8041262\n\n\n\n\n\n\n\n8.3.3 Performing relational join\nThe code chunk below will be used to update the attribute table of hunan’s SpatialPolygonsDataFrame with the attribute fields of hunan2012 dataframe. This is performed by using left_join() of dplyr package.\nAs the join columns are not specified, this function will assume that columns with the same names, e.g., ‘county’ in both dfs will be the join columns.\nThe select() will retain the columns indicated in the resulting joined df.\n\nhunan <- left_join(hunan, hunan2012) %>% \n  select(1:4,7,15)\nclass(hunan)\n\n[1] \"sf\"         \"data.frame\"\n\n\nNote the geospatial characteristics of hunan is retained.\n\nhead(hunan,3) %>% kable\n\n\n\n\n\n\n\n\n\n\n\n\n\nNAME_2\nID_3\nNAME_3\nENGTYPE_3\nCounty\nGDPPC\ngeometry\n\n\n\n\nChangde\n21098\nAnxiang\nCounty\nAnxiang\n23667\nPOLYGON ((112.0625 29.75523…\n\n\nChangde\n21100\nHanshou\nCounty\nHanshou\n20981\nPOLYGON ((112.2288 29.11684…\n\n\nChangde\n21101\nJinshi\nCounty City\nJinshi\n34592\nPOLYGON ((111.8927 29.6013,…"
+  },
+  {
+    "objectID": "Hands-on_Ex2/Hands-on_Ex2_1.html#visualising-regional-development-indicator",
+    "href": "Hands-on_Ex2/Hands-on_Ex2_1.html#visualising-regional-development-indicator",
+    "title": "Hands-on Exercise 2.1: Spatial Weights and Applications",
+    "section": "8.4 Visualising Regional Development Indicator",
+    "text": "8.4 Visualising Regional Development Indicator\nNow, we are going to prepare a basemap and a choropleth map showing the distribution of GDPPC 2012 by using qtm() of tmap package.\n\nbasemap <- tm_shape(hunan)+\n  tm_polygons() +\n  tm_text('NAME_3',\n          size = 0.35)\n\ngdppc <- tm_shape(hunan)+\n  tm_polygons('GDPPC') +\n    tm_layout(legend.height = 0.20, \n            legend.width = 0.25)\n  \n\ntmap_arrange(basemap, gdppc,\n           asp=1,\n           ncol=2)"
+  },
+  {
+    "objectID": "Hands-on_Ex2/Hands-on_Ex2_1.html#computing-contiguity-spatial-weights",
+    "href": "Hands-on_Ex2/Hands-on_Ex2_1.html#computing-contiguity-spatial-weights",
+    "title": "Hands-on Exercise 2.1: Spatial Weights and Applications",
+    "section": "8.5 Computing Contiguity Spatial Weights",
+    "text": "8.5 Computing Contiguity Spatial Weights\nIn this section, we will use poly2nb() of spdep package to compute contiguity weight matrices for the study area. This function builds a neighbours list based on regions with contiguous boundaries.\nBy default, ‘queen’ argument is set to TRUE: two polygons sharing one shared boundary point will meet contiguity condition. Returns a list of first order neighbours using the Queen criteria.\nIf ‘queen’ argument is set to FALSE: requires more than one shared boundary point. (but may not mean a shared boundary line)\n\n8.5.1 Computing (QUEEN) contiguity based neighbours\nThe code chunk below is used to compute Queen contiguity weight matrix.\n\nwm_q <- poly2nb(hunan, queen=TRUE)\nsummary(wm_q)\n\nNeighbour list object:\nNumber of regions: 88 \nNumber of nonzero links: 448 \nPercentage nonzero weights: 5.785124 \nAverage number of links: 5.090909 \nLink number distribution:\n\n 1  2  3  4  5  6  7  8  9 11 \n 2  2 12 16 24 14 11  4  2  1 \n2 least connected regions:\n30 65 with 1 link\n1 most connected region:\n85 with 11 links\n\n\nThe summary report above shows that there are 88 area units in Hunan. The most connected area unit has 11 neighbours. There are two area units with only one heighbours.\nwm_q (weights matrix queen) ’s class\n\nclass(wm_q)\n\n[1] \"nb\"\n\n\nA quick peak at wm_q\n\nhead(wm_q,3)\n\n[[1]]\n[1]  2  3  4 57 85\n\n[[2]]\n[1]  1 57 58 78 85\n\n[[3]]\n[1]  1  4  5 85\n\n\nFor each polygon in our polygon object, wm_q lists all neighboring polygons. For example, to see the neighbors for the first polygon in the object, type:\n\nwm_q[[1]]\n\n[1]  2  3  4 57 85\n\n\nPolygon 1 has 5 neighbors. The numbers represent the polygon IDs as stored in hunan SpatialPolygonsDataFrame class.\nWe can retrive the county name of Polygon ID=1 by using the code chunk below:\n\nhunan$County[1]\n\n[1] \"Anxiang\"\n\n\nPolygon ID=1 is Anxiang county.\nTo reveal the county names of the five neighboring polygons, the code chunk will be used:\n\nx1 <- wm_q[[1]]\nhunan$County[c(x1)]\n\n[1] \"Hanshou\" \"Jinshi\"  \"Li\"      \"Nan\"     \"Taoyuan\"\n\n\nThe printed output above shows that the GDPPC of the five nearest neighbours based on Queen's method are 20981, 34592, 24473, 21311 and 22879 respectively.\nTo display the complete weight matrix, use str()\n\nstr(wm_q)\n\nList of 88\n $ : int [1:5] 2 3 4 57 85\n $ : int [1:5] 1 57 58 78 85\n $ : int [1:4] 1 4 5 85\n $ : int [1:4] 1 3 5 6\n $ : int [1:4] 3 4 6 85\n $ : int [1:5] 4 5 69 75 85\n $ : int [1:4] 67 71 74 84\n $ : int [1:7] 9 46 47 56 78 80 86\n $ : int [1:6] 8 66 68 78 84 86\n $ : int [1:8] 16 17 19 20 22 70 72 73\n $ : int [1:3] 14 17 72\n $ : int [1:5] 13 60 61 63 83\n $ : int [1:4] 12 15 60 83\n $ : int [1:3] 11 15 17\n $ : int [1:4] 13 14 17 83\n $ : int [1:5] 10 17 22 72 83\n $ : int [1:7] 10 11 14 15 16 72 83\n $ : int [1:5] 20 22 23 77 83\n $ : int [1:6] 10 20 21 73 74 86\n $ : int [1:7] 10 18 19 21 22 23 82\n $ : int [1:5] 19 20 35 82 86\n $ : int [1:5] 10 16 18 20 83\n $ : int [1:7] 18 20 38 41 77 79 82\n $ : int [1:5] 25 28 31 32 54\n $ : int [1:5] 24 28 31 33 81\n $ : int [1:4] 27 33 42 81\n $ : int [1:3] 26 29 42\n $ : int [1:5] 24 25 33 49 54\n $ : int [1:3] 27 37 42\n $ : int 33\n $ : int [1:8] 24 25 32 36 39 40 56 81\n $ : int [1:8] 24 31 50 54 55 56 75 85\n $ : int [1:5] 25 26 28 30 81\n $ : int [1:3] 36 45 80\n $ : int [1:6] 21 41 47 80 82 86\n $ : int [1:6] 31 34 40 45 56 80\n $ : int [1:4] 29 42 43 44\n $ : int [1:4] 23 44 77 79\n $ : int [1:5] 31 40 42 43 81\n $ : int [1:6] 31 36 39 43 45 79\n $ : int [1:6] 23 35 45 79 80 82\n $ : int [1:7] 26 27 29 37 39 43 81\n $ : int [1:6] 37 39 40 42 44 79\n $ : int [1:4] 37 38 43 79\n $ : int [1:6] 34 36 40 41 79 80\n $ : int [1:3] 8 47 86\n $ : int [1:5] 8 35 46 80 86\n $ : int [1:5] 50 51 52 53 55\n $ : int [1:4] 28 51 52 54\n $ : int [1:5] 32 48 52 54 55\n $ : int [1:3] 48 49 52\n $ : int [1:5] 48 49 50 51 54\n $ : int [1:3] 48 55 75\n $ : int [1:6] 24 28 32 49 50 52\n $ : int [1:5] 32 48 50 53 75\n $ : int [1:7] 8 31 32 36 78 80 85\n $ : int [1:6] 1 2 58 64 76 85\n $ : int [1:5] 2 57 68 76 78\n $ : int [1:4] 60 61 87 88\n $ : int [1:4] 12 13 59 61\n $ : int [1:7] 12 59 60 62 63 77 87\n $ : int [1:3] 61 77 87\n $ : int [1:4] 12 61 77 83\n $ : int [1:2] 57 76\n $ : int 76\n $ : int [1:5] 9 67 68 76 84\n $ : int [1:4] 7 66 76 84\n $ : int [1:5] 9 58 66 76 78\n $ : int [1:3] 6 75 85\n $ : int [1:3] 10 72 73\n $ : int [1:3] 7 73 74\n $ : int [1:5] 10 11 16 17 70\n $ : int [1:5] 10 19 70 71 74\n $ : int [1:6] 7 19 71 73 84 86\n $ : int [1:6] 6 32 53 55 69 85\n $ : int [1:7] 57 58 64 65 66 67 68\n $ : int [1:7] 18 23 38 61 62 63 83\n $ : int [1:7] 2 8 9 56 58 68 85\n $ : int [1:7] 23 38 40 41 43 44 45\n $ : int [1:8] 8 34 35 36 41 45 47 56\n $ : int [1:6] 25 26 31 33 39 42\n $ : int [1:5] 20 21 23 35 41\n $ : int [1:9] 12 13 15 16 17 18 22 63 77\n $ : int [1:6] 7 9 66 67 74 86\n $ : int [1:11] 1 2 3 5 6 32 56 57 69 75 ...\n $ : int [1:9] 8 9 19 21 35 46 47 74 84\n $ : int [1:4] 59 61 62 88\n $ : int [1:2] 59 87\n - attr(*, \"class\")= chr \"nb\"\n - attr(*, \"region.id\")= chr [1:88] \"1\" \"2\" \"3\" \"4\" ...\n - attr(*, \"call\")= language poly2nb(pl = hunan, queen = TRUE)\n - attr(*, \"type\")= chr \"queen\"\n - attr(*, \"sym\")= logi TRUE\n\n#wm_q[1:10]\n#methods(class = class(wm_q))\n\n\n\n8.5.2 Creating (ROOK) contiguity based neighbours\nThe code chunk below is used to compute Rook contiguity weight matrix.\n\nwm_r <- poly2nb(hunan, queen=FALSE)\nsummary(wm_r)\n\nNeighbour list object:\nNumber of regions: 88 \nNumber of nonzero links: 440 \nPercentage nonzero weights: 5.681818 \nAverage number of links: 5 \nLink number distribution:\n\n 1  2  3  4  5  6  7  8  9 10 \n 2  2 12 20 21 14 11  3  2  1 \n2 least connected regions:\n30 65 with 1 link\n1 most connected region:\n85 with 10 links\n\n\nThe summary report above shows that there are 88 area units in Hunan. The most connect area unit has 10 neighbours. There are two area units with only one heighbours."
   },
   {
     "objectID": "Hands-on_Ex2/Hands-on_Ex2_1.html#theories",
@@ -203,6 +217,13 @@
     "text": "Theories"
   },
   {
+    "objectID": "In-class_Ex1/data/geospatial/MPSZ-2019/MPSZ-2019.html",
+    "href": "In-class_Ex1/data/geospatial/MPSZ-2019/MPSZ-2019.html",
+    "title": "NYX Geospatial App",
+    "section": "",
+    "text": "<!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’>     dataset\n\n\n        0 0     false"
+  },
+  {
     "objectID": "In-class_Ex1/In-class_Ex1.html",
     "href": "In-class_Ex1/In-class_Ex1.html",
     "title": "In-class Exercise 1",
@@ -243,12 +264,5 @@
     "title": "ISSS624_AGA",
     "section": "",
     "text": "Welcome to my Applied Geospatial Analysis Website.\nI will be sharing my learning journey with you."
-  },
-  {
-    "objectID": "In-class_Ex1/data/geospatial/MPSZ-2019/MPSZ-2019.html",
-    "href": "In-class_Ex1/data/geospatial/MPSZ-2019/MPSZ-2019.html",
-    "title": "NYX Geospatial App",
-    "section": "",
-    "text": "<!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’>     dataset\n\n\n        0 0     false"
   }
 ]

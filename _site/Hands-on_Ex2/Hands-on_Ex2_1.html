@@ -157,9 +157,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <a class="dropdown-item" href="../Hands-on_Ex1/Hands-on_Ex1_2.html">
  <span class="dropdown-text">Hands-on Exercise 1.2</span></a>
   </li>  
-        <li class="dropdown-header">Hands-on Exercise 2.1</li>
-        <li class="dropdown-header">Hands-on Exercise 2.2</li>
-        <li class="dropdown-header">Hands-on Exercise 2.3</li>
+        <li>
+    <a class="dropdown-item" href="../Hands-on_Ex2/Hands-on_Ex2_1.html">
+ <span class="dropdown-text">Hands-on Exercise 2.1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../Hands-on_Ex2/Hands-on_Ex2_2.html">
+ <span class="dropdown-text">Hands-on Exercise 2.2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../Hands-on_Ex2/Hands-on_Ex2_3.html">
+ <span class="dropdown-text">Hands-on Exercise 2.3</span></a>
+  </li>  
+        <li class="dropdown-header">Hands-on Exercise 3.1</li>
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -230,6 +240,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <a href="../Hands-on_Ex1/Hands-on_Ex1_2.html" class="sidebar-item-text sidebar-link">Hands-on Exercise 1.2: Choropleth Mapping with R</a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Hands-on_Ex2/Hands-on_Ex2_1.html" class="sidebar-item-text sidebar-link active">Hands-on Exercise 2.1: Spatial Weights and Applications</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Hands-on_Ex2/Hands-on_Ex2_2.html" class="sidebar-item-text sidebar-link">Hands-on Exercise 2.2: Global Measures of Spatial Autocorrelation</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Hands-on_Ex2/Hands-on_Ex2_3.html" class="sidebar-item-text sidebar-link">Hands-on Exercise 2.3:Local Measures of Spatial Autocorrelation</a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -244,10 +269,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
-  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">Getting Started</a></li>
-  <li><a href="#learning-outcome" id="toc-learning-outcome" class="nav-link" data-scroll-target="#learning-outcome">1.1 Learning Outcome</a></li>
-  <li><a href="#importing-geospatial-data" id="toc-importing-geospatial-data" class="nav-link" data-scroll-target="#importing-geospatial-data">Importing Geospatial data</a></li>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><strong>8.1 Overview</strong></a></li>
+  <li><a href="#the-study-area-and-data" id="toc-the-study-area-and-data" class="nav-link" data-scroll-target="#the-study-area-and-data"><strong>8.2 The Study Area and Data</strong></a>
+  <ul class="collapse">
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started"><strong>8.2.1 Getting Started</strong></a></li>
+  </ul></li>
+  <li><a href="#getting-the-data-into-r-environment" id="toc-getting-the-data-into-r-environment" class="nav-link" data-scroll-target="#getting-the-data-into-r-environment"><strong>8.3 Getting the Data Into R Environment</strong></a>
+  <ul class="collapse">
+  <li><a href="#import-csv-file-into-r-environment" id="toc-import-csv-file-into-r-environment" class="nav-link" data-scroll-target="#import-csv-file-into-r-environment"><strong>8.3.2 Import csv file into r environment</strong></a></li>
+  <li><a href="#performing-relational-join" id="toc-performing-relational-join" class="nav-link" data-scroll-target="#performing-relational-join"><strong>8.3.3 Performing relational join</strong></a></li>
+  </ul></li>
+  <li><a href="#visualising-regional-development-indicator" id="toc-visualising-regional-development-indicator" class="nav-link" data-scroll-target="#visualising-regional-development-indicator"><strong>8.4 Visualising Regional Development Indicator</strong></a></li>
+  <li><a href="#computing-contiguity-spatial-weights" id="toc-computing-contiguity-spatial-weights" class="nav-link" data-scroll-target="#computing-contiguity-spatial-weights"><strong>8.5 Computing Contiguity Spatial Weights</strong></a>
+  <ul class="collapse">
+  <li><a href="#computing-queen-contiguity-based-neighbours" id="toc-computing-queen-contiguity-based-neighbours" class="nav-link" data-scroll-target="#computing-queen-contiguity-based-neighbours"><strong>8.5.1 Computing (QUEEN) contiguity based neighbours</strong></a></li>
+  <li><a href="#creating-rook-contiguity-based-neighbours" id="toc-creating-rook-contiguity-based-neighbours" class="nav-link" data-scroll-target="#creating-rook-contiguity-based-neighbours"><strong>8.5.2 Creating (ROOK) contiguity based neighbours</strong></a></li>
+  </ul></li>
   <li><a href="#theories" id="toc-theories" class="nav-link" data-scroll-target="#theories">Theories</a>
   <ul class="collapse">
   <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
@@ -284,7 +321,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">November 15, 2023</p>
+      <p class="date-modified">November 20, 2023</p>
     </div>
   </div>
     
@@ -294,31 +331,583 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </header>
 
 <section id="overview" class="level2">
-<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<h2 class="anchored" data-anchor-id="overview"><strong>8.1 Overview</strong></h2>
+<p>In this hands-on exercise, we will learn how to compute spatial weights using R. By the end to this hands-on exercise, we will be able to:</p>
+<ul>
+<li><p>import geospatial data using appropriate function(s) of <strong>sf</strong> package,</p></li>
+<li><p>import csv file using appropriate function of <strong>readr</strong> package,</p></li>
+<li><p>perform relational join using appropriate join function of <strong>dplyr</strong> package,</p></li>
+<li><p>compute spatial weights using appropriate functions of <strong>spdep</strong> package, and</p></li>
+<li><p>calculate spatially lagged variables using appropriate functions of <strong>spdep</strong> package.</p></li>
+</ul>
 </section>
-<section id="getting-started" class="level2">
-<h2 class="anchored" data-anchor-id="getting-started">Getting Started</h2>
+<section id="the-study-area-and-data" class="level2">
+<h2 class="anchored" data-anchor-id="the-study-area-and-data"><strong>8.2 The Study Area and Data</strong></h2>
+<p>Two data sets will be used in this hands-on exercise, they are:</p>
+<ul>
+<li><p>Hunan county boundary layer. This is a geospatial data set in ESRI shapefile format.</p></li>
+<li><p>Hunan_2012.csv: This csv file (aspatial) contains selected Hunan’s local development indicators in 2012.</p></li>
+</ul>
+<section id="getting-started" class="level3">
+<h3 class="anchored" data-anchor-id="getting-started"><strong>8.2.1 Getting Started</strong></h3>
 <div class="cell">
-<details>
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, spdep, tmap, tidyverse, knitr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="learning-outcome" class="level2">
-<h2 class="anchored" data-anchor-id="learning-outcome">1.1 Learning Outcome</h2>
 </section>
-<section id="importing-geospatial-data" class="level2">
-<h2 class="anchored" data-anchor-id="importing-geospatial-data">Importing Geospatial data</h2>
+<section id="getting-the-data-into-r-environment" class="level2">
+<h2 class="anchored" data-anchor-id="getting-the-data-into-r-environment"><strong>8.3 Getting the Data Into R Environment</strong></h2>
+<p><strong>8.3.1 Import shapefile into r environment</strong></p>
+<p>The code chunk below uses <a href="https://r-spatial.github.io/sf/reference/st_read.html"><em>st_read()</em></a> of <strong>sf</strong> package to import Hunan shapefile into R. The imported shapefile will be <strong>simple features</strong> Object of <strong>sf</strong>.</p>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>hunan <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn=</span><span class="st">'data/geospatial'</span>,</span>
+<span id="cb2-2"><a href="#cb2-2"></a>                 <span class="at">layer =</span> <span class="st">'Hunan'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `Hunan' from data source 
+  `C:\yixin-neo\ISSS624_AGA\Hands-on_Ex2\data\geospatial' using driver `ESRI Shapefile'
+Simple feature collection with 88 features and 7 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: 108.7831 ymin: 24.6342 xmax: 114.2544 ymax: 30.12812
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">class</span>(hunan)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "sf"         "data.frame"</code></pre>
+</div>
+</div>
+<p><code>hunan</code> is in WSG84 coordinate system.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">head</span>(hunan,<span class="dv">3</span>) <span class="sc">%&gt;%</span> <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 6%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 8%">
+<col style="width: 32%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">NAME_2</th>
+<th style="text-align: right;">ID_3</th>
+<th style="text-align: left;">NAME_3</th>
+<th style="text-align: left;">ENGTYPE_3</th>
+<th style="text-align: right;">Shape_Leng</th>
+<th style="text-align: right;">Shape_Area</th>
+<th style="text-align: left;">County</th>
+<th style="text-align: left;">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Changde</td>
+<td style="text-align: right;">21098</td>
+<td style="text-align: left;">Anxiang</td>
+<td style="text-align: left;">County</td>
+<td style="text-align: right;">1.869074</td>
+<td style="text-align: right;">0.1005619</td>
+<td style="text-align: left;">Anxiang</td>
+<td style="text-align: left;">POLYGON ((112.0625 29.75523…</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Changde</td>
+<td style="text-align: right;">21100</td>
+<td style="text-align: left;">Hanshou</td>
+<td style="text-align: left;">County</td>
+<td style="text-align: right;">2.360691</td>
+<td style="text-align: right;">0.1997875</td>
+<td style="text-align: left;">Hanshou</td>
+<td style="text-align: left;">POLYGON ((112.2288 29.11684…</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Changde</td>
+<td style="text-align: right;">21101</td>
+<td style="text-align: left;">Jinshi</td>
+<td style="text-align: left;">County City</td>
+<td style="text-align: right;">1.425620</td>
+<td style="text-align: right;">0.0530241</td>
+<td style="text-align: left;">Jinshi</td>
+<td style="text-align: left;">POLYGON ((111.8927 29.6013,…</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<section id="import-csv-file-into-r-environment" class="level3">
+<h3 class="anchored" data-anchor-id="import-csv-file-into-r-environment"><strong>8.3.2 Import csv file into r environment</strong></h3>
+<p>Next, we will import <em>Hunan_2012.csv</em> into R by using <em>read_csv()</em> of <strong>readr</strong> package. The output is R dataframe class.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>hunan2012 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'data/aspatial/Hunan_2012.csv'</span>)</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="fu">head</span>(hunan2012,<span class="dv">3</span>) <span class="sc">%&gt;%</span> <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 4%">
+<col style="width: 3%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">County</th>
+<th style="text-align: left;">City</th>
+<th style="text-align: right;">avg_wage</th>
+<th style="text-align: right;">deposite</th>
+<th style="text-align: right;">FAI</th>
+<th style="text-align: right;">Gov_Rev</th>
+<th style="text-align: right;">Gov_Exp</th>
+<th style="text-align: right;">GDP</th>
+<th style="text-align: right;">GDPPC</th>
+<th style="text-align: right;">GIO</th>
+<th style="text-align: right;">Loan</th>
+<th style="text-align: right;">NIPCR</th>
+<th style="text-align: right;">Bed</th>
+<th style="text-align: right;">Emp</th>
+<th style="text-align: right;">EmpR</th>
+<th style="text-align: right;">EmpRT</th>
+<th style="text-align: right;">Pri_Stu</th>
+<th style="text-align: right;">Sec_Stu</th>
+<th style="text-align: right;">Household</th>
+<th style="text-align: right;">Household_R</th>
+<th style="text-align: right;">NOIP</th>
+<th style="text-align: right;">Pop_R</th>
+<th style="text-align: right;">RSCG</th>
+<th style="text-align: right;">Pop_T</th>
+<th style="text-align: right;">Agri</th>
+<th style="text-align: right;">Service</th>
+<th style="text-align: right;">Disp_Inc</th>
+<th style="text-align: right;">RORP</th>
+<th style="text-align: right;">ROREmp</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Anhua</td>
+<td style="text-align: left;">Yiyang</td>
+<td style="text-align: right;">30544</td>
+<td style="text-align: right;">10967.0</td>
+<td style="text-align: right;">6831.7</td>
+<td style="text-align: right;">456.72</td>
+<td style="text-align: right;">2703.0</td>
+<td style="text-align: right;">13225.0</td>
+<td style="text-align: right;">14567</td>
+<td style="text-align: right;">9276.9</td>
+<td style="text-align: right;">3954.9</td>
+<td style="text-align: right;">3528.3</td>
+<td style="text-align: right;">2718</td>
+<td style="text-align: right;">494.31</td>
+<td style="text-align: right;">441.4</td>
+<td style="text-align: right;">338.0</td>
+<td style="text-align: right;">54.175</td>
+<td style="text-align: right;">32.830</td>
+<td style="text-align: right;">290.4</td>
+<td style="text-align: right;">234.5</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">670.3</td>
+<td style="text-align: right;">5760.6</td>
+<td style="text-align: right;">910.8</td>
+<td style="text-align: right;">4942.253</td>
+<td style="text-align: right;">5414.5</td>
+<td style="text-align: right;">12373</td>
+<td style="text-align: right;">0.7359464</td>
+<td style="text-align: right;">0.8929619</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Anren</td>
+<td style="text-align: left;">Chenzhou</td>
+<td style="text-align: right;">28058</td>
+<td style="text-align: right;">4598.9</td>
+<td style="text-align: right;">6386.1</td>
+<td style="text-align: right;">220.57</td>
+<td style="text-align: right;">1454.7</td>
+<td style="text-align: right;">4941.2</td>
+<td style="text-align: right;">12761</td>
+<td style="text-align: right;">4189.2</td>
+<td style="text-align: right;">2555.3</td>
+<td style="text-align: right;">3271.8</td>
+<td style="text-align: right;">970</td>
+<td style="text-align: right;">290.82</td>
+<td style="text-align: right;">255.4</td>
+<td style="text-align: right;">99.4</td>
+<td style="text-align: right;">33.171</td>
+<td style="text-align: right;">17.505</td>
+<td style="text-align: right;">104.6</td>
+<td style="text-align: right;">121.9</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">243.2</td>
+<td style="text-align: right;">2386.4</td>
+<td style="text-align: right;">388.7</td>
+<td style="text-align: right;">2357.764</td>
+<td style="text-align: right;">3814.1</td>
+<td style="text-align: right;">16072</td>
+<td style="text-align: right;">0.6256753</td>
+<td style="text-align: right;">0.8782065</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Anxiang</td>
+<td style="text-align: left;">Changde</td>
+<td style="text-align: right;">31935</td>
+<td style="text-align: right;">5517.2</td>
+<td style="text-align: right;">3541.0</td>
+<td style="text-align: right;">243.64</td>
+<td style="text-align: right;">1779.5</td>
+<td style="text-align: right;">12482.0</td>
+<td style="text-align: right;">23667</td>
+<td style="text-align: right;">5108.9</td>
+<td style="text-align: right;">2806.9</td>
+<td style="text-align: right;">7693.7</td>
+<td style="text-align: right;">1931</td>
+<td style="text-align: right;">336.39</td>
+<td style="text-align: right;">270.5</td>
+<td style="text-align: right;">205.9</td>
+<td style="text-align: right;">19.584</td>
+<td style="text-align: right;">17.819</td>
+<td style="text-align: right;">148.1</td>
+<td style="text-align: right;">135.4</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">346.0</td>
+<td style="text-align: right;">3957.9</td>
+<td style="text-align: right;">528.3</td>
+<td style="text-align: right;">4524.410</td>
+<td style="text-align: right;">14100.0</td>
+<td style="text-align: right;">16610</td>
+<td style="text-align: right;">0.6549309</td>
+<td style="text-align: right;">0.8041262</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="performing-relational-join" class="level3">
+<h3 class="anchored" data-anchor-id="performing-relational-join"><strong>8.3.3 Performing relational join</strong></h3>
+<p>The code chunk below will be used to update the attribute table of <em>hunan</em>’s SpatialPolygonsDataFrame with the attribute fields of <em>hunan2012</em> dataframe. This is performed by using <em>left_join()</em> of <strong>dplyr</strong> package.</p>
+<p>As the join columns are not specified, this function will assume that columns with the same names, e.g., ‘county’ in both dfs will be the join columns.</p>
+<p>The select() will retain the columns indicated in the resulting joined df.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>hunan <span class="ot">&lt;-</span> <span class="fu">left_join</span>(hunan, hunan2012) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-2"><a href="#cb8-2"></a>  <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>,<span class="dv">7</span>,<span class="dv">15</span>)</span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="fu">class</span>(hunan)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "sf"         "data.frame"</code></pre>
+</div>
+</div>
+<p>Note the geospatial characteristics of hunan is retained.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">head</span>(hunan,<span class="dv">3</span>) <span class="sc">%&gt;%</span> kable</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 7%">
+<col style="width: 10%">
+<col style="width: 15%">
+<col style="width: 10%">
+<col style="width: 7%">
+<col style="width: 39%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">NAME_2</th>
+<th style="text-align: right;">ID_3</th>
+<th style="text-align: left;">NAME_3</th>
+<th style="text-align: left;">ENGTYPE_3</th>
+<th style="text-align: left;">County</th>
+<th style="text-align: right;">GDPPC</th>
+<th style="text-align: left;">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Changde</td>
+<td style="text-align: right;">21098</td>
+<td style="text-align: left;">Anxiang</td>
+<td style="text-align: left;">County</td>
+<td style="text-align: left;">Anxiang</td>
+<td style="text-align: right;">23667</td>
+<td style="text-align: left;">POLYGON ((112.0625 29.75523…</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Changde</td>
+<td style="text-align: right;">21100</td>
+<td style="text-align: left;">Hanshou</td>
+<td style="text-align: left;">County</td>
+<td style="text-align: left;">Hanshou</td>
+<td style="text-align: right;">20981</td>
+<td style="text-align: left;">POLYGON ((112.2288 29.11684…</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Changde</td>
+<td style="text-align: right;">21101</td>
+<td style="text-align: left;">Jinshi</td>
+<td style="text-align: left;">County City</td>
+<td style="text-align: left;">Jinshi</td>
+<td style="text-align: right;">34592</td>
+<td style="text-align: left;">POLYGON ((111.8927 29.6013,…</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="visualising-regional-development-indicator" class="level2">
+<h2 class="anchored" data-anchor-id="visualising-regional-development-indicator"><strong>8.4 Visualising Regional Development Indicator</strong></h2>
+<p>Now, we are going to prepare a basemap and a choropleth map showing the distribution of GDPPC 2012 by using <em>qtm()</em> of <strong>tmap</strong> package.</p>
+<div class="cell" data-fig.asp="0.68">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>basemap <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(hunan)<span class="sc">+</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>  <span class="fu">tm_polygons</span>() <span class="sc">+</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a>  <span class="fu">tm_text</span>(<span class="st">'NAME_3'</span>,</span>
+<span id="cb11-4"><a href="#cb11-4"></a>          <span class="at">size =</span> <span class="fl">0.35</span>)</span>
+<span id="cb11-5"><a href="#cb11-5"></a></span>
+<span id="cb11-6"><a href="#cb11-6"></a>gdppc <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(hunan)<span class="sc">+</span></span>
+<span id="cb11-7"><a href="#cb11-7"></a>  <span class="fu">tm_polygons</span>(<span class="st">'GDPPC'</span>) <span class="sc">+</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a>    <span class="fu">tm_layout</span>(<span class="at">legend.height =</span> <span class="fl">0.20</span>, </span>
+<span id="cb11-9"><a href="#cb11-9"></a>            <span class="at">legend.width =</span> <span class="fl">0.25</span>)</span>
+<span id="cb11-10"><a href="#cb11-10"></a>  </span>
+<span id="cb11-11"><a href="#cb11-11"></a></span>
+<span id="cb11-12"><a href="#cb11-12"></a><span class="fu">tmap_arrange</span>(basemap, gdppc,</span>
+<span id="cb11-13"><a href="#cb11-13"></a>           <span class="at">asp=</span><span class="dv">1</span>,</span>
+<span id="cb11-14"><a href="#cb11-14"></a>           <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex2_1_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="1344"></p>
+</div>
+</div>
+</section>
+<section id="computing-contiguity-spatial-weights" class="level2">
+<h2 class="anchored" data-anchor-id="computing-contiguity-spatial-weights"><strong>8.5 Computing Contiguity Spatial Weights</strong></h2>
+<p>In this section, we will use <a href="https://r-spatial.github.io/spdep/reference/poly2nb.html"><em>poly2nb()</em></a> of <strong>spdep</strong> package to compute contiguity weight matrices for the study area. This function builds a neighbours list based on regions with contiguous boundaries.</p>
+<p>By default, ‘queen’ argument is set to TRUE: two polygons sharing one shared boundary point will meet contiguity condition. Returns a list of first order neighbours using the Queen criteria.</p>
+<p>If ‘queen’ argument is set to FALSE: requires more than one shared boundary point. (but may not mean a shared boundary line)</p>
+<section id="computing-queen-contiguity-based-neighbours" class="level3">
+<h3 class="anchored" data-anchor-id="computing-queen-contiguity-based-neighbours"><strong>8.5.1 Computing (QUEEN) contiguity based neighbours</strong></h3>
+<p>The code chunk below is used to compute Queen contiguity weight matrix.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>wm_q <span class="ot">&lt;-</span> <span class="fu">poly2nb</span>(hunan, <span class="at">queen=</span><span class="cn">TRUE</span>)</span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="fu">summary</span>(wm_q)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Neighbour list object:
+Number of regions: 88 
+Number of nonzero links: 448 
+Percentage nonzero weights: 5.785124 
+Average number of links: 5.090909 
+Link number distribution:
+
+ 1  2  3  4  5  6  7  8  9 11 
+ 2  2 12 16 24 14 11  4  2  1 
+2 least connected regions:
+30 65 with 1 link
+1 most connected region:
+85 with 11 links</code></pre>
+</div>
+</div>
+<p>The summary report above shows that there are 88 area units in Hunan. The most connected area unit has 11 neighbours. There are two area units with only one heighbours.</p>
+<p><code>wm_q</code> (weights matrix queen) ’s class</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">class</span>(wm_q)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "nb"</code></pre>
+</div>
+</div>
+<p>A quick peak at <code>wm_q</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="fu">head</span>(wm_q,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1]  2  3  4 57 85
+
+[[2]]
+[1]  1 57 58 78 85
+
+[[3]]
+[1]  1  4  5 85</code></pre>
+</div>
+</div>
+<p>For each polygon in our polygon object, <em>wm_q</em> lists all neighboring polygons. For example, to see the neighbors for the first polygon in the object, type:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>wm_q[[<span class="dv">1</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  2  3  4 57 85</code></pre>
+</div>
+</div>
+<p>Polygon 1 has 5 neighbors. The numbers represent the polygon IDs as stored in hunan SpatialPolygonsDataFrame class.</p>
+<p>We can retrive the county name of Polygon ID=1 by using the code chunk below:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>hunan<span class="sc">$</span>County[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Anxiang"</code></pre>
+</div>
+</div>
+<p>Polygon ID=1 is Anxiang county.</p>
+<p>To reveal the county names of the five neighboring polygons, the code chunk will be used:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>x1 <span class="ot">&lt;-</span> wm_q[[<span class="dv">1</span>]]</span>
+<span id="cb22-2"><a href="#cb22-2"></a>hunan<span class="sc">$</span>County[<span class="fu">c</span>(x1)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Hanshou" "Jinshi"  "Li"      "Nan"     "Taoyuan"</code></pre>
+</div>
+</div>
+<p>The printed output above shows that the GDPPC of the five nearest neighbours based on Queen's method are 20981, 34592, 24473, 21311 and 22879 respectively.</p>
+<p>To display the complete weight matrix, use <em>str()</em></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="fu">str</span>(wm_q)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 88
+ $ : int [1:5] 2 3 4 57 85
+ $ : int [1:5] 1 57 58 78 85
+ $ : int [1:4] 1 4 5 85
+ $ : int [1:4] 1 3 5 6
+ $ : int [1:4] 3 4 6 85
+ $ : int [1:5] 4 5 69 75 85
+ $ : int [1:4] 67 71 74 84
+ $ : int [1:7] 9 46 47 56 78 80 86
+ $ : int [1:6] 8 66 68 78 84 86
+ $ : int [1:8] 16 17 19 20 22 70 72 73
+ $ : int [1:3] 14 17 72
+ $ : int [1:5] 13 60 61 63 83
+ $ : int [1:4] 12 15 60 83
+ $ : int [1:3] 11 15 17
+ $ : int [1:4] 13 14 17 83
+ $ : int [1:5] 10 17 22 72 83
+ $ : int [1:7] 10 11 14 15 16 72 83
+ $ : int [1:5] 20 22 23 77 83
+ $ : int [1:6] 10 20 21 73 74 86
+ $ : int [1:7] 10 18 19 21 22 23 82
+ $ : int [1:5] 19 20 35 82 86
+ $ : int [1:5] 10 16 18 20 83
+ $ : int [1:7] 18 20 38 41 77 79 82
+ $ : int [1:5] 25 28 31 32 54
+ $ : int [1:5] 24 28 31 33 81
+ $ : int [1:4] 27 33 42 81
+ $ : int [1:3] 26 29 42
+ $ : int [1:5] 24 25 33 49 54
+ $ : int [1:3] 27 37 42
+ $ : int 33
+ $ : int [1:8] 24 25 32 36 39 40 56 81
+ $ : int [1:8] 24 31 50 54 55 56 75 85
+ $ : int [1:5] 25 26 28 30 81
+ $ : int [1:3] 36 45 80
+ $ : int [1:6] 21 41 47 80 82 86
+ $ : int [1:6] 31 34 40 45 56 80
+ $ : int [1:4] 29 42 43 44
+ $ : int [1:4] 23 44 77 79
+ $ : int [1:5] 31 40 42 43 81
+ $ : int [1:6] 31 36 39 43 45 79
+ $ : int [1:6] 23 35 45 79 80 82
+ $ : int [1:7] 26 27 29 37 39 43 81
+ $ : int [1:6] 37 39 40 42 44 79
+ $ : int [1:4] 37 38 43 79
+ $ : int [1:6] 34 36 40 41 79 80
+ $ : int [1:3] 8 47 86
+ $ : int [1:5] 8 35 46 80 86
+ $ : int [1:5] 50 51 52 53 55
+ $ : int [1:4] 28 51 52 54
+ $ : int [1:5] 32 48 52 54 55
+ $ : int [1:3] 48 49 52
+ $ : int [1:5] 48 49 50 51 54
+ $ : int [1:3] 48 55 75
+ $ : int [1:6] 24 28 32 49 50 52
+ $ : int [1:5] 32 48 50 53 75
+ $ : int [1:7] 8 31 32 36 78 80 85
+ $ : int [1:6] 1 2 58 64 76 85
+ $ : int [1:5] 2 57 68 76 78
+ $ : int [1:4] 60 61 87 88
+ $ : int [1:4] 12 13 59 61
+ $ : int [1:7] 12 59 60 62 63 77 87
+ $ : int [1:3] 61 77 87
+ $ : int [1:4] 12 61 77 83
+ $ : int [1:2] 57 76
+ $ : int 76
+ $ : int [1:5] 9 67 68 76 84
+ $ : int [1:4] 7 66 76 84
+ $ : int [1:5] 9 58 66 76 78
+ $ : int [1:3] 6 75 85
+ $ : int [1:3] 10 72 73
+ $ : int [1:3] 7 73 74
+ $ : int [1:5] 10 11 16 17 70
+ $ : int [1:5] 10 19 70 71 74
+ $ : int [1:6] 7 19 71 73 84 86
+ $ : int [1:6] 6 32 53 55 69 85
+ $ : int [1:7] 57 58 64 65 66 67 68
+ $ : int [1:7] 18 23 38 61 62 63 83
+ $ : int [1:7] 2 8 9 56 58 68 85
+ $ : int [1:7] 23 38 40 41 43 44 45
+ $ : int [1:8] 8 34 35 36 41 45 47 56
+ $ : int [1:6] 25 26 31 33 39 42
+ $ : int [1:5] 20 21 23 35 41
+ $ : int [1:9] 12 13 15 16 17 18 22 63 77
+ $ : int [1:6] 7 9 66 67 74 86
+ $ : int [1:11] 1 2 3 5 6 32 56 57 69 75 ...
+ $ : int [1:9] 8 9 19 21 35 46 47 74 84
+ $ : int [1:4] 59 61 62 88
+ $ : int [1:2] 59 87
+ - attr(*, "class")= chr "nb"
+ - attr(*, "region.id")= chr [1:88] "1" "2" "3" "4" ...
+ - attr(*, "call")= language poly2nb(pl = hunan, queen = TRUE)
+ - attr(*, "type")= chr "queen"
+ - attr(*, "sym")= logi TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="co">#wm_q[1:10]</span></span>
+<span id="cb26-2"><a href="#cb26-2"></a><span class="co">#methods(class = class(wm_q))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="creating-rook-contiguity-based-neighbours" class="level3">
+<h3 class="anchored" data-anchor-id="creating-rook-contiguity-based-neighbours"><strong>8.5.2 Creating (ROOK) contiguity based neighbours</strong></h3>
+<p>The code chunk below is used to compute Rook contiguity weight matrix.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>wm_r <span class="ot">&lt;-</span> <span class="fu">poly2nb</span>(hunan, <span class="at">queen=</span><span class="cn">FALSE</span>)</span>
+<span id="cb27-2"><a href="#cb27-2"></a><span class="fu">summary</span>(wm_r)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Neighbour list object:
+Number of regions: 88 
+Number of nonzero links: 440 
+Percentage nonzero weights: 5.681818 
+Average number of links: 5 
+Link number distribution:
+
+ 1  2  3  4  5  6  7  8  9 10 
+ 2  2 12 20 21 14 11  3  2  1 
+2 least connected regions:
+30 65 with 1 link
+1 most connected region:
+85 with 10 links</code></pre>
+</div>
+</div>
+<p>The summary report above shows that there are 88 area units in Hunan. The most connect area unit has 10 neighbours. There are two area units with only one heighbours.</p>
+<div class="cell" data-fig.asp="0.68">
 
 </div>
-<div class="cell">
-
-</div>
-<div class="cell">
-
-</div>
+</section>
 </section>
 <section id="theories" class="level2">
 <h2 class="anchored" data-anchor-id="theories">Theories</h2>
