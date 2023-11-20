@@ -290,6 +290,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#determine-the-cut-off-distance" id="toc-determine-the-cut-off-distance" class="nav-link" data-scroll-target="#determine-the-cut-off-distance"><strong>8.6.1 Determine the cut-off distance</strong></a></li>
   <li><a href="#computing-fixed-distance-weight-matrix" id="toc-computing-fixed-distance-weight-matrix" class="nav-link" data-scroll-target="#computing-fixed-distance-weight-matrix">8.6.2 Computing <u>fixed</u> distance weight matrix</a></li>
+  <li><a href="#computing-adaptive-distance-weight-matrix" id="toc-computing-adaptive-distance-weight-matrix" class="nav-link" data-scroll-target="#computing-adaptive-distance-weight-matrix"><strong>8.6.3 Computing adaptive distance weight matrix</strong></a></li>
+  </ul></li>
+  <li><a href="#weights-based-on-inverse-distance-method" id="toc-weights-based-on-inverse-distance-method" class="nav-link" data-scroll-target="#weights-based-on-inverse-distance-method"><strong>8.7 Weights based on Inverse Distance Method</strong></a>
+  <ul class="collapse">
+  <li><a href="#row-standardised-weights-matrix" id="toc-row-standardised-weights-matrix" class="nav-link" data-scroll-target="#row-standardised-weights-matrix"><strong>8.7.1 Row-standardised weights matrix</strong></a></li>
+  </ul></li>
+  <li><a href="#application-of-spatial-weight-matrix" id="toc-application-of-spatial-weight-matrix" class="nav-link" data-scroll-target="#application-of-spatial-weight-matrix"><strong>8.8 Application of Spatial Weight Matrix</strong></a>
+  <ul class="collapse">
+  <li><a href="#spatial-lag-with-row-standardized-weights" id="toc-spatial-lag-with-row-standardized-weights" class="nav-link" data-scroll-target="#spatial-lag-with-row-standardized-weights">8.8.1 Spatial lag with row-standardized weights</a></li>
   </ul></li>
   <li><a href="#theories" id="toc-theories" class="nav-link" data-scroll-target="#theories">Theories</a>
   <ul class="collapse">
@@ -327,7 +336,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">November 20, 2023</p>
+      <p class="date-modified">November 21, 2023</p>
     </div>
   </div>
     
@@ -701,10 +710,11 @@ Geodetic CRS:  WGS 84</code></pre>
 <span id="cb11-8"><a href="#cb11-8"></a>    <span class="fu">tm_layout</span>(<span class="at">legend.height =</span> <span class="fl">0.20</span>, </span>
 <span id="cb11-9"><a href="#cb11-9"></a>            <span class="at">legend.width =</span> <span class="fl">0.25</span>)</span>
 <span id="cb11-10"><a href="#cb11-10"></a>  </span>
-<span id="cb11-11"><a href="#cb11-11"></a></span>
-<span id="cb11-12"><a href="#cb11-12"></a><span class="fu">tmap_arrange</span>(basemap, gdppc,</span>
-<span id="cb11-13"><a href="#cb11-13"></a>           <span class="at">asp=</span><span class="dv">1</span>,</span>
-<span id="cb11-14"><a href="#cb11-14"></a>           <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-11"><a href="#cb11-11"></a><span class="co"># or gdppc &lt;- qtm(hunan, "GDPPC")</span></span>
+<span id="cb11-12"><a href="#cb11-12"></a></span>
+<span id="cb11-13"><a href="#cb11-13"></a><span class="fu">tmap_arrange</span>(basemap, gdppc,</span>
+<span id="cb11-14"><a href="#cb11-14"></a>           <span class="at">asp=</span><span class="dv">1</span>,</span>
+<span id="cb11-15"><a href="#cb11-15"></a>           <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="Hands-on_Ex2_1_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="1344"></p>
 </div>
@@ -712,7 +722,7 @@ Geodetic CRS:  WGS 84</code></pre>
 </section>
 <section id="computing-contiguity-spatial-weights" class="level2">
 <h2 class="anchored" data-anchor-id="computing-contiguity-spatial-weights"><strong>8.5 Computing Contiguity Spatial Weights</strong></h2>
-<p>In this section, we will use <a href="https://r-spatial.github.io/spdep/reference/poly2nb.html"><em>poly2nb()</em></a> of <strong>spdep</strong> package to compute contiguity weight matrices for the study area. This function builds a neighbours list based on regions with contiguous boundaries.</p>
+<p>In this section, we will use <a href="https://r-spatial.github.io/spdep/reference/poly2nb.html"><em>poly2nb()</em></a> of <strong>spdep</strong> package to compute contiguity weight matrices for the study area. This function builds a neighbours list based on regions with contiguous boundaries. <strong>Use this if we know that for a variable, sharing common boundary increases spatial interaction.</strong></p>
 <p>By default, ‘queen’ argument is set to TRUE: two polygons sharing one shared boundary point will meet contiguity condition. Returns a list of first order neighbours using the Queen criteria.</p>
 <p>If ‘queen’ argument is set to FALSE: requires more than one shared boundary point. (but may not mean a shared boundary line)</p>
 <section id="computing-queen-contiguity-based-neighbours" class="level3">
@@ -738,7 +748,7 @@ Link number distribution:
 </div>
 </div>
 <p>The summary report above shows that there are 88 area units in Hunan. The most connected area unit has 11 neighbours. There are two area units with only one heighbours.</p>
-<p><code>wm_q</code> (weights matrix queen) ’s class</p>
+<p><code>wm_q</code> (weights matrix queen) <strong>class: ‘nb’</strong></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">class</span>(wm_q)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -783,7 +793,7 @@ Link number distribution:
 <pre><code>[1] "Hanshou" "Jinshi"  "Li"      "Nan"     "Taoyuan"</code></pre>
 </div>
 </div>
-<p>The printed output above shows that the GDPPC of the five nearest neighbours based on Queen's method are 20981, 34592, 24473, 21311 and 22879 respectively.</p>
+<p>The printed output above shows that the GDPPC of the five nearest neighbours based on Queen’s method are 20981, 34592, 24473, 21311 and 22879 respectively.</p>
 <p>To display the complete weight matrix, use <em>str()</em></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="fu">str</span>(wm_q)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1104,9 +1114,9 @@ Link number distribution:
 [1] 4</code></pre>
 </div>
 </div></li>
-<li><p>Return a list of the <strong>length</strong> (the distance to one's nearest neighbour) of neighbour relationship edges by using <a href="https://r-spatial.github.io/spdep/reference/nbdists.html"><em>nbdists()</em></a> of <strong>spdep</strong>. The function returns in the units of the coordinates if the coordinates are projected, in km if in WSG84. <strong>Class: ‘nbdist’</strong></p>
+<li><p>Return a list of the <strong>length</strong> (the distance to one’s nearest neighbour) of neighbour relationship edges by using <a href="https://r-spatial.github.io/spdep/reference/nbdists.html"><em>nbdists()</em></a> of <strong>spdep</strong>. The function returns in the units of the coordinates if the coordinates are projected, in km if in WSG84. <strong>Class: ‘nbdist’</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a><span class="fu">nbdists</span>(<span class="fu">knn2nb</span>(<span class="fu">knearneigh</span>(coords)),</span>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a><span class="fu">nbdists</span>(<span class="fu">knn2nb</span>(<span class="fu">knearneigh</span>(coords, <span class="at">k=</span><span class="dv">1</span>)),</span>
 <span id="cb49-2"><a href="#cb49-2"></a>        coords,</span>
 <span id="cb49-3"><a href="#cb49-3"></a>        <span class="at">longlat =</span> <span class="cn">TRUE</span>) [<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1129,7 +1139,7 @@ Link number distribution:
 <li><p>Remove the list structure of the returned object by using <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/unlist"><strong>unlist()</strong></a>. <strong>Class of k1dists: numeric.</strong></p>
 <p>Output: 25.53398 43.03114 25.53398 29.28480 29.28480 45.98097 58.52704 28.95985 34.45062 37.99885 44.49442 33.48816 35.98123</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a>k1 <span class="ot">&lt;-</span> <span class="fu">knn2nb</span>(<span class="fu">knearneigh</span>(coords))</span>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a>k1 <span class="ot">&lt;-</span> <span class="fu">knn2nb</span>(<span class="fu">knearneigh</span>(coords, <span class="at">k=</span><span class="dv">1</span>))</span>
 <span id="cb51-2"><a href="#cb51-2"></a>k1dists <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">nbdists</span>(k1, coords, <span class="at">longlat =</span> <span class="cn">TRUE</span>))</span>
 <span id="cb51-3"><a href="#cb51-3"></a><span class="fu">summary</span>(k1dists)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1158,10 +1168,16 @@ Percentage nonzero weights: 4.183884
 Average number of links: 3.681818 </code></pre>
 </div>
 </div>
-<p>Average number of links is calculated by dividing the total number of links by the number of regions. On average, each region has approximately 3.68 neighboring regions.</p>
+<p>Average number of links is calculated by dividing the total number of links by the number of regions. On average, each region has approximately 3.68 neighboring regions. <strong>Class of <code>wm_d62</code>: ‘nb’</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a><span class="fu">class</span>(wm_d62)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "nb"</code></pre>
+</div>
+</div>
 <p>Next, we will use <em>str()</em> to display the content of wm_d62 weight matrix.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a><span class="fu">str</span>(wm_d62)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="fu">str</span>(wm_d62)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>List of 88
  $ : int [1:5] 3 4 5 57 64
@@ -1264,7 +1280,7 @@ Average number of links: 3.681818 </code></pre>
 <p>Another way to display the structure of the weight matrix is to combine <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/table"><em>table()</em></a> and <a href="https://r-spatial.github.io/spdep/reference/card.html"><em>card()</em></a> of spdep.</p>
 <p>The column headers “1” means the count of counties that have 1 neighbor within the specified distance of 62km, “2” means the count of counties that have 2 neighbors, and so on.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="fu">table</span>(hunan<span class="sc">$</span>County, <span class="fu">card</span>(wm_d62))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1"></a><span class="fu">table</span>(hunan<span class="sc">$</span>County, <span class="fu">card</span>(wm_d62))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>               
                 1 2 3 4 5 6
@@ -1360,19 +1376,436 @@ Average number of links: 3.681818 </code></pre>
 </div>
 <p>TO find the number of connected components (aka see if there are any spatial units / regions without a neighbour)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1"></a>n_comp <span class="ot">&lt;-</span> <span class="fu">n.comp.nb</span>(wm_d62)</span>
-<span id="cb59-2"><a href="#cb59-2"></a>n_comp<span class="sc">$</span>nc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1"></a>n_comp <span class="ot">&lt;-</span> <span class="fu">n.comp.nb</span>(wm_d62)</span>
+<span id="cb61-2"><a href="#cb61-2"></a>n_comp<span class="sc">$</span>nc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1</code></pre>
 </div>
 </div>
-<p>In this connect component, there are 88 elements (spatial units)</p>
+<p>In this connected component, there are 88 elements (spatial units)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1"></a><span class="fu">table</span>(n_comp<span class="sc">$</span>comp.id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1"></a><span class="fu">table</span>(n_comp<span class="sc">$</span>comp.id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
  1 
 88 </code></pre>
+</div>
+</div>
+<section id="plotting-fixed-distance-weight-matrix" class="level4">
+<h4 class="anchored" data-anchor-id="plotting-fixed-distance-weight-matrix">8.6.2.1 Plotting fixed distance weight matrix</h4>
+<p>Next, we will plot the distance weight matrix by using the code chunk below.</p>
+<ul>
+<li><p>wm_d62 is the fixed distance weight matrix,</p></li>
+<li><p>coords refers to long, lat coordinates for CG of each polygon</p></li>
+<li><p>k1 is the list of integer ID of the polygon which is the nearest neighbour to me. The topmost layer of the plot colours the nearest neighbour edge to red colour.</p></li>
+</ul>
+<div class="cell" data-fig.asp="0.68">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1"></a><span class="fu">plot</span>(hunan<span class="sc">$</span>geometry, <span class="at">border=</span><span class="st">"lightgrey"</span>)</span>
+<span id="cb65-2"><a href="#cb65-2"></a><span class="fu">plot</span>(wm_d62, coords, <span class="at">add=</span><span class="cn">TRUE</span>)</span>
+<span id="cb65-3"><a href="#cb65-3"></a><span class="fu">plot</span>(k1, coords, <span class="at">add=</span><span class="cn">TRUE</span>, <span class="at">col=</span><span class="st">"red"</span>, <span class="at">length=</span><span class="fl">0.08</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex2_1_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid" width="1344"></p>
+</div>
+</div>
+<p>The red lines shows the links of 1st nearest neighbours and the black lines show the lines of neighbours within the cut-off distance of 62km.</p>
+<p>To plot red and black side by side,</p>
+<div class="cell" data-fig.asp="0.68">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb66-2"><a href="#cb66-2"></a><span class="fu">plot</span>(hunan<span class="sc">$</span>geometry, <span class="at">border=</span><span class="st">"lightgrey"</span>, <span class="at">main =</span> <span class="st">'Neighbours within 62 km'</span>)</span>
+<span id="cb66-3"><a href="#cb66-3"></a><span class="fu">plot</span>(wm_d62, coords, <span class="at">add=</span><span class="cn">TRUE</span>)</span>
+<span id="cb66-4"><a href="#cb66-4"></a><span class="fu">plot</span>(hunan<span class="sc">$</span>geometry, <span class="at">border=</span><span class="st">"lightgrey"</span>, <span class="at">main =</span> <span class="st">'Nearest Neighbour'</span>)</span>
+<span id="cb66-5"><a href="#cb66-5"></a><span class="fu">plot</span>(k1, coords, <span class="at">add=</span><span class="cn">TRUE</span>, <span class="at">col=</span><span class="st">"red"</span>, <span class="at">length=</span><span class="fl">0.08</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex2_1_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid" width="1344"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="computing-adaptive-distance-weight-matrix" class="level3">
+<h3 class="anchored" data-anchor-id="computing-adaptive-distance-weight-matrix"><strong>8.6.3 Computing adaptive distance weight matrix</strong></h3>
+<p><strong>Use this method if the dataset is highly skewed to fix the # of nbs.</strong></p>
+<p>Earlier, we used <code>k1 &lt;- knn2nb(knearneigh(coords, k=1))</code> and <code>wm_d62 &lt;- dnearneigh(coords, 0, 62, longlat=TRUE )</code> to plot maps of nearest nb and nbs within 62km range.</p>
+<p>One of the characteristics of fixed distance weight matrix is that more densely settled areas (usually the urban areas) tend to have more neighbours and the less densely settled areas (usually the rural counties) tend to have lesser neighbours. Having many neighbours smoothes the neighbour relationship across more neighbours.</p>
+<p>It is possible to control the numbers of neighbours directly using k-nearest neighbours, either accepting asymmetric neighbours or imposing symmetry as shown in the code chunk below. <strong>class of <code>knn6</code>: ‘nb’</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1"></a>knn6 <span class="ot">&lt;-</span> <span class="fu">knn2nb</span>(<span class="fu">knearneigh</span>(coords, <span class="at">k=</span><span class="dv">6</span>))</span>
+<span id="cb67-2"><a href="#cb67-2"></a>knn6</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Neighbour list object:
+Number of regions: 88 
+Number of nonzero links: 528 
+Percentage nonzero weights: 6.818182 
+Average number of links: 6 
+Non-symmetric neighbours list</code></pre>
+</div>
+</div>
+<p>Similarly, we can display the content of the matrix by using <em>str()</em>. Note that each spatial units has exactly 6 neighbours.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1"></a><span class="fu">str</span>(knn6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 88
+ $ : int [1:6] 2 3 4 5 57 64
+ $ : int [1:6] 1 3 57 58 78 85
+ $ : int [1:6] 1 2 4 5 57 85
+ $ : int [1:6] 1 3 5 6 69 85
+ $ : int [1:6] 1 3 4 6 69 85
+ $ : int [1:6] 3 4 5 69 75 85
+ $ : int [1:6] 9 66 67 71 74 84
+ $ : int [1:6] 9 46 47 78 80 86
+ $ : int [1:6] 8 46 66 68 84 86
+ $ : int [1:6] 16 19 22 70 72 73
+ $ : int [1:6] 10 14 16 17 70 72
+ $ : int [1:6] 13 15 60 61 63 83
+ $ : int [1:6] 12 15 60 61 63 83
+ $ : int [1:6] 11 15 16 17 72 83
+ $ : int [1:6] 12 13 14 17 60 83
+ $ : int [1:6] 10 11 17 22 72 83
+ $ : int [1:6] 10 11 14 16 72 83
+ $ : int [1:6] 20 22 23 63 77 83
+ $ : int [1:6] 10 20 21 73 74 82
+ $ : int [1:6] 18 19 21 22 23 82
+ $ : int [1:6] 19 20 35 74 82 86
+ $ : int [1:6] 10 16 18 19 20 83
+ $ : int [1:6] 18 20 41 77 79 82
+ $ : int [1:6] 25 28 31 52 54 81
+ $ : int [1:6] 24 28 31 33 54 81
+ $ : int [1:6] 25 27 29 33 42 81
+ $ : int [1:6] 26 29 30 37 42 81
+ $ : int [1:6] 24 25 33 49 52 54
+ $ : int [1:6] 26 27 37 42 43 81
+ $ : int [1:6] 26 27 28 33 49 81
+ $ : int [1:6] 24 25 36 39 40 54
+ $ : int [1:6] 24 31 50 54 55 56
+ $ : int [1:6] 25 26 28 30 49 81
+ $ : int [1:6] 36 40 41 45 56 80
+ $ : int [1:6] 21 41 46 47 80 82
+ $ : int [1:6] 31 34 40 45 56 80
+ $ : int [1:6] 26 27 29 42 43 44
+ $ : int [1:6] 23 43 44 62 77 79
+ $ : int [1:6] 25 40 42 43 44 81
+ $ : int [1:6] 31 36 39 43 45 79
+ $ : int [1:6] 23 35 45 79 80 82
+ $ : int [1:6] 26 27 37 39 43 81
+ $ : int [1:6] 37 39 40 42 44 79
+ $ : int [1:6] 37 38 39 42 43 79
+ $ : int [1:6] 34 36 40 41 79 80
+ $ : int [1:6] 8 9 35 47 78 86
+ $ : int [1:6] 8 21 35 46 80 86
+ $ : int [1:6] 49 50 51 52 53 55
+ $ : int [1:6] 28 33 48 51 52 54
+ $ : int [1:6] 32 48 51 52 54 55
+ $ : int [1:6] 28 48 49 50 52 54
+ $ : int [1:6] 28 48 49 50 51 54
+ $ : int [1:6] 48 50 51 52 55 75
+ $ : int [1:6] 24 28 49 50 51 52
+ $ : int [1:6] 32 48 50 52 53 75
+ $ : int [1:6] 32 34 36 78 80 85
+ $ : int [1:6] 1 2 3 58 64 68
+ $ : int [1:6] 2 57 64 66 68 78
+ $ : int [1:6] 12 13 60 61 87 88
+ $ : int [1:6] 12 13 59 61 63 87
+ $ : int [1:6] 12 13 60 62 63 87
+ $ : int [1:6] 12 38 61 63 77 87
+ $ : int [1:6] 12 18 60 61 62 83
+ $ : int [1:6] 1 3 57 58 68 76
+ $ : int [1:6] 58 64 66 67 68 76
+ $ : int [1:6] 9 58 67 68 76 84
+ $ : int [1:6] 7 65 66 68 76 84
+ $ : int [1:6] 9 57 58 66 78 84
+ $ : int [1:6] 4 5 6 32 75 85
+ $ : int [1:6] 10 16 19 22 72 73
+ $ : int [1:6] 7 19 73 74 84 86
+ $ : int [1:6] 10 11 14 16 17 70
+ $ : int [1:6] 10 19 21 70 71 74
+ $ : int [1:6] 19 21 71 73 84 86
+ $ : int [1:6] 6 32 50 53 55 69
+ $ : int [1:6] 58 64 65 66 67 68
+ $ : int [1:6] 18 23 38 61 62 63
+ $ : int [1:6] 2 8 9 46 58 68
+ $ : int [1:6] 38 40 41 43 44 45
+ $ : int [1:6] 34 35 36 41 45 47
+ $ : int [1:6] 25 26 28 33 39 42
+ $ : int [1:6] 19 20 21 23 35 41
+ $ : int [1:6] 12 13 15 16 22 63
+ $ : int [1:6] 7 9 66 68 71 74
+ $ : int [1:6] 2 3 4 5 56 69
+ $ : int [1:6] 8 9 21 46 47 74
+ $ : int [1:6] 59 60 61 62 63 88
+ $ : int [1:6] 59 60 61 62 63 87
+ - attr(*, "region.id")= chr [1:88] "1" "2" "3" "4" ...
+ - attr(*, "call")= language knearneigh(x = coords, k = 6)
+ - attr(*, "sym")= logi FALSE
+ - attr(*, "type")= chr "knn"
+ - attr(*, "knn-k")= num 6
+ - attr(*, "class")= chr "nb"</code></pre>
+</div>
+</div>
+<section id="plotting-distance-based-neighbours" class="level4">
+<h4 class="anchored" data-anchor-id="plotting-distance-based-neighbours">8.6.3.1 Plotting distance based neighbours</h4>
+<div class="cell" data-fig.asp="0.68">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(hunan), <span class="at">border =</span> <span class="st">'lightgray'</span>)</span>
+<span id="cb71-2"><a href="#cb71-2"></a><span class="fu">plot</span>(knn6, coords, <span class="at">pch=</span><span class="dv">18</span>, <span class="at">cex=</span><span class="fl">0.6</span>, <span class="at">add=</span> <span class="cn">TRUE</span>, <span class="at">col=</span><span class="st">'red'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex2_1_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid" width="1344"></p>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="weights-based-on-inverse-distance-method" class="level2">
+<h2 class="anchored" data-anchor-id="weights-based-on-inverse-distance-method"><strong>8.7 Weights based on Inverse Distance Method</strong></h2>
+<p>In this section, we will learn how to derive a spatial weight matrix based on Inversed Distance method. <strong>This will assign greater weightage to closer polygons, use this if we know that closer proximity will result in more spatial interaction.</strong></p>
+<p>Earlier, we applied nbdists() <code>nbdists(knn2nb(knearneigh(coords, k=1)), coords, longlat = TRUE)</code> to compute the distance of one’s nearest neighbour.</p>
+<p>First, we will compute the distances between areas (defined using Queen contiguity method) by using <a href="https://r-spatial.github.io/spdep/reference/nbdists.html"><em>nbdists()</em></a> of <strong>spdep</strong>.</p>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Queen’s neighbours distance</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Fixed’s neighbours distance (NYX)</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1"></a>dist <span class="ot">&lt;-</span> <span class="fu">nbdists</span>(wm_q, coords, <span class="at">longlat=</span><span class="cn">TRUE</span>)</span>
+<span id="cb72-2"><a href="#cb72-2"></a><span class="fu">head</span>(dist,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] 65.12941 25.53398 54.91802 35.61352 87.32760
+
+[[2]]
+[1] 65.12941 56.67944 51.92312 43.03114 58.16151
+
+[[3]]
+[1] 25.53398 35.43536 27.05778 71.64530</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1"></a><span class="fu">head</span>(<span class="fu">nbdists</span>(wm_d62, coords, <span class="at">longlat=</span><span class="cn">TRUE</span>),<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] 25.53398 54.91802 52.58627 35.61352 48.15609
+
+[[2]]
+[1] 56.67944 51.92312 43.03114 58.16151
+
+[[3]]
+[1] 25.53398 35.43536 27.05778 58.73243</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>For queen’s method, now compute the inverse distances for all polygons to their neighbours</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1"></a>ids <span class="ot">&lt;-</span> <span class="fu">lapply</span>(dist, <span class="cf">function</span>(x) <span class="dv">1</span><span class="sc">/</span>(x))</span>
+<span id="cb76-2"><a href="#cb76-2"></a><span class="fu">head</span>(ids,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] 0.01535405 0.03916350 0.01820896 0.02807922 0.01145113
+
+[[2]]
+[1] 0.01535405 0.01764308 0.01925924 0.02323898 0.01719350
+
+[[3]]
+[1] 0.03916350 0.02822040 0.03695795 0.01395765</code></pre>
+</div>
+</div>
+<section id="row-standardised-weights-matrix" class="level3">
+<h3 class="anchored" data-anchor-id="row-standardised-weights-matrix"><strong>8.7.1 Row-standardised weights matrix</strong></h3>
+<p><code>nb2listw(neighbours, glist=NULL, style="W", zero.policy=NULL)</code></p>
+<p>Arguments</p>
+<table class="table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 73%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><code>neighbours</code></th>
+<th>an object of class <code>nb</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>glist</code></td>
+<td>list of general weights corresponding to neighbours</td>
+</tr>
+<tr class="even">
+<td><code>style</code></td>
+<td><code>style</code> can take values “W”, “B”, “C”, “U”, “minmax” and “S”</td>
+</tr>
+<tr class="odd">
+<td><code>zero.policy</code></td>
+<td>default NULL, use global option value; if FALSE stop with error for any empty neighbour sets, if TRUE permit the weights list to be formed with zero-length weights vectors</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Details</strong></p>
+<p>Starting from a binary neighbours list, in which regions are either listed as neighbours or are absent (thus not in the set of neighbours for some definition), the function adds a weights list with values given by the coding scheme style chosen.</p>
+<p>Weights to each neighboring polygon</p>
+<ul>
+<li><p>each neighboring polygon will be assigned equal weight (style=“W”) &lt;- row standardised. This is accomplished by assigning the fraction 1/(#ofneighbors) to each neighboring county then summing the weighted income values</p></li>
+<li><p>drawback of this method is that polygon along the edge will base their lagged values on fewer polygons, thus over estimating the true nature of spatial autocorrelation in the data. Next time can consider other more robust options are available, notably style=“B” &lt;- basic binary coding</p></li>
+<li><p>The zero.policy=TRUE option allows for lists of non-neighbors. This should be used with caution since the user may not be aware of missing neighbors in their dataset however, a zero.policy of FALSE would return an error. <strong>Class of rsmq_q = ‘listw’ and ‘nb’</strong></p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1"></a><span class="co"># wm_q is binary matrix</span></span>
+<span id="cb78-2"><a href="#cb78-2"></a>rswm_q <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(wm_q, <span class="at">style =</span> <span class="st">'W'</span>, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb78-3"><a href="#cb78-3"></a>rswm_q</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Characteristics of weights list object:
+Neighbour list object:
+Number of regions: 88 
+Number of nonzero links: 448 
+Percentage nonzero weights: 5.785124 
+Average number of links: 5.090909 
+
+Weights style: W 
+Weights constants summary:
+   n   nn S0       S1       S2
+W 88 7744 88 37.86334 365.9147</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1"></a><span class="fu">class</span>(rswm_q)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "listw" "nb"   </code></pre>
+</div>
+</div>
+<p>To see the weight of the first polygon’s 5 neighbours type:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1"></a>rswm_q<span class="sc">$</span>weights[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] 0.2 0.2 0.2 0.2 0.2</code></pre>
+</div>
+</div>
+<p>The 5 neighbours are</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1"></a>rswm_q<span class="sc">$</span>neighbours[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1]  2  3  4 57 85</code></pre>
+</div>
+</div>
+<p>Explanation of above: Each neighbor is assigned a 0.125 of the total weight. This means that when R computes the average neighboring income values, each <strong>neighbor’s income will be multiplied by 0.125 before being tallied.</strong></p>
+<p>Using the same queen’s method, we can also derive a row standardised inverse-distance weight matrix by using the code chunk below. Recall <code>ids</code> contains inverse-distances to neighbours , originally from queens <code>wm_q</code> which is a binary matrix. <strong>Class of rswm_q is ‘listw’ and ‘nb’</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1"></a>rswm_ids <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(wm_q, <span class="at">glist=</span>ids, <span class="at">style =</span><span class="st">'B'</span>, <span class="at">zero.policy=</span><span class="cn">TRUE</span>)</span>
+<span id="cb86-2"><a href="#cb86-2"></a>rswm_ids</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Characteristics of weights list object:
+Neighbour list object:
+Number of regions: 88 
+Number of nonzero links: 448 
+Percentage nonzero weights: 5.785124 
+Average number of links: 5.090909 
+
+Weights style: B 
+Weights constants summary:
+   n   nn       S0        S1     S2
+B 88 7744 8.786867 0.3776535 3.8137</code></pre>
+</div>
+</div>
+<p>To see the weights of the 1st polygon; it is actually the same as <code>ids</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1"></a>rswm_ids<span class="sc">$</span>weights[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] 0.01535405 0.03916350 0.01820896 0.02807922 0.01145113</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1"></a><span class="fu">summary</span>(<span class="fu">unlist</span>(rswm_ids<span class="sc">$</span>weights))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.008218 0.015088 0.018739 0.019614 0.022823 0.040338 </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="application-of-spatial-weight-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="application-of-spatial-weight-matrix"><strong>8.8 Application of Spatial Weight Matrix</strong></h2>
+<p>In this section, you will learn how to create four different spatial lagged variables, they are:</p>
+<ul>
+<li><p>spatial lag with row-standardized weights,</p></li>
+<li><p>spatial lag as a sum of neighbouring values,</p></li>
+<li><p>spatial window average, and</p></li>
+<li><p>spatial window sum.</p></li>
+</ul>
+<section id="spatial-lag-with-row-standardized-weights" class="level3">
+<h3 class="anchored" data-anchor-id="spatial-lag-with-row-standardized-weights">8.8.1 Spatial lag with row-standardized weights</h3>
+<ul>
+<li><p>compute the average neighbour GDPCC values for each polygon</p></li>
+<li><p>commonly called spatially lagged values</p></li>
+<li><p>does not include itself</p></li>
+<li><p>Recalled in the previous section, we retrieved the GDPPC of these five countries (neighbours of poly1 using queen method) by using the code chunk below.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1"></a>x1 <span class="ot">&lt;-</span> wm_q[[<span class="dv">1</span>]]</span>
+<span id="cb92-2"><a href="#cb92-2"></a>hunan<span class="sc">$</span>GDPPC[<span class="fu">c</span>(x1)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 20981 34592 24473 21311 22879</code></pre>
+</div>
+</div>
+<ul>
+<li><p>In the code below, use spatial weight matrix (equal weightage of 0.2 for poly1 etc.. ) by 0.2 * 20981 + 0.2 * 34592 + 0.2 * 24473 + 0.2 * 21311 + 0.2 * 22879 = 24847.20 for poly1 “Anxiang”</p></li>
+<li><p>22724.80 is the average GDPPC for poly2 based on equal weightage (0.2) of all its five neighbours . 24143.25 for poly3 based on equal weightage (0.25) based on four neighbours.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1"></a>GDPPC.lag <span class="ot">&lt;-</span> <span class="fu">lag.listw</span>(rswm_q, hunan<span class="sc">$</span>GDPPC)</span>
+<span id="cb94-2"><a href="#cb94-2"></a>GDPPC.lag</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 24847.20 22724.80 24143.25 27737.50 27270.25 21248.80 43747.00 33582.71
+ [9] 45651.17 32027.62 32671.00 20810.00 25711.50 30672.33 33457.75 31689.20
+[17] 20269.00 23901.60 25126.17 21903.43 22718.60 25918.80 20307.00 20023.80
+[25] 16576.80 18667.00 14394.67 19848.80 15516.33 20518.00 17572.00 15200.12
+[33] 18413.80 14419.33 24094.50 22019.83 12923.50 14756.00 13869.80 12296.67
+[41] 15775.17 14382.86 11566.33 13199.50 23412.00 39541.00 36186.60 16559.60
+[49] 20772.50 19471.20 19827.33 15466.80 12925.67 18577.17 14943.00 24913.00
+[57] 25093.00 24428.80 17003.00 21143.75 20435.00 17131.33 24569.75 23835.50
+[65] 26360.00 47383.40 55157.75 37058.00 21546.67 23348.67 42323.67 28938.60
+[73] 25880.80 47345.67 18711.33 29087.29 20748.29 35933.71 15439.71 29787.50
+[81] 18145.00 21617.00 29203.89 41363.67 22259.09 44939.56 16902.00 16930.00</code></pre>
+</div>
+</div>
+<p>We can append the spatially lag GDPPC values onto hunan sf data frame by using the code chunk below.</p>
+<p>First, create <code>lag.list</code> that contains two individual lists, namely NAME_3 column in <code>hunan</code> and the lag variable. Next, transform both lists into a dataframe. Rename the column headers. Perform a left join with hunan and lag.res will automatically use <code>NAME_3</code> column as the join column.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1"></a>lag.list <span class="ot">&lt;-</span> <span class="fu">list</span>(hunan<span class="sc">$</span>NAME_3, <span class="fu">lag.listw</span>(rswm_q, hunan<span class="sc">$</span>GDPPC))</span>
+<span id="cb96-2"><a href="#cb96-2"></a>lag.res <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(lag.list)</span>
+<span id="cb96-3"><a href="#cb96-3"></a><span class="fu">colnames</span>(lag.res) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"NAME_3"</span>, <span class="st">"lag GDPPC"</span>)</span>
+<span id="cb96-4"><a href="#cb96-4"></a>hunan <span class="ot">&lt;-</span> <span class="fu">left_join</span>(hunan,lag.res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The following table shows the average neighboring income values (stored in the Inc.lag object) for each county.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1"></a><span class="fu">head</span>(hunan,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 3 features and 7 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: 111.7027 ymin: 28.61762 xmax: 112.3013 ymax: 29.77344
+Geodetic CRS:  WGS 84
+   NAME_2  ID_3  NAME_3   ENGTYPE_3  County GDPPC lag GDPPC
+1 Changde 21098 Anxiang      County Anxiang 23667  24847.20
+2 Changde 21100 Hanshou      County Hanshou 20981  22724.80
+3 Changde 21101  Jinshi County City  Jinshi 34592  24143.25
+                        geometry
+1 POLYGON ((112.0625 29.75523...
+2 POLYGON ((112.2288 29.11684...
+3 POLYGON ((111.8927 29.6013,...</code></pre>
+</div>
+</div>
+<p>Next, we will plot both the GDPPC and spatial lag GDPPC for comparison using the code chunk below.</p>
+<div class="cell" data-fig.asp="0.68">
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1"></a>gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">'GDPPC'</span>) <span class="sc">+</span></span>
+<span id="cb99-2"><a href="#cb99-2"></a>    <span class="fu">tm_layout</span>(<span class="at">legend.height =</span> <span class="fl">0.2</span>,</span>
+<span id="cb99-3"><a href="#cb99-3"></a>              <span class="at">legend.width=</span><span class="fl">0.2</span>)</span>
+<span id="cb99-4"><a href="#cb99-4"></a>lag_gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">'lag GDPPC'</span>) <span class="sc">+</span></span>
+<span id="cb99-5"><a href="#cb99-5"></a>  <span class="fu">tm_layout</span>(<span class="at">legend.height =</span> <span class="fl">0.2</span>,</span>
+<span id="cb99-6"><a href="#cb99-6"></a>            <span class="at">legend.width=</span><span class="fl">0.4</span>)</span>
+<span id="cb99-7"><a href="#cb99-7"></a></span>
+<span id="cb99-8"><a href="#cb99-8"></a><span class="fu">tmap_arrange</span>(gdppc, lag_gdppc, <span class="at">asp=</span><span class="dv">1</span>, <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex2_1_files/figure-html/unnamed-chunk-55-1.png" class="img-fluid" width="1344"></p>
 </div>
 </div>
 <div class="cell" data-fig.asp="0.68">
