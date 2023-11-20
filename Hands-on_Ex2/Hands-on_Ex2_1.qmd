@@ -102,7 +102,7 @@ Now, we are going to prepare a basemap and a choropleth map showing the distribu
 basemap <- tm_shape(hunan)+
   tm_polygons() +
   tm_text('NAME_3',
-          size = 0.35)
+          size = 0.5)
 
 gdppc <- tm_shape(hunan)+
   tm_polygons('GDPPC') +
@@ -191,12 +191,215 @@ summary(wm_r)
 
 The summary report above shows that there are 88 area units in Hunan. The most connect area unit has 10 neighbours. There are two area units with only one heighbours.
 
+### 8.5.3 Visualising contiguity weights (find centroid coords first)
 
+A connectivity graph takes a point and displays a line to each neighbouring point.
 
+-   need a point in polygon via polygon centroids (its lat & long) \<- calculate using the sf package first
 
+To obtain coordinates in a separate data frame
 
+1.  input vector is the geometry column of us.bound (in `hunan`), an sf object \<- a polygon
 
+    Using hunan\$geometry\[\[1\]\]: The input vector of the FIRST POLYGON looks like POLYGON ((112.0625 29.75523, 112.069 29.74544, 112.0707 29.7415, 112.0716 29.73667, .... , 112.0625 29.75523).
 
+2.  To find the centroid (CG) of one polygon, use the `st_centroid()` function, which is a formula shorthand for a small anonymous function (lambda function). It takes an argument represented by **`.x`**.
+    `st_centroid(.x)[[1]]` extracts the X-coordinate (longitude) of the centroid while `st_centroid(.x)[[2]]` extracts the Y-coords.
+
+    ::: panel-tabset
+    #### X and Y
+
+    ```{r}
+    #hunan$geometry[[1]]
+    st_centroid(hunan$geometry[[1]])
+    ```
+
+    #### X only
+
+    ```{r}
+    st_centroid(hunan$geometry[[1]])[[1]]
+    ```
+
+    #### Y only
+
+    ```{r}
+    st_centroid(hunan$geometry[[1]])[[2]]
+    ```
+    :::
+
+**`map_dbl(...)`** is a function from the **`purrr`** package that applies a function to each element of a list or vector and returns the results as a double vector. In this case, the function being applied is the expression following **`~`**.
+Example of how this function is used in a simple way:
+
+```{r}
+# Example list of vectors
+list_of_vectors <- list(a = c(1, 2, 3), b = c(4, 5, 6), c = c(7, 8, 9))
+
+# Applying a function to calculate the sum of each vector
+map_dbl(list_of_vectors, ~ sum(.x))
+
+```
+
+After finding centroid, to access longitude values
+
+-   double bracket notation \[\[ \]\] and 1
+
+    ```{r}
+    longitude <- map_dbl(hunan$geometry, ~st_centroid(.x)[[1]])
+    longitude
+    ```
+
+To access the latitude value
+
+-   double bracket notation \[\[ \]\] and 2
+
+    ```{r}
+    latitude <- map_dbl(hunan$geometry, ~st_centroid(.x)[[2]])
+    ```
+
+With both longitude and latitude, use cbind() to combine both in the same object,
+
+```{r}
+coords <- cbind(longitude, latitude)
+head(coords)
+```
+
+#### 8.5.3.1 Plotting Queen contiguity based neighbours map
+
+wm\_ q is weight matrix using queen method (88 rows of list of neighbours)
+
+coords is an array of x,y coordinates of centroids for each of the 88 counties
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.6
+plot(hunan$geometry, border="lightgrey", main="Queen's contiguity")
+plot(wm_q, coords, pch = 19, cex = 0.6, add = TRUE, col= "red")
+```
+
+> Use the [plot()](https://www.digitalocean.com/community/tutorials/plot-function-in-r) function
+>
+> 1.  **The shape of the markers:** The plot markers are by default small, empty circles. These are also known as plot characters - denoted by **pch**. Pch values 0 to 25 are valid and give several different symbols on the graph. **Pch** 0 is for a square, 1 is for a circle, 3 is for a triangle, 4 is for a cross and so on.
+>
+> 2.  **Size of the plot markers**: The **cex** parameter can be set to 0.5 if we want the markers to be 50% smaller and 1.5 if wewant them to be 50% larger.
+>
+> 3.  **Color of the plot markers:** These colors can be selected from a list provided by R under the `colors()` function.
+
+#### 8.5.3.2 Plotting Rook contiguity based neighbours map
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+plot(hunan$geometry, border = 'lightgrey', main='Rooks contiguity')
+plot(wm_r, coords, pch = 19, cex = 0.6, add = TRUE, col ="blue")
+```
+
+#### 8.5.3.3 Plotting both Queen and Rook contiguity based neighbours maps side-by-side
+
+`par(mfrow = c(1, 2))` arranges subsequent plots in a grid with **one** row and **two** columns
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+par(mfrow=c(1,2))
+
+plot(hunan$geometry, border="lightgrey", main="Queen's contiguity")
+plot(wm_q, coords, pch = 19, cex = 0.6, add = TRUE, col= "red", main="Queen Contiguity")
+plot(hunan$geometry, border="lightgrey",main="Rook's contiguity")
+plot(wm_r, coords, pch = 19, cex = 0.6, add = TRUE, col = "blue", main="Rook Contiguity")
+```
+
+## 8.6 Computing distance based neighbours
+
+-   In this section, we will derive distance-based weight matrices by using [*dnearneigh()*](https://r-spatial.github.io/spdep/reference/dnearneigh.html) of **spdep** package.
+
+    | dnearneigh(x, d1, d2, row.names = NULL, longlat = NULL, bounds=c("GE", "LE"),
+    |  use_kd_tree=TRUE, symtest=FALSE, use_s2=packageVersion("s2") \> "1.0.7", k=200,
+    |  dwithin=TRUE)
+
+-   identifies neighbours using distance band with lower d1= and upper d2= bounds controlled by the `bounds=` argument
+
+-   If unprojected coordinates are used (WSG84 geographic) and either specified in the coordinates object x or with x as a two column matrix and longlat=TRUE, great circle distances in **km** will be calculated assuming the WGS84 reference ellipsoid.
+
+### **8.6.1 Determine the cut-off distance**
+
+Firstly, we need to determine the upper limit for distance band by using the steps below:
+
+-   Return a **matrix** with the indices of points belonging to the set of the k nearest neighbours of each other by using [*knearneigh()*](https://r-spatial.github.io/spdep/reference/knearneigh.html) of **spdep**. **Class: 'knn'**.
+    Output: NN of poly1 = poly3, NN of poly2 = poly 78 etc...
+
+    ```{r}
+    str(knearneigh(coords,
+               k=1))
+    #knearneigh(coords,k=1)['nn']  #<< shows matrix
+    ```
+
+-   Convert the matrix knn object returned by *knearneigh()* into a neighbours **list** with a list of integer vectors containing neighbour region number ids by using [*knn2nb()*](https://r-spatial.github.io/spdep/reference/knn2nb.html). **Class: nb**
+
+    ```{r}
+    knn2nb(knearneigh(coords))[1:5]
+    ```
+
+-   Return a list of the **length** (the distance to one\'s nearest neighbour) of neighbour relationship edges by using [*nbdists()*](https://r-spatial.github.io/spdep/reference/nbdists.html) of **spdep**. The function returns in the units of the coordinates if the coordinates are projected, in km if in WSG84. **Class: 'nbdist'**
+
+    ```{r}
+    nbdists(knn2nb(knearneigh(coords)),
+            coords,
+            longlat = TRUE) [1:5]
+    ```
+
+-   Remove the list structure of the returned object by using [**unlist()**](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/unlist). **Class of k1dists: numeric.**
+
+    Output: 25.53398 43.03114 25.53398 29.28480 29.28480 45.98097 58.52704 28.95985 34.45062 37.99885 44.49442 33.48816 35.98123
+
+    ```{r}
+    k1 <- knn2nb(knearneigh(coords))
+    k1dists <- unlist(nbdists(k1, coords, longlat = TRUE))
+    summary(k1dists)
+    ```
+
+**The summary report shows that the largest first nearest neighbour distance is 61.79. So using this as the upper threshold (62km) will help to ensure that all units (polygons) will have at least one neighbour**.
+
+### 8.6.2 Computing [fixed]{.underline} distance weight matrix
+
+(Earlier, we had used `poly2nb(hunan, queen=TRUE/FALSE)` to define neighbours using Queen or Rook method, resulting in `wm_q` and `wm_r`)
+
+Now, to define neighbours using distance, we use the `dnearneigh()` ,
+
+-   *longlat argument: TRUE if point coordinates are **geographical** longitude-latitude decimal degrees (WSG84)*
+
+```{r}
+wm_d62 <- dnearneigh(coords, 0, 62, longlat=TRUE )
+wm_d62
+```
+
+Average number of links is calculated by dividing the total number of links by the number of regions. On average, each region has approximately 3.68 neighboring regions.
+
+Next, we will use *str()* to display the content of wm_d62 weight matrix.
+
+```{r}
+str(wm_d62)
+```
+
+Another way to display the structure of the weight matrix is to combine [*table()*](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/table) and [*card()*](https://r-spatial.github.io/spdep/reference/card.html) of spdep.
+
+The column headers "1" means the count of counties that have 1 neighbor within the specified distance of 62km, "2" means the count of counties that have 2 neighbors, and so on.
+
+```{r}
+table(hunan$County, card(wm_d62))
+```
+
+TO find the number of connected components (aka see if there are any spatial units / regions without a neighbour)
+
+```{r}
+n_comp <- n.comp.nb(wm_d62)
+n_comp$nc
+```
+
+In this connect component, there are 88 elements (spatial units)
+
+```{r}
+table(n_comp$comp.id)
+```
 
 ```{r}
 #| code-fold: True
