@@ -481,7 +481,7 @@ dist <- nbdists(wm_q, coords, longlat=TRUE)
 head(dist,3)
 ```
 
-Now compute the inverse distances for all polygons to their neighbours. **Class of ids: matrix of list**
+Now compute the inverse distances for all polygons to their neighbours. **Class of ids: matrix of list.** `ids` is also glist (general weights for each nb).
 
 ```{r}
 ids <- lapply(dist, function(x) 1/(x))
@@ -495,7 +495,7 @@ head(ids,3)
 Arguments
 
 | `neighbours`  | an object of class `nb`                                                                                                                                                     |
-|---------------------|---------------------------------------------------|
+|----------------------|--------------------------------------------------|
 | `glist`       | list of general weights corresponding to neighbours                                                                                                                         |
 | `style`       | `style` can take values "W", "B", "C", "U", "minmax" and "S"                                                                                                                |
 | `zero.policy` | default NULL, use global option value; if FALSE stop with error for any empty neighbour sets, if TRUE permit the weights list to be formed with zero-length weights vectors |
@@ -546,14 +546,14 @@ rswm_q$neighbours[1]
 
 Explanation of above: Each neighbor is assigned a 0.125 of the total weight. This means that when R computes the average neighboring income values, each **neighbor's income will be multiplied by 0.125 before being tallied.**
 
-Using the same queen's method, we can also derive a (row standardised ?) inverse-distance weight matrix by using the code chunk below. Recall `ids` contains inverse-distances to neighbours , originally from queens `wm_q` which is a binary matrix. **Class of rswm_ids is 'listw' and 'nb'.** It contains 3 lists, 'style' of class character ,'neighbours' of class nb, 'weights' of class nb
+Using the same queen's method, we can also derive a (row standardised ?) inverse-distance weight matrix by using the code chunk below. Recall `ids` contains inverse-distances to neighbours, also our glist (general weights of neighbours) , originally from queens `wm_q` which is a neighbour structure. We will now use `nb2listw()` and `wm_q` and `ids` to create a spatial weights matrix. **Class of rswm_ids is 'listw' and 'nb'.** It contains 3 lists, 'style' of class character ,'neighbours' of class nb, 'weights' of class nb
 
 ```{r}
-rswm_ids <- nb2listw(wm_q, glist=ids, style ='B', zero.policy=TRUE)
+rswm_ids <- nb2listw(wm_q, glist=ids, style ='W', zero.policy=TRUE)
 rswm_ids
 ```
 
-To see the weights of the 1st polygon; it is actually the same as `ids`
+To see the weights of the 1st polygon; it is actually the similar as `ids`, but not identical.
 
 ```{r}
 rswm_ids$weights[1]
@@ -571,7 +571,7 @@ b <- unlist(nb2listw(wm_q, style = 'B', zero.policy = TRUE)$weights[1])
 c <- unlist(rswm_ids$weights[1])
 
 weights_comparison <- as.data.frame(cbind(a,b,c))
-colnames(weights_comparison) <- c("row standardised", "binary", 'inverse distance')
+colnames(weights_comparison) <- c("row standardised", "binary", 'row standardised inverse distance')
 weights_comparison
 ```
 
@@ -602,6 +602,8 @@ x1 <- wm_q[[1]]
 hunan$GDPPC[c(x1)]
 ```
 
+-   Now we compute the row-standardised lag variable using `lag.listw()` and `rsqm_q` (neighbour structure).
+
 -   In the code below, use spatial weight matrix (equal weightage of 0.2 for poly1 etc.. ) by 0.2 \* 20981 + 0.2 \* 34592 + 0.2 \* 24473 + 0.2 \* 21311 + 0.2 \* 22879 = 24847.20 for poly1 "Anxiang"
 
 -   22724.80 is the average GDPPC for poly2 based on equal weightage (0.2) of all its five neighbours . 24143.25 for poly3 based on equal weightage (0.25) based on four neighbours.
@@ -613,10 +615,12 @@ GDPPC.lag
 
 We can append the spatially lag GDPPC values onto hunan sf data frame by using the code chunk below.
 
-First, create `lag.list` that contains two individual lists, namely NAME_3 column in `hunan` and the lag variable. Next, transform both lists into a dataframe. Rename the column headers. Perform a left join with hunan and lag.res will automatically use `NAME_3` column as the join column.
+First, create `lag.list` that contains two **individual** lists, namely NAME_3 column in `hunan` and the lag variable. Next, transform both lists into a dataframe. Rename the column headers. Perform a left join with hunan and lag.res will automatically use `NAME_3` column as the join column.
 
 ```{r}
 lag.list <- list(hunan$NAME_3, lag.listw(rswm_q, hunan$GDPPC))
+str(lag.list)
+
 lag.res <- as.data.frame(lag.list)
 colnames(lag.res) <- c("NAME_3", "lag GDPPC")
 hunan <- left_join(hunan,lag.res)
@@ -644,12 +648,17 @@ lag_gdppc <- qtm(hunan, 'lag GDPPC') +
 tmap_arrange(gdppc, lag_gdppc, asp=1, ncol=2)
 ```
 
+::: callout-note
+The chart on the left plots the original GDPPC values of respective spatial units. The chart on the right plots the average GDPPC values of all spatial units that shares a boundary (Queen) for a particular spatial unit. Does not include diagonal (own's) GDPPC value.
+:::
+
 Compute lag variable using rswm_ids (inverse-distance method)
 
 ```{r}
 #| fig-width: 14
 #| fig-asp: 0.68
 lag.list.2 <- list(hunan$NAME_3, lag.listw(rswm_ids, hunan$GDPPC))
+str(lag.list.2)
 lag.res.2 <- as.data.frame(lag.list.2)
 colnames(lag.res.2) <- c("NAME_3", "lag GDPPC ID")
 hunan <- left_join(hunan,lag.res.2)
@@ -664,15 +673,240 @@ lag_gdppc_id <- qtm(hunan, 'lag GDPPC ID') +
 tmap_arrange(lag_gdppc, lag_gdppc_id, asp=1, ncol=2)
 ```
 
+::: callout-note
+**Lag variable using Queen's contiguity (Row standardised weight matrix)**
+
+The lag variable represents the spatial AVERAGE of GDPPC for neighbouring areas based on Queen contiguity.
+
+**Lag variable using Inverse-Distance Weight matrix**
+
+The lag variable is calculated as a WEIGHTED AVERAGE of GDPPC. Further neighbours are penalised (assign lesser weights) when we use inverse-distance.
+:::
+
+### **8.8.2 Spatial lag as a sum of neighboring values**
+
+**Part 1: Obtain binary weights matrix called \'b_weights\' (glist):**
+
+wm_q (aka neighbour list) is a \'nb\' class containing neighbour IDs for each polygon. E.g. Neighbours list of the first three polygons:
+
 ```{r}
-#| code-fold: True
+#| echo: false
+wm_q[1:3]
+```
+
+To create a binary list, we will now apply lambda function of 0\*neighbour ID + 1 ; so that if there is a neighbour, the value is 1. Class of b_weights is a matrix with lists of 1 .
+
+Similar to `ids` earlier, b_weights is the glist (general weights corresponding to neighbours). We need the neighbour structure `wm_q` and `glist` to convert to spatial weights matrix using `nb2listw()`.
+
+```{r}
+b_weights <- lapply(wm_q, function(x) 0*x+1)
+class(b_weights)
+b_weights[1:3]
+```
+
+**Part 2: Create the spatial weights matrix using nb2listw() , `wm_q` (neighbour structure) and `b_weights`** (glist)
+
+```{r}
+b_weights2 <- nb2listw(wm_q, 
+                       glist = b_weights, 
+                       style = "B")
+b_weights2
+```
+
+Sneakpeak at b_weights2
+
+```{r}
+b_weights2$weights[1:3]
+```
+
+With the proper weights assigned, we can use lag.listw to compute a lag variable from our weight and GDPPC. Since the weights are all '1's, we will be summing all our neighbours' GDPPC.
+
+lag_sum contains two lists, namely `NAME_3` and `lag_sum GDPPC`. Combine both lists into a df. Rename the df column headers.
+
+```{r}
+lag_sum <- list(hunan$NAME_3, lag.listw(b_weights2, hunan$GDPPC))
+str(lag_sum)
+
+lag.res <- as.data.frame(lag_sum)
+colnames(lag.res) <- c('NAME_3', 'lag_sum GDPPC')
+```
+
+Next, append `lag.res` to `hunan` sf dataframe
+
+```{r}
+hunan <- left_join(hunan, lag.res)
+```
+
+Plot both the *GDPPC* and *Spatial Lag Sum GDPPC* for comparison using the code chunk below.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+gdppc <- qtm(hunan, 'GDPPC') +
+    tm_layout(main.title='No lag variable',
+              legend.height = 0.2,
+              legend.width=0.2)
+
+lag_sum_gdppc <- qtm(hunan, 'lag_sum GDPPC') +
+  tm_layout(main.title = 'spatial lag as lag sum of nb values',
+            legend.height = 0.2,
+            legend.width=0.2)
+
+tmap_arrange(gdppc, lag_sum_gdppc, asp=1, ncol=2)
+```
+
+::: callout-note
+The lag variable created by summing up neighbours' GDPPC look more alike the lag variable created using inverse-distance weights matrix.
+:::
+
+### 8.8.3 Spatial window average
+
+-   must use row-standardized weights
+
+-   similar to 8.8.1 but only difference is that it includes the diagonal element;
+
+-   To include diagonal in R, we need to go back to the neighbors structure `wm_q` and add the diagonal element before assigning weights.
+
+```{r}
+# weight matrix queen self
+wm_qs <- include.self(wm_q)
+wm_qs
+wm_qs[1:3]
+```
+
+We can see that polygon 1 has its diagonal (1) inside and polygon 2 has its diagonal (2) inside.We can see that polygon 1 has its diagonal (1) inside and polygon 2 has its diagonal (2) inside.
+
+As expected, the Number of nonzero links, Percentage nonzero weights and Average number of links are 536, 6.921488 and 6.090909 respectively as compared to wm_q of 448, 5.785124 and 5.090909.
+
+Now, proceed to create the spatial weights matrix that includes self:
+
+Default style is 'W' - row standardised.
+
+```{r}
+wm_qs <- nb2listw(wm_qs, style ='W', zero.policy = TRUE)
+wm_qs$weights[1:3]
+```
+
+Now, create lag variable using spatial weights matrix `wm_qs` and `hunan$GDPCC` variable:
+
+```{r}
+lag_w_ave_gdppc <- lag.listw(wm_qs,
+                             hunan$GDPPC)
+lag_w_ave_gdppc
+```
+
+Append `lag_w_ave_gdppc` to the `hunan` dataframe by using the series of steps below:
+
+```{r}
+lag.list.wm_qs <- list(hunan$NAME_3, lag.listw(wm_qs, hunan$GDPPC))
+str(lag.list.wm_qs)
+lag_wm_qs.res <- as.data.frame(lag.list.wm_qs)
+colnames(lag_wm_qs.res) <- c('NAME_3', 'lag_window_avg GDPPC')
+
+hunan <- left_join(hunan, lag_wm_qs.res)
+
+hunan %>% 
+  select('County', 'lag GDPPC', 'lag_window_avg GDPPC') %>% 
+  head() %>% 
+  kable()
+
+#as_tibble(hunan)  #<< will isolate the geometry part
+```
+
+Use dtm() to plot 'lag GDPPC' and 'lag_window_avg GDPPC' side-by-side
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+
+W_avg_gdppc <- qtm(hunan, 'lag_window_avg GDPPC') +
+  tm_layout(main.title='With lag_sum variable',
+            legend.height = 0.2,
+            legend.width=0.4)
+
+tmap_arrange(lag_gdppc, W_avg_gdppc, asp=1, ncol=2)
+
+```
+
+::: callout-note
+Both charts use row-standardised spatial weights matrix.
+
+Difference between charts is that left does not include self's GDPPC but the right includes self's GDPPC.
+:::
+
+### **8.8.4 Spatial window sum**
+
+The spatial window sum is the counter part of the window average, but without using row-standardized weights. (similar to 8.8.2 but including self)
+
+To add the diagonal element to the neighbour list, we just need to use *include.self()* from **spdep**.
+
+```{r}
+wm_qs <- include.self(wm_q)
+wm_qs
+```
+
+Next, we will assign binary **general** weights to the neighbour structure that includes the diagonal element.
+
+```{r}
+b_weights <- lapply(wm_qs, function(x) 0*x + 1)
+b_weights[1:3]
+```
+
+Each spatial unit has one more element, that is itself.
+
+Again, we use *`nb2listw()`* and `wm_qs` (nb structure) and `b_weights` (glist) to create **spatial** weights matrix `b_weights`
+
+```{r}
+b_weights2 <- nb2listw(wm_qs, 
+                       glist = b_weights, 
+                       style = "B")
+b_weights2
+```
+
+Compute the window sum lag variable using `lag.listw()`, `b_weights2` (spatial weights matrix) and `hunan$GDPCC` (variable). The below also appends the window sum lag variable to `hunan` df.
+
+```{r}
+w_sum_gdppc <- list(hunan$NAME_3, lag.listw(b_weights2, hunan$GDPPC))
+str(w_sum_gdppc)
+w_sum_gdppc.res <- as.data.frame(w_sum_gdppc)
+colnames(w_sum_gdppc.res) <- c("NAME_3", "w_sum GDPPC")
+
+hunan <- left_join(hunan, w_sum_gdppc.res)
+hunan %>%
+  select("County", "lag_sum GDPPC", "w_sum GDPPC") %>%
+  head() %>% 
+  kable()
+```
+
+Lastly, *qtm()* of **tmap** package is used to plot the lag_sum GDPPC and w_sum_gdppc maps next to each other for quick comparison.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+
+W_sum_gdppc <- qtm(hunan, 'w_sum GDPPC') +
+  tm_layout(main.title='With lag_win_sum variable',
+            legend.height = 0.2,
+            legend.width=0.4)
+
+tmap_arrange(lag_sum_gdppc, W_sum_gdppc, asp=1, ncol=2)
+
+```
+
+::: callout-note
+Both charts do not use row-standardised spatial matrix, instead they use binary '1' because of the need to sum up the GDPPC values. Difference is that left does not include self but right includes self.
+:::
+
+```{r}
+
 #| eval: false
 #| echo: false
 #| fig-width: 14
 #| fig-asp: 0.68
+#| code-fold: True
 ```
 
-## Theories
+## Summaries
 
 Summary of deriving spatial weights matrix
 
