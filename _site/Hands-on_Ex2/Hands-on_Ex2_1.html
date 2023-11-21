@@ -300,10 +300,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#spatial-lag-with-row-standardized-weights" id="toc-spatial-lag-with-row-standardized-weights" class="nav-link" data-scroll-target="#spatial-lag-with-row-standardized-weights">8.8.1 Spatial lag with row-standardized weights</a></li>
   </ul></li>
-  <li><a href="#theories" id="toc-theories" class="nav-link" data-scroll-target="#theories">Theories</a>
-  <ul class="collapse">
-  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
-  </ul></li>
+  <li><a href="#theories" id="toc-theories" class="nav-link" data-scroll-target="#theories">Theories</a></li>
   </ul>
 </nav>
     </div>
@@ -1152,10 +1149,12 @@ Link number distribution:
 </section>
 <section id="computing-fixed-distance-weight-matrix" class="level3">
 <h3 class="anchored" data-anchor-id="computing-fixed-distance-weight-matrix">8.6.2 Computing <u>fixed</u> distance weight matrix</h3>
-<p>(Earlier, we had used <code>poly2nb(hunan, queen=TRUE/FALSE)</code> to define neighbours using Queen or Rook method, resulting in <code>wm_q</code> and <code>wm_r</code>)</p>
-<p>Now, to define neighbours using distance, we use the <code>dnearneigh()</code> ,</p>
+<p>(Earlier, we had used <code>poly2nb(hunan, queen=TRUE/FALSE)</code> to define neighbours using Queen or Rook method, resulting in <code>wm_q</code> and <code>wm_r.</code>)</p>
+<p>(We also have <code>k1</code> of ‘nb’ class where each polygon has 1 nb. Additionally, we used summary(unlist(nbdists())) to calculate the distance between furthest neighbours.)</p>
+<p>Now, to define neighbours using a <strong>distance threshold</strong>, we use the <code>dnearneigh()</code> ,</p>
 <ul>
 <li><em>longlat argument: TRUE if point coordinates are <strong>geographical</strong> longitude-latitude decimal degrees (WSG84)</em></li>
+<li>some polygons have more than 1 nb, but all polygons have at least 1 nb here due to distance threshold.</li>
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a>wm_d62 <span class="ot">&lt;-</span> <span class="fu">dnearneigh</span>(coords, <span class="dv">0</span>, <span class="dv">62</span>, <span class="at">longlat=</span><span class="cn">TRUE</span> )</span>
@@ -1556,11 +1555,7 @@ Non-symmetric neighbours list</code></pre>
 <h2 class="anchored" data-anchor-id="weights-based-on-inverse-distance-method"><strong>8.7 Weights based on Inverse Distance Method</strong></h2>
 <p>In this section, we will learn how to derive a spatial weight matrix based on Inversed Distance method. <strong>This will assign greater weightage to closer polygons, use this if we know that closer proximity will result in more spatial interaction.</strong></p>
 <p>Earlier, we applied nbdists() <code>nbdists(knn2nb(knearneigh(coords, k=1)), coords, longlat = TRUE)</code> to compute the distance of one’s nearest neighbour.</p>
-<p>First, we will compute the distances between areas (defined using Queen contiguity method) by using <a href="https://r-spatial.github.io/spdep/reference/nbdists.html"><em>nbdists()</em></a> of <strong>spdep</strong>.</p>
-<div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Queen’s neighbours distance</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Fixed’s neighbours distance (NYX)</a></li></ul>
-<div class="tab-content">
-<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<p>First, we will compute the distances between areas (defined using Queen contiguity method) by using <a href="https://r-spatial.github.io/spdep/reference/nbdists.html"><em>nbdists()</em></a> of <strong>spdep</strong>. <strong>Class of dist: nbdist</strong></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb72"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1"></a>dist <span class="ot">&lt;-</span> <span class="fu">nbdists</span>(wm_q, coords, <span class="at">longlat=</span><span class="cn">TRUE</span>)</span>
 <span id="cb72-2"><a href="#cb72-2"></a><span class="fu">head</span>(dist,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1575,28 +1570,10 @@ Non-symmetric neighbours list</code></pre>
 [1] 25.53398 35.43536 27.05778 71.64530</code></pre>
 </div>
 </div>
-</div>
-<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<p>Now compute the inverse distances for all polygons to their neighbours. <strong>Class of ids: matrix of list</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1"></a><span class="fu">head</span>(<span class="fu">nbdists</span>(wm_d62, coords, <span class="at">longlat=</span><span class="cn">TRUE</span>),<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[[1]]
-[1] 25.53398 54.91802 52.58627 35.61352 48.15609
-
-[[2]]
-[1] 56.67944 51.92312 43.03114 58.16151
-
-[[3]]
-[1] 25.53398 35.43536 27.05778 58.73243</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<p>For queen’s method, now compute the inverse distances for all polygons to their neighbours</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1"></a>ids <span class="ot">&lt;-</span> <span class="fu">lapply</span>(dist, <span class="cf">function</span>(x) <span class="dv">1</span><span class="sc">/</span>(x))</span>
-<span id="cb76-2"><a href="#cb76-2"></a><span class="fu">head</span>(ids,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1"></a>ids <span class="ot">&lt;-</span> <span class="fu">lapply</span>(dist, <span class="cf">function</span>(x) <span class="dv">1</span><span class="sc">/</span>(x))</span>
+<span id="cb74-2"><a href="#cb74-2"></a><span class="fu">head</span>(ids,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 [1] 0.01535405 0.03916350 0.01820896 0.02807922 0.01145113
@@ -1614,8 +1591,8 @@ Non-symmetric neighbours list</code></pre>
 <p>Arguments</p>
 <table class="table">
 <colgroup>
-<col style="width: 26%">
-<col style="width: 73%">
+<col style="width: 29%">
+<col style="width: 70%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -1646,10 +1623,14 @@ Non-symmetric neighbours list</code></pre>
 <li><p>drawback of this method is that polygon along the edge will base their lagged values on fewer polygons, thus over estimating the true nature of spatial autocorrelation in the data. Next time can consider other more robust options are available, notably style=“B” &lt;- basic binary coding</p></li>
 <li><p>The zero.policy=TRUE option allows for lists of non-neighbors. This should be used with caution since the user may not be aware of missing neighbors in their dataset however, a zero.policy of FALSE would return an error. <strong>Class of rsmq_q = ‘listw’ and ‘nb’</strong></p></li>
 </ul>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">style = ‘W’</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">style = ‘B’</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1"></a><span class="co"># wm_q is binary matrix</span></span>
-<span id="cb78-2"><a href="#cb78-2"></a>rswm_q <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(wm_q, <span class="at">style =</span> <span class="st">'W'</span>, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb78-3"><a href="#cb78-3"></a>rswm_q</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1"></a><span class="co"># wm_q is a matrix containing nb indexes</span></span>
+<span id="cb76-2"><a href="#cb76-2"></a>rswm_q <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(wm_q, <span class="at">style =</span> <span class="st">'W'</span>, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb76-3"><a href="#cb76-3"></a>rswm_q</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Characteristics of weights list object:
 Neighbour list object:
@@ -1662,6 +1643,18 @@ Weights style: W
 Weights constants summary:
    n   nn S0       S1       S2
 W 88 7744 88 37.86334 365.9147</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1"></a><span class="fu">nb2listw</span>(wm_q, <span class="at">style =</span> <span class="st">'B'</span>, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>weights[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] 1 1 1 1 1</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="cell">
@@ -1687,7 +1680,7 @@ W 88 7744 88 37.86334 365.9147</code></pre>
 </div>
 </div>
 <p>Explanation of above: Each neighbor is assigned a 0.125 of the total weight. This means that when R computes the average neighboring income values, each <strong>neighbor’s income will be multiplied by 0.125 before being tallied.</strong></p>
-<p>Using the same queen’s method, we can also derive a row standardised inverse-distance weight matrix by using the code chunk below. Recall <code>ids</code> contains inverse-distances to neighbours , originally from queens <code>wm_q</code> which is a binary matrix. <strong>Class of rswm_q is ‘listw’ and ‘nb’</strong></p>
+<p>Using the same queen’s method, we can also derive a (row standardised ?) inverse-distance weight matrix by using the code chunk below. Recall <code>ids</code> contains inverse-distances to neighbours , originally from queens <code>wm_q</code> which is a binary matrix. <strong>Class of rswm_ids is ‘listw’ and ‘nb’.</strong> It contains 3 lists, ‘style’ of class character ,‘neighbours’ of class nb, ‘weights’ of class nb</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb86"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1"></a>rswm_ids <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(wm_q, <span class="at">glist=</span>ids, <span class="at">style =</span><span class="st">'B'</span>, <span class="at">zero.policy=</span><span class="cn">TRUE</span>)</span>
 <span id="cb86-2"><a href="#cb86-2"></a>rswm_ids</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1720,6 +1713,24 @@ B 88 7744 8.786867 0.3776535 3.8137</code></pre>
 0.008218 0.015088 0.018739 0.019614 0.022823 0.040338 </code></pre>
 </div>
 </div>
+<p>Finally, a comparison of the weights for polygon 1 across three spatial weights methods:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1"></a>a <span class="ot">&lt;-</span> <span class="fu">unlist</span>(rswm_q<span class="sc">$</span>weights[<span class="dv">1</span>])</span>
+<span id="cb92-2"><a href="#cb92-2"></a>b <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">nb2listw</span>(wm_q, <span class="at">style =</span> <span class="st">'B'</span>, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>weights[<span class="dv">1</span>])</span>
+<span id="cb92-3"><a href="#cb92-3"></a>c <span class="ot">&lt;-</span> <span class="fu">unlist</span>(rswm_ids<span class="sc">$</span>weights[<span class="dv">1</span>])</span>
+<span id="cb92-4"><a href="#cb92-4"></a></span>
+<span id="cb92-5"><a href="#cb92-5"></a>weights_comparison <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">cbind</span>(a,b,c))</span>
+<span id="cb92-6"><a href="#cb92-6"></a><span class="fu">colnames</span>(weights_comparison) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"row standardised"</span>, <span class="st">"binary"</span>, <span class="st">'inverse distance'</span>)</span>
+<span id="cb92-7"><a href="#cb92-7"></a>weights_comparison</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  row standardised binary inverse distance
+1              0.2      1       0.01535405
+2              0.2      1       0.03916350
+3              0.2      1       0.01820896
+4              0.2      1       0.02807922
+5              0.2      1       0.01145113</code></pre>
+</div>
+</div>
 </section>
 </section>
 <section id="application-of-spatial-weight-matrix" class="level2">
@@ -1740,8 +1751,8 @@ B 88 7744 8.786867 0.3776535 3.8137</code></pre>
 <li><p>Recalled in the previous section, we retrieved the GDPPC of these five countries (neighbours of poly1 using queen method) by using the code chunk below.</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1"></a>x1 <span class="ot">&lt;-</span> wm_q[[<span class="dv">1</span>]]</span>
-<span id="cb92-2"><a href="#cb92-2"></a>hunan<span class="sc">$</span>GDPPC[<span class="fu">c</span>(x1)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1"></a>x1 <span class="ot">&lt;-</span> wm_q[[<span class="dv">1</span>]]</span>
+<span id="cb94-2"><a href="#cb94-2"></a>hunan<span class="sc">$</span>GDPPC[<span class="fu">c</span>(x1)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 20981 34592 24473 21311 22879</code></pre>
 </div>
@@ -1751,8 +1762,8 @@ B 88 7744 8.786867 0.3776535 3.8137</code></pre>
 <li><p>22724.80 is the average GDPPC for poly2 based on equal weightage (0.2) of all its five neighbours . 24143.25 for poly3 based on equal weightage (0.25) based on four neighbours.</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1"></a>GDPPC.lag <span class="ot">&lt;-</span> <span class="fu">lag.listw</span>(rswm_q, hunan<span class="sc">$</span>GDPPC)</span>
-<span id="cb94-2"><a href="#cb94-2"></a>GDPPC.lag</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1"></a>GDPPC.lag <span class="ot">&lt;-</span> <span class="fu">lag.listw</span>(rswm_q, hunan<span class="sc">$</span>GDPPC)</span>
+<span id="cb96-2"><a href="#cb96-2"></a>GDPPC.lag</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] 24847.20 22724.80 24143.25 27737.50 27270.25 21248.80 43747.00 33582.71
  [9] 45651.17 32027.62 32671.00 20810.00 25711.50 30672.33 33457.75 31689.20
@@ -1770,42 +1781,65 @@ B 88 7744 8.786867 0.3776535 3.8137</code></pre>
 <p>We can append the spatially lag GDPPC values onto hunan sf data frame by using the code chunk below.</p>
 <p>First, create <code>lag.list</code> that contains two individual lists, namely NAME_3 column in <code>hunan</code> and the lag variable. Next, transform both lists into a dataframe. Rename the column headers. Perform a left join with hunan and lag.res will automatically use <code>NAME_3</code> column as the join column.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1"></a>lag.list <span class="ot">&lt;-</span> <span class="fu">list</span>(hunan<span class="sc">$</span>NAME_3, <span class="fu">lag.listw</span>(rswm_q, hunan<span class="sc">$</span>GDPPC))</span>
-<span id="cb96-2"><a href="#cb96-2"></a>lag.res <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(lag.list)</span>
-<span id="cb96-3"><a href="#cb96-3"></a><span class="fu">colnames</span>(lag.res) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"NAME_3"</span>, <span class="st">"lag GDPPC"</span>)</span>
-<span id="cb96-4"><a href="#cb96-4"></a>hunan <span class="ot">&lt;-</span> <span class="fu">left_join</span>(hunan,lag.res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1"></a>lag.list <span class="ot">&lt;-</span> <span class="fu">list</span>(hunan<span class="sc">$</span>NAME_3, <span class="fu">lag.listw</span>(rswm_q, hunan<span class="sc">$</span>GDPPC))</span>
+<span id="cb98-2"><a href="#cb98-2"></a>lag.res <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(lag.list)</span>
+<span id="cb98-3"><a href="#cb98-3"></a><span class="fu">colnames</span>(lag.res) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"NAME_3"</span>, <span class="st">"lag GDPPC"</span>)</span>
+<span id="cb98-4"><a href="#cb98-4"></a>hunan <span class="ot">&lt;-</span> <span class="fu">left_join</span>(hunan,lag.res)</span>
+<span id="cb98-5"><a href="#cb98-5"></a></span>
+<span id="cb98-6"><a href="#cb98-6"></a><span class="fu">head</span>(<span class="fu">as_tibble</span>(hunan),<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 8
+  NAME_2   ID_3 NAME_3  ENGTYPE_3   County  GDPPC `lag GDPPC`
+  &lt;chr&gt;   &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;chr&gt;   &lt;dbl&gt;       &lt;dbl&gt;
+1 Changde 21098 Anxiang County      Anxiang 23667      24847.
+2 Changde 21100 Hanshou County      Hanshou 20981      22725.
+3 Changde 21101 Jinshi  County City Jinshi  34592      24143.
+# ℹ 1 more variable: geometry &lt;POLYGON [°]&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1"></a><span class="co"># head(hunan,3) %&gt;%  kable()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The following table shows the average neighboring income values (stored in the Inc.lag object) for each county.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1"></a><span class="fu">head</span>(hunan,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Simple feature collection with 3 features and 7 fields
-Geometry type: POLYGON
-Dimension:     XY
-Bounding box:  xmin: 111.7027 ymin: 28.61762 xmax: 112.3013 ymax: 29.77344
-Geodetic CRS:  WGS 84
-   NAME_2  ID_3  NAME_3   ENGTYPE_3  County GDPPC lag GDPPC
-1 Changde 21098 Anxiang      County Anxiang 23667  24847.20
-2 Changde 21100 Hanshou      County Hanshou 20981  22724.80
-3 Changde 21101  Jinshi County City  Jinshi 34592  24143.25
-                        geometry
-1 POLYGON ((112.0625 29.75523...
-2 POLYGON ((112.2288 29.11684...
-3 POLYGON ((111.8927 29.6013,...</code></pre>
-</div>
-</div>
 <p>Next, we will plot both the GDPPC and spatial lag GDPPC for comparison using the code chunk below.</p>
 <div class="cell" data-fig.asp="0.68">
-<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1"></a>gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">'GDPPC'</span>) <span class="sc">+</span></span>
-<span id="cb99-2"><a href="#cb99-2"></a>    <span class="fu">tm_layout</span>(<span class="at">legend.height =</span> <span class="fl">0.2</span>,</span>
-<span id="cb99-3"><a href="#cb99-3"></a>              <span class="at">legend.width=</span><span class="fl">0.2</span>)</span>
-<span id="cb99-4"><a href="#cb99-4"></a>lag_gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">'lag GDPPC'</span>) <span class="sc">+</span></span>
-<span id="cb99-5"><a href="#cb99-5"></a>  <span class="fu">tm_layout</span>(<span class="at">legend.height =</span> <span class="fl">0.2</span>,</span>
-<span id="cb99-6"><a href="#cb99-6"></a>            <span class="at">legend.width=</span><span class="fl">0.4</span>)</span>
-<span id="cb99-7"><a href="#cb99-7"></a></span>
-<span id="cb99-8"><a href="#cb99-8"></a><span class="fu">tmap_arrange</span>(gdppc, lag_gdppc, <span class="at">asp=</span><span class="dv">1</span>, <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1"></a>gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">'GDPPC'</span>) <span class="sc">+</span></span>
+<span id="cb101-2"><a href="#cb101-2"></a>    <span class="fu">tm_layout</span>(<span class="at">main.title=</span><span class="st">'No lag variable'</span>,</span>
+<span id="cb101-3"><a href="#cb101-3"></a>              <span class="at">legend.height =</span> <span class="fl">0.2</span>,</span>
+<span id="cb101-4"><a href="#cb101-4"></a>              <span class="at">legend.width=</span><span class="fl">0.2</span>)</span>
+<span id="cb101-5"><a href="#cb101-5"></a>lag_gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">'lag GDPPC'</span>) <span class="sc">+</span></span>
+<span id="cb101-6"><a href="#cb101-6"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title=</span><span class="st">'With lag variable (Row-stand)'</span>,</span>
+<span id="cb101-7"><a href="#cb101-7"></a>            <span class="at">legend.height =</span> <span class="fl">0.2</span>,</span>
+<span id="cb101-8"><a href="#cb101-8"></a>            <span class="at">legend.width=</span><span class="fl">0.4</span>)</span>
+<span id="cb101-9"><a href="#cb101-9"></a></span>
+<span id="cb101-10"><a href="#cb101-10"></a><span class="fu">tmap_arrange</span>(gdppc, lag_gdppc, <span class="at">asp=</span><span class="dv">1</span>, <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="Hands-on_Ex2_1_files/figure-html/unnamed-chunk-55-1.png" class="img-fluid" width="1344"></p>
+</div>
+</div>
+<p>Compute lag variable using rswm_ids (inverse-distance method)</p>
+<div class="cell" data-fig.asp="0.68">
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1"></a>lag.list<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">list</span>(hunan<span class="sc">$</span>NAME_3, <span class="fu">lag.listw</span>(rswm_ids, hunan<span class="sc">$</span>GDPPC))</span>
+<span id="cb102-2"><a href="#cb102-2"></a>lag.res<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(lag.list<span class="fl">.2</span>)</span>
+<span id="cb102-3"><a href="#cb102-3"></a><span class="fu">colnames</span>(lag.res<span class="fl">.2</span>) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"NAME_3"</span>, <span class="st">"lag GDPPC ID"</span>)</span>
+<span id="cb102-4"><a href="#cb102-4"></a>hunan <span class="ot">&lt;-</span> <span class="fu">left_join</span>(hunan,lag.res<span class="fl">.2</span>)</span>
+<span id="cb102-5"><a href="#cb102-5"></a></span>
+<span id="cb102-6"><a href="#cb102-6"></a><span class="fu">head</span>(<span class="fu">as_tibble</span>(hunan),<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 9
+  NAME_2   ID_3 NAME_3  ENGTYPE_3   County  GDPPC `lag GDPPC` `lag GDPPC ID`
+  &lt;chr&gt;   &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;chr&gt;   &lt;dbl&gt;       &lt;dbl&gt;          &lt;dbl&gt;
+1 Changde 21098 Anxiang County      Anxiang 23667      24847.          2983.
+2 Changde 21100 Hanshou County      Hanshou 20981      22725.          2092.
+3 Changde 21101 Jinshi  County City Jinshi  34592      24143.          2881.
+# ℹ 1 more variable: geometry &lt;POLYGON [°]&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1"></a>lag_gdppc_id <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">'lag GDPPC ID'</span>) <span class="sc">+</span></span>
+<span id="cb104-2"><a href="#cb104-2"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title=</span><span class="st">'With lag variable (Inv_dist)'</span>,</span>
+<span id="cb104-3"><a href="#cb104-3"></a>            <span class="at">legend.height =</span> <span class="fl">0.2</span>,</span>
+<span id="cb104-4"><a href="#cb104-4"></a>            <span class="at">legend.width=</span><span class="fl">0.4</span>)</span>
+<span id="cb104-5"><a href="#cb104-5"></a></span>
+<span id="cb104-6"><a href="#cb104-6"></a><span class="fu">tmap_arrange</span>(lag_gdppc, lag_gdppc_id, <span class="at">asp=</span><span class="dv">1</span>, <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex2_1_files/figure-html/unnamed-chunk-56-1.png" class="img-fluid" width="1344"></p>
 </div>
 </div>
 <div class="cell" data-fig.asp="0.68">
@@ -1815,11 +1849,10 @@ Geodetic CRS:  WGS 84
 </section>
 <section id="theories" class="level2">
 <h2 class="anchored" data-anchor-id="theories">Theories</h2>
-<section id="section" class="level3">
-<h3 class="anchored" data-anchor-id="section"></h3>
+<p>Summary of deriving spatial weights matrix</p>
+<p><img src="images/Summary of deriving weights matrix.png" class="img-fluid"></p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->

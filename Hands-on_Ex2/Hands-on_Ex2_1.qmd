@@ -359,11 +359,14 @@ Firstly, we need to determine the upper limit for distance band by using the ste
 
 ### 8.6.2 Computing [fixed]{.underline} distance weight matrix
 
-(Earlier, we had used `poly2nb(hunan, queen=TRUE/FALSE)` to define neighbours using Queen or Rook method, resulting in `wm_q` and `wm_r`)
+(Earlier, we had used `poly2nb(hunan, queen=TRUE/FALSE)` to define neighbours using Queen or Rook method, resulting in `wm_q` and `wm_r.`)
 
-Now, to define neighbours using distance, we use the `dnearneigh()` ,
+(We also have `k1` of 'nb' class where each polygon has 1 nb. Additionally, we used summary(unlist(nbdists())) to calculate the distance between furthest neighbours.)
+
+Now, to define neighbours using a **distance threshold**, we use the `dnearneigh()` ,
 
 -   *longlat argument: TRUE if point coordinates are **geographical** longitude-latitude decimal degrees (WSG84)*
+-   some polygons have more than 1 nb, but all polygons have at least 1 nb here due to distance threshold.
 
 ```{r}
 wm_d62 <- dnearneigh(coords, 0, 62, longlat=TRUE )
@@ -471,24 +474,14 @@ In this section, we will learn how to derive a spatial weight matrix based on In
 
 Earlier, we applied nbdists() `nbdists(knn2nb(knearneigh(coords, k=1)), coords, longlat = TRUE)` to compute the distance of one's nearest neighbour.
 
-First, we will compute the distances between areas (defined using Queen contiguity method) by using [*nbdists()*](https://r-spatial.github.io/spdep/reference/nbdists.html) of **spdep**.
-
-::: panel-tabset
-### Queen's neighbours distance
+First, we will compute the distances between areas (defined using Queen contiguity method) by using [*nbdists()*](https://r-spatial.github.io/spdep/reference/nbdists.html) of **spdep**. **Class of dist: nbdist**
 
 ```{r}
 dist <- nbdists(wm_q, coords, longlat=TRUE)
 head(dist,3)
 ```
 
-### Fixed's neighbours distance (NYX)
-
-```{r}
-head(nbdists(wm_d62, coords, longlat=TRUE),3)
-```
-:::
-
-For queen's method, now compute the inverse distances for all polygons to their neighbours
+Now compute the inverse distances for all polygons to their neighbours. **Class of ids: matrix of list**
 
 ```{r}
 ids <- lapply(dist, function(x) 1/(x))
@@ -502,7 +495,7 @@ head(ids,3)
 Arguments
 
 | `neighbours`  | an object of class `nb`                                                                                                                                                     |
-|-------------------|-----------------------------------------------------|
+|---------------------|---------------------------------------------------|
 | `glist`       | list of general weights corresponding to neighbours                                                                                                                         |
 | `style`       | `style` can take values "W", "B", "C", "U", "minmax" and "S"                                                                                                                |
 | `zero.policy` | default NULL, use global option value; if FALSE stop with error for any empty neighbour sets, if TRUE permit the weights list to be formed with zero-length weights vectors |
@@ -519,11 +512,21 @@ Weights to each neighboring polygon
 
 -   The zero.policy=TRUE option allows for lists of non-neighbors. This should be used with caution since the user may not be aware of missing neighbors in their dataset however, a zero.policy of FALSE would return an error. **Class of rsmq_q = 'listw' and 'nb'**
 
+::: panel-tabset
+#### style = 'W'
+
 ```{r}
-# wm_q is binary matrix
+# wm_q is a matrix containing nb indexes
 rswm_q <- nb2listw(wm_q, style = 'W', zero.policy = TRUE)
 rswm_q
 ```
+
+#### style = 'B'
+
+```{r}
+nb2listw(wm_q, style = 'B', zero.policy = TRUE)$weights[1]
+```
+:::
 
 ```{r}
 class(rswm_q)
@@ -543,10 +546,9 @@ rswm_q$neighbours[1]
 
 Explanation of above: Each neighbor is assigned a 0.125 of the total weight. This means that when R computes the average neighboring income values, each **neighbor's income will be multiplied by 0.125 before being tallied.**
 
-Using the same queen's method, we can also derive a row standardised inverse-distance weight matrix by using the code chunk below. Recall `ids` contains inverse-distances to neighbours , originally from queens `wm_q` which is a binary matrix. **Class of rswm_q is 'listw' and 'nb'**
+Using the same queen's method, we can also derive a (row standardised ?) inverse-distance weight matrix by using the code chunk below. Recall `ids` contains inverse-distances to neighbours , originally from queens `wm_q` which is a binary matrix. **Class of rswm_ids is 'listw' and 'nb'.** It contains 3 lists, 'style' of class character ,'neighbours' of class nb, 'weights' of class nb
 
 ```{r}
-
 rswm_ids <- nb2listw(wm_q, glist=ids, style ='B', zero.policy=TRUE)
 rswm_ids
 ```
@@ -559,6 +561,18 @@ rswm_ids$weights[1]
 
 ```{r}
 summary(unlist(rswm_ids$weights))
+```
+
+Finally, a comparison of the weights for polygon 1 across three spatial weights methods:
+
+```{r}
+a <- unlist(rswm_q$weights[1])
+b <- unlist(nb2listw(wm_q, style = 'B', zero.policy = TRUE)$weights[1])
+c <- unlist(rswm_ids$weights[1])
+
+weights_comparison <- as.data.frame(cbind(a,b,c))
+colnames(weights_comparison) <- c("row standardised", "binary", 'inverse distance')
+weights_comparison
 ```
 
 ## **8.8 Application of Spatial Weight Matrix**
@@ -606,13 +620,12 @@ lag.list <- list(hunan$NAME_3, lag.listw(rswm_q, hunan$GDPPC))
 lag.res <- as.data.frame(lag.list)
 colnames(lag.res) <- c("NAME_3", "lag GDPPC")
 hunan <- left_join(hunan,lag.res)
+
+head(as_tibble(hunan),3)
+# head(hunan,3) %>%  kable()
 ```
 
 The following table shows the average neighboring income values (stored in the Inc.lag object) for each county.
-
-```{r}
-head(hunan,3)
-```
 
 Next, we will plot both the GDPPC and spatial lag GDPPC for comparison using the code chunk below.
 
@@ -620,13 +633,35 @@ Next, we will plot both the GDPPC and spatial lag GDPPC for comparison using the
 #| fig-width: 14
 #| fig-asp: 0.68
 gdppc <- qtm(hunan, 'GDPPC') +
-    tm_layout(legend.height = 0.2,
+    tm_layout(main.title='No lag variable',
+              legend.height = 0.2,
               legend.width=0.2)
 lag_gdppc <- qtm(hunan, 'lag GDPPC') +
-  tm_layout(legend.height = 0.2,
+  tm_layout(main.title='With lag variable (Row-stand)',
+            legend.height = 0.2,
             legend.width=0.4)
 
 tmap_arrange(gdppc, lag_gdppc, asp=1, ncol=2)
+```
+
+Compute lag variable using rswm_ids (inverse-distance method)
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+lag.list.2 <- list(hunan$NAME_3, lag.listw(rswm_ids, hunan$GDPPC))
+lag.res.2 <- as.data.frame(lag.list.2)
+colnames(lag.res.2) <- c("NAME_3", "lag GDPPC ID")
+hunan <- left_join(hunan,lag.res.2)
+
+head(as_tibble(hunan),3)
+
+lag_gdppc_id <- qtm(hunan, 'lag GDPPC ID') +
+  tm_layout(main.title='With lag variable (Inv_dist)',
+            legend.height = 0.2,
+            legend.width=0.4)
+
+tmap_arrange(lag_gdppc, lag_gdppc_id, asp=1, ncol=2)
 ```
 
 ```{r}
@@ -639,4 +674,6 @@ tmap_arrange(gdppc, lag_gdppc, asp=1, ncol=2)
 
 ## Theories
 
-### 
+Summary of deriving spatial weights matrix
+
+![](images/Summary%20of%20deriving%20weights%20matrix.png)
