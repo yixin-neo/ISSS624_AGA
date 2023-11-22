@@ -29,7 +29,7 @@ In this hands-on exercise, we will learn to
 
 -   compute Local Indicator of Spatial Association (LISA) statistics for detecting clusters and outliers by using appropriate functions **spdep** package;
 
--   compute Getis-Ord\'s Gi-statistics for detecting hot spot or/and cold spot area by using appropriate functions of **spdep** package; and
+-   compute Getis-Ord's Gi-statistics for detecting hot spot or/and cold spot area by using appropriate functions of **spdep** package; and
 
 -   to visualise the analysis output by using **tmap** package.
 
@@ -41,12 +41,11 @@ In this hands-on exercise, we will learn to
 
 -   we should apply appropriate spatial statistical methods to discover if development are even distributed geographically in the province
 
--   if answer is NO, we ask \"is there sign of clustering?\" (GLOBAL spatial autocorrelation)
+-   if answer is NO, we ask "is there sign of clustering?" (GLOBAL spatial autocorrelation)
 
--   if YES, \"Where are the clusters\" (LOCAL spatial autocorrelation)
+-   if YES, "Where are the clusters" (LOCAL spatial autocorrelation)
 
-In this case study, we are interested to examine the spatial pattern of a selected development indicator (i.e. GDP per capita) of Hunan Provice, People Republic of China.
-(https://en.wikipedia.org/wiki/Hunan)
+In this case study, we are interested to examine the spatial pattern of a selected development indicator (i.e. GDP per capita) of Hunan Provice, People Republic of China. (https://en.wikipedia.org/wiki/Hunan)
 
 ### 
 
@@ -102,7 +101,7 @@ head(hunan2012,3)
 
 ### **9.3.3 Performing relational join**
 
-The code chunk below will be used to update the attribute table of *hunan*\'s SpatialPolygonsDataFrame (geospatial) with the attribute fields of *hunan2012* dataframe (aspatial) . This is performed by using *left_join()* of **dplyr** package. Since the join columns are not specified, identical columns names ('County') form both dataset will be used for the join.
+The code chunk below will be used to update the attribute table of *hunan*'s SpatialPolygonsDataFrame (geospatial) with the attribute fields of *hunan2012* dataframe (aspatial) . This is performed by using *left_join()* of **dplyr** package. Since the join columns are not specified, identical columns names ('County') form both dataset will be used for the join.
 
 Column 7 and 15 are the 'County' and 'GDPPC' columns respectively.
 
@@ -116,7 +115,7 @@ head(hunan,3)
 
 Now, we are going to prepare a basemap and a choropleth map showing the distribution of GDPPC 2012 by using *qtm()* of **tmap** package.
 
--   tm_fill() \'s **n** refer to the number of equal intervals
+-   tm_fill() 's **n** refer to the number of equal intervals
 
 ```{r}
 #| fig-width: 14
@@ -182,7 +181,7 @@ The summary report above shows that there are 88 area units in Hunan. The most c
 
 ### **9.4.2 Row-standardised weights matrix**
 
-Next, we need to assign weights to each neighboring polygon. In our case, each neighboring polygon will be assigned equal weight (style=\"W\"). This is accomplished by assigning the fraction 1/(#ofneighbors) to each neighboring county then summing the weighted income values. While this is the most intuitive way to summaries the neighbors\' values it has one drawback in that polygons along the edges of the study area will base their lagged values on fewer polygons thus potentially over- or under-estimating the true nature of the spatial autocorrelation in the data. For this example, we\'ll stick with the style=\"W\" option for simplicity\'s sake but note that other more robust options are available, notably style=\"B\".
+Next, we need to assign weights to each neighboring polygon. In our case, each neighboring polygon will be assigned equal weight (style="W"). This is accomplished by assigning the fraction 1/(#ofneighbors) to each neighboring county then summing the weighted income values. While this is the most intuitive way to summaries the neighbors' values it has one drawback in that polygons along the edges of the study area will base their lagged values on fewer polygons thus potentially over- or under-estimating the true nature of the spatial autocorrelation in the data. For this example, we'll stick with the style="W" option for simplicity's sake but note that other more robust options are available, notably style="B".
 
 ```{r}
 rswm_q <- nb2listw(wm_q,
@@ -199,7 +198,7 @@ rswm_q$weights[1:3]
 
 The input of *nb2listw()* must be an object of class **nb**. The syntax of the function has two major arguments, namely style and zero.poly.
 
--   *style* can take values \"W\", \"B\", \"C\", \"U\", \"minmax\" and \"S\". B is the basic binary coding, W is row standardised (sums over all links to n), C is globally standardised (sums over all links to n), U is equal to C divided by the number of neighbours (sums over all links to unity), while S is the variance-stabilizing coding scheme proposed by Tiefelsdorf et al. 1999, p. 167-168 (sums over all links to n).
+-   *style* can take values "W", "B", "C", "U", "minmax" and "S". B is the basic binary coding, W is row standardised (sums over all links to n), C is globally standardised (sums over all links to n), U is equal to C divided by the number of neighbours (sums over all links to unity), while S is the variance-stabilizing coding scheme proposed by Tiefelsdorf et al. 1999, p. 167-168 (sums over all links to n).
 
 -   If *zero policy* is set to TRUE, weights vectors of zero length are inserted for regions without neighbour in the neighbours list. These will in turn generate lag values of zero, equivalent to the sum of products of the zero row t(rep(0, length=length(neighbours))) %\*% x, for arbitrary numerical vector x of length length(neighbours). The spatially lagged value of x for the zero-neighbour region will then be zero, which may (or may not) be a sensible choice.
 
@@ -208,20 +207,21 @@ attributes(rswm_q)
 methods(class=class(rswm_q))
 ```
 
-### **9.4.3 Global Spatial Autocorrelation: Moran\'s I**
+### **9.4.3 Global Spatial Autocorrelation: Moran's I**
 
-In this section, we will learn how to perform Moran\'s I statistics testing by using [*moran.test()*](https://r-spatial.github.io/spdep/reference/moran.test.html) of **spdep**.
+In this section, we will learn how to perform Moran's I statistics testing by using [*moran.test()*](https://r-spatial.github.io/spdep/reference/moran.test.html) of **spdep**.
 
-### **9.4.4 Moran\'s I test**
+### **9.4.4 Moran's I test**
 
-**Global** spatial association assesses the overall spatial pattern of a variable across the entire study area. It provides a single value or metric that summarizes the extent to which similar values
-cluster together or are dispersed across the entire geographic space.
+**Global** spatial association assesses the overall spatial pattern of a variable across the entire study area. It provides a single value or metric that summarizes the extent to which similar values cluster together or are dispersed across the entire geographic space.
 
 **The Moran's I assumes data follows a normal distribution and are randomised.**
 
+Moran's I values range from -1 to 1 while Geary's C ranges from 0 to 2.
+
 ![](images/Global%20Moran%20stats%20test.png){width="357"}
 
-The code chunk below performs Moran\'s I statistical testing using [*moran.test()*](https://r-spatial.github.io/spdep/reference/moran.test.html) of **spdep**. It takes in the main arguments:
+The code chunk below performs Moran's I statistical testing using [*moran.test()*](https://r-spatial.github.io/spdep/reference/moran.test.html) of **spdep**. It takes in the main arguments:
 
 -   variable
 
@@ -234,16 +234,15 @@ moran.test(hunan$GDPPC,
            na.action=na.omit)
 ```
 
-> The null hypothesis: Observed spatial patterns of values is equally likely as any random spatial
-> pattern.
+> The null hypothesis: Observed spatial patterns of values is equally likely as any random spatial pattern.
 >
 > Since the p-value is less than 0.05 and Moran I statistic is greater than 1, we can reject the null hypothesis and conclude that similar values tend to cluster together in our area of study.
 
-#### 9.4.4.1 Computing Monte Carlo Moran\'s I
+#### 9.4.4.1 Computing Monte Carlo Moran's I
 
 In the event we are unsure whether the data follows a normal distribution and are randomised, we can use the Monte Carlo Simulation to simulate Moran's I [n]{.underline} times under the assumption of no spatial pattern (shuffle/permutate the variable across all spatial units). This creates a baseline to compare with the observed Moran's I value from dataset.
 
-The code chunk below performs permutation test for Moran\'s I statistic by using [*moran.mc()*](https://r-spatial.github.io/spdep/reference/moran.mc.html) of **spdep**. A total of 1000 simulation will be performed.
+The code chunk below performs permutation test for Moran's I statistic by using [*moran.mc()*](https://r-spatial.github.io/spdep/reference/moran.mc.html) of **spdep**. A total of 1000 simulation will be performed.
 
 ```{r}
 set.seed(1234)
@@ -257,9 +256,9 @@ bperm
 
 | Since the p-value is less than 0.05 and Moran I statistic is greater than 1, we can reject the null hypothesis and conclude that similar values tend to cluster together in our area of study.
 
-#### 9.4.4.2 Visualising Monte Carlo Moran\'s I
+#### 9.4.4.2 Visualising Monte Carlo Moran's I
 
-It is always a good practice for us the examine the simulated Moran\'s I test statistics in greater detail. This can be achieved by plotting the distribution of the statistical values as a histogram by using the code chunk below.
+It is always a good practice for us the examine the simulated Moran's I test statistics in greater detail. This can be achieved by plotting the distribution of the statistical values as a histogram by using the code chunk below.
 
 In the code chunk below [*hist()*](https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/hist) and [*abline()*](https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/abline) of R Graphics are used.
 
@@ -288,7 +287,7 @@ Plotting
 
 We will use [ggplot2](https://ggplot2.tidyverse.org/) to create the histogram instead of base r.
 
-[**ggthemes**](https://cran.r-project.org/web/packages/ggthemes/) provides [\'ggplot2\' themes](https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/) that replicate the look of plots by Edward Tufte, Stephen Few, [Fivethirtyeight](https://fivethirtyeight.com/), [The Economist](https://www.economist.com/graphic-detail), \'Stata\', \'Excel\', and [The Wall Street Journal](https://www.pinterest.com/wsjgraphics/wsj-graphics/), among others.
+[**ggthemes**](https://cran.r-project.org/web/packages/ggthemes/) provides ['ggplot2' themes](https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/) that replicate the look of plots by Edward Tufte, Stephen Few, [Fivethirtyeight](https://fivethirtyeight.com/), [The Economist](https://www.economist.com/graphic-detail), 'Stata', 'Excel', and [The Wall Street Journal](https://www.pinterest.com/wsjgraphics/wsj-graphics/), among others.
 
 ```{r}
 #| fig-width: 14
@@ -300,21 +299,20 @@ library(ggthemes)
 bperm_df <- as.data.frame(bperm$res)
 colnames(bperm_df) <- c('res')
 
-q <- quantile(bperm_df$res, probs = c(0.25, 0.5, 0.75))
-mean <- mean(bperm_df$res)
-
+#q <- quantile(bperm_df$res[1:999], probs = c(0.25, 0.5, 0.75))
+mean <- mean(bperm_df$res[1:999])
+mean
 ggplot(data=bperm_df,
        aes(x=res)) +
   geom_histogram(bins=20,
-                 #boundary=100,
                  color='grey25',
                  fill='grey90',size=0.8) +
-  geom_vline(xintercept = q[2], linetype='dotted', size = 0.8, color='blue') +
-  geom_vline(xintercept = q[3], linetype='dotted', size = 0.8) +
+  #geom_vline(xintercept = q[2], linetype='dotted', size = 0.8, color='blue') +
+  #geom_vline(xintercept = q[3], linetype='dotted', size = 0.8) +
   geom_vline(xintercept = mean, linetype='dotted', size = 0.8, color='red') +
-  annotate('text' , x= -0.055, y=180, label='50th \npercentile', size = 5, color='blue') +
-  annotate('text' , x= 0.06, y=180, label='75th \npercentile', size = 5) +
-  annotate('text' , x= 0.005, y=180, label='mean', size = 5, color='red') +
+  #annotate('text' , x= -0.055, y=180, label='50th \npercentile', size = 5, color='blue') +
+  #annotate('text' , x= 0.06, y=180, label='75th \npercentile', size = 5) +
+  annotate('text' , x= 0.015, y=180, label='mean', size = 5, color='red') +
   labs(y= 'Frequency', x="Moran's I values") +
   theme_economist() +
   theme(axis.title.y=element_text(angle = 0,
@@ -336,6 +334,162 @@ abline(v=0,
 ```
 :::
 
+### **9.4.5 Global Spatial Autocorrelation: Geary's**
+
+In this section, we will learn how to perform Geary's c statistics testing by using appropriate functions of **spdep** package.
+
+#### 9.4.5.1 Geary's C test
+
+The code chunk below performs Geary's C test for spatial autocorrelation by using [*geary.test()*](https://r-spatial.github.io/spdep/reference/geary.test.html) of **spdep**.
+
+```{r}
+geary.test(hunan$GDPPC, listw=rswm_q)
+```
+
+> The null hypothesis: Observed spatial patterns of values is equally likely as any random spatial pattern.
+>
+> Since the p-value is less than 0.05 and Geary's C statistic is greater 0 and less than 1, we can reject the null hypothesis and conclude that similar values tend to cluster together in our area of study.
+
+#### 9.4.5.2 Computing Monte Carlo Geary's C
+
+In the event we are unsure whether the data follows a normal distribution and are randomised, the code chunk below performs permutation test for Geary's C statistic by using [*geary.mc()*](https://r-spatial.github.io/spdep/reference/geary.mc.html) of **spdep**.
+
+```{r}
+set.seed(1234)
+bperm=geary.mc(hunan$GDPPC, 
+               listw=rswm_q, 
+               nsim=999)
+bperm
+```
+
+| Since the p-value is less than 0.05 and Geary's C statistic is greater 0 and less than 1, we can reject the null hypothesis and conclude that similar values tend to cluster together in our area of study.
+
+#### 9.4.5.3 Visualising the Monte Carlo Geary's C
+
+Next, we will plot a histogram to reveal the distribution of the simulated values by using the code chunk below.
+
+Get the mean of simulated Geary's C
+
+```{r}
+mean(bperm$res[1:999])
+```
+
+Get the variance
+
+```{r}
+var(bperm$res[1:999])
+```
+
+Summary statistics
+
+```{r}
+summary(bperm$res[1:999])
+```
+
+Plot the histogram using ggplot2
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+
+bperm_df <- as.data.frame(bperm$res)
+colnames(bperm_df) <- c('res')
+
+#q <- quantile(bperm_df$res[1:999], probs = c(0.25, 0.5, 0.75))
+mean <- mean(bperm_df$res[1:999])
+mean
+ggplot(data=bperm_df,
+       aes(x=res)) +
+  geom_histogram(bins=20,
+                 color='grey25',
+                 fill='grey90',size=0.8) +
+  geom_vline(xintercept = mean, linetype='dotted', size = 0.8, color='red') +
+  annotate('text' , x= 1.05, y=180, label='mean', size = 5, color='red') +
+  labs(y= 'Frequency', x="Geary's C values") +
+  theme_economist() +
+  theme(axis.title.y=element_text(angle = 0,
+                                  vjust=0.9)) +
+  ggtitle("Histogram of Simulated Geary's C")
+```
+
+## **9.5 Spatial Correlogram**
+
+Spatial correlograms are great to examine patterns of spatial autocorrelation in your data or model residuals. They show how correlated are pairs of spatial observations when you increase the distance (lag) between them - they are plots of some index of autocorrelation (Moran's I or Geary's c) against distance.Although correlograms are not as fundamental as variograms (a keystone concept of geostatistics), they are very useful as an exploratory and descriptive tool. For this purpose they actually provide richer information than variograms.
+
+### **9.5.1 Compute Moran's I correlogram**
+
+In the code chunk below, [*sp.correlogram()*](https://r-spatial.github.io/spdep/reference/sp.correlogram.html) of **spdep** package is used to compute a 6-lag spatial correlogram of GDPPC. The global spatial autocorrelation used in Moran's I. The **plot()** of base Graph is then used to plot the output.
+
+```{r}
+MI_corr <- sp.correlogram(wm_q, 
+                          hunan$GDPPC, 
+                          order=6, 
+                          method="I", 
+                          style="W")
+plot(MI_corr)
+```
+
+Arguments:
+
+-   'order' refers to number of layers away from each polygon using contiguity method.
+    We want to check how the Moran's I values changes (and its statistical significance changes) as the neighbours get further and further away.
+
+-   'method': 'corr' for correlation, 'I' for Moran's I and 'C' for Gerary's C.
+
+| [Understanding the plot]{.underline} 
+| **Y-Axis:** The y-axis typically represents the Moran's I coefficient, which quantifies spatial autocorrelation. Above zero, similar values cluster. Below zero, dissimilar values cluster.
+| **X-Axis:** The x-axis represents spatial distance lags. Each point on the correlogram corresponds to a specific distance lag (e.g., distance between observations). The points are usually organized in bins or distance classes.
+| **Bars or Lines:** Bars or lines connect the Moran's I values at different distance lags, forming a pattern that shows how spatial autocorrelation changes with distance.
+| [Usefulness of Moran's I Correlogram]{.underline} 
+| **Detecting Spatial Patterns:** A Moran's I correlogram provides insights into the presence and structure of spatial patterns in our data. It helps identify at what distances spatial autocorrelation is significant.
+
+By plotting the output might not allow us to provide complete interpretation. This is because not all autocorrelation values are statistically significant. Hence, it is important for us to examine the full analysis report by printing out the analysis results as in the code chunk below.
+
+```{r}
+print(MI_corr)
+```
+
+We see that with the exception of Lag 4, the rest of the results are statistically significant at the 95% level of confidence.
+
+As we consider order lag from 1 to 3, there is significant positive autocorrelation (similar values cluster) and we note the Moran's I values decreases as order increases. For order 5 and 6, there is significant negative autocorrelation (dissimilar values cluster)
+
+[Possible reason for the change of polarity:]{.underline}
+
+Local clusters could dominate at smaller distances while at larger distances, can detect dispersion more.
+
+
+**9.5.2 Compute Geary\'s C correlogram and plot**
+
+In the code chunk below, *sp.correlogram()* of **spdep** package is used to compute a 6-lag spatial correlogram of GDPPC. The global spatial autocorrelation used in Geary\'s C. The **plot()** of base Graph is then used to plot the output.
+
+```{r}
+GC_corr <- sp.correlogram(wm_q, 
+                          hunan$GDPPC, 
+                          order=6, 
+                          method="C", 
+                          style="W")
+plot(GC_corr)
+```
+
+0\< Geary C \< 1 : similar values cluster
+
+1 \< Geary C \< 2: dissimilar values cluster
+
+Now examine the full report to check which values are significant.
+
+```{r}
+print(GC_corr)
+```
+
+The results of Geary's C statistics test is similar to Moran's I.
+
+All lag orders except Lag order of 3, 4 and 6 are statistically significant at 95% confidence level.
+
+Lag order 1 and 2: clustering of similar values, order 2 is less clustered than order 1. (Moran's I and Geary's C are inversely related.)
+
+Lag order 5: clustering of dissimilar values.
+
 ```{r}
 #| eval: false
 #| echo: false
@@ -343,7 +497,5 @@ abline(v=0,
 #| fig-width: 14
 #| fig-asp: 0.68
 ```
-
-## Summaries
 
 ### 
