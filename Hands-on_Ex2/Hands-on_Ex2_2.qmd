@@ -1,5 +1,5 @@
 ---
-title: "Hands-on Exercise 2.2: Global Measures of Spatial Autocorrelation"
+title: "Hands-on Exercise 2.2 and 2.3: Global and Local Measures of Spatial Autocorrelation"
 author: "NeoYX"
 date: '22 Nov 2023'
 date-modified: "`r Sys.Date()`"
@@ -32,6 +32,8 @@ In this hands-on exercise, we will learn to
 -   compute Getis-Ord's Gi-statistics for detecting hot spot or/and cold spot area by using appropriate functions of **spdep** package; and
 
 -   to visualise the analysis output by using **tmap** package.
+
+# 9 Hands-on_EX2_2: Global measures of spatial autocorrelation
 
 ## **9.2 Getting Started**
 
@@ -432,16 +434,15 @@ plot(MI_corr)
 
 Arguments:
 
--   'order' refers to number of layers away from each polygon using contiguity method.
-    We want to check how the Moran's I values changes (and its statistical significance changes) as the neighbours get further and further away.
+-   'order' refers to number of layers away from each polygon using contiguity method. We want to check how the Moran's I values changes (and its statistical significance changes) as the neighbours get further and further away.
 
 -   'method': 'corr' for correlation, 'I' for Moran's I and 'C' for Gerary's C.
 
-| [Understanding the plot]{.underline} 
+| [Understanding the plot]{.underline}
 | **Y-Axis:** The y-axis typically represents the Moran's I coefficient, which quantifies spatial autocorrelation. Above zero, similar values cluster. Below zero, dissimilar values cluster.
 | **X-Axis:** The x-axis represents spatial distance lags. Each point on the correlogram corresponds to a specific distance lag (e.g., distance between observations). The points are usually organized in bins or distance classes.
 | **Bars or Lines:** Bars or lines connect the Moran's I values at different distance lags, forming a pattern that shows how spatial autocorrelation changes with distance.
-| [Usefulness of Moran's I Correlogram]{.underline} 
+| [Usefulness of Moran's I Correlogram]{.underline}
 | **Detecting Spatial Patterns:** A Moran's I correlogram provides insights into the presence and structure of spatial patterns in our data. It helps identify at what distances spatial autocorrelation is significant.
 
 By plotting the output might not allow us to provide complete interpretation. This is because not all autocorrelation values are statistically significant. Hence, it is important for us to examine the full analysis report by printing out the analysis results as in the code chunk below.
@@ -458,10 +459,9 @@ As we consider order lag from 1 to 3, there is significant positive autocorrelat
 
 Local clusters could dominate at smaller distances while at larger distances, can detect dispersion more.
 
+**9.5.2 Compute Geary's C correlogram and plot**
 
-**9.5.2 Compute Geary\'s C correlogram and plot**
-
-In the code chunk below, *sp.correlogram()* of **spdep** package is used to compute a 6-lag spatial correlogram of GDPPC. The global spatial autocorrelation used in Geary\'s C. The **plot()** of base Graph is then used to plot the output.
+In the code chunk below, *sp.correlogram()* of **spdep** package is used to compute a 6-lag spatial correlogram of GDPPC. The global spatial autocorrelation used in Geary's C. The **plot()** of base Graph is then used to plot the output.
 
 ```{r}
 GC_corr <- sp.correlogram(wm_q, 
@@ -489,6 +489,169 @@ All lag orders except Lag order of 3, 4 and 6 are statistically significant at 9
 Lag order 1 and 2: clustering of similar values, order 2 is less clustered than order 1. (Moran's I and Geary's C are inversely related.)
 
 Lag order 5: clustering of dissimilar values.
+
+# 
+10 Hands-on_Ex2_3:  **Local Measures of Spatial Autocorrelation**
+
+## **10.6 Cluster and Outlier Analysis**
+
+Local Indicators of Spatial Association or LISA are statistics that evaluate the existence of clusters in the spatial arrangement of a given variable. For instance if we are studying cancer rates among census tracts in a given city local clusters in the rates mean that there are **localised areas** that have higher or lower rates than is to be expected by chance alone; that is, the values occurring are above or below those of a random distribution in space.
+
+In this section, we will learn how to apply appropriate Local Indicators for Spatial Association (LISA), especially local Moran\'I to detect cluster (HH or LL) and/or outlier (HL, LH) from GDP per capita 2012 of Hunan Province, PRC.
+
+### **10.6.1 Computing local Moran\'s I**
+
+To compute local Moran\'s I, the [*localmoran()*](https://r-spatial.github.io/spdep/reference/localmoran.html) function of **spdep** will be used. It computes ***Ii*** values, given a set of ***zi*** values (variable) and a **listw** object (spatial weights matrix) providing neighbour weighting information for the polygon associated with the zi values.
+
+The code chunks below are used to compute local Moran\'s I of *GDPPC2012* at the county level.
+
+```{r}
+fips <- order(hunan$County)
+localMI <- localmoran(hunan$GDPPC, rswm_q)
+head(localMI)
+
+```
+
+*localmoran()* function returns a matrix of values whose columns are:
+
+-   Ii: the local Moran\'s I statistics
+
+-   E.Ii: the expectation of local moran statistic under the randomisation hypothesis
+
+-   Var.Ii: the variance of local moran statistic under the randomisation hypothesis
+
+-   Z.Ii:the standard deviate of local moran statistic
+
+-   Pr(z != E(Ii)): the p-value of local moran statistic
+
+Note there is no County's name in the output above.
+
+We must first create a dataframe that appends the County's name to its local moran (li) values.
+
+-   Fips is an object of integer class. It contains the row ids if rows are to be arranged in alphabetical order.
+
+-   localMI\[Fips,\] would arrange the rows of `localMI` in alphabetical order of its countys' name, retaining all the columns.
+
+-   The row names would take the countys' name.
+
+```{r}
+data.frame(
+  localMI[fips,],
+  row.names=hunan$County[fips])
+```
+
+The code chunk below list the content of the local Moran matrix derived by using [*printCoefmat()*](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/printCoefmat).
+
+```{r}
+printCoefmat(data.frame(
+  localMI[fips,], 
+  row.names=hunan$County[fips]),
+  check.names=FALSE)
+```
+
+#### 10.6.1.1 Mapping the local Moran\'s I
+
+Before mapping the local Moran\'s I map, it is wise to append the local Moran\'s I dataframe (i.e. localMI) onto hunan SpatialPolygonDataFrame. The code chunks below can be used to perform the task. The out SpatialPolygonDataFrame is called *hunan.localMI*.
+
+The `Pr.z….E.Ii..` containing p-value of the local moran I is renamed to `PR.Ii`
+
+```{r}
+hunan.localMI <- cbind(hunan,localMI) %>% 
+    rename(Pr.Ii = Pr.z....E.Ii..)
+```
+
+#### 10.6.1.2 Mapping local Moran\'s I values
+
+Using choropleth mapping functions of **tmap** package, we can plot the local Moran\'s I values by using the code chunks below. For paletter colours, refer to colorbrewers [link](https://r-graph-gallery.com/38-rcolorbrewers-palettes.html).
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+tm_shape(hunan.localMI) +
+  tm_fill(col='Ii',
+          style = 'pretty',
+          #palette = 'RdBu', # << refer to colourbrewer
+          title = 'Local Moran statistics') +
+  tm_borders(alpha= 0.5) + 
+  tm_layout(main.title = "Local Moran's I",
+            legend.width= 0.25,
+            legend.height = 0.25)
+    
+```
+
+#### 10.6.1.3 Mapping local Moran\'s I p-values
+
+The choropleth shows there is evidence for both positive and negative Ii values. However, it is useful to **consider the p-values** for each of these values, as consider above.
+
+The code chunks below produce a choropleth map of Moran\'s I p-values by using functions of **tmap** package.
+
+::: panel-tabset
+## Various p values
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+tm_shape(hunan.localMI) +
+  tm_fill(col = "Pr.Ii", 
+          breaks=c(-Inf, 0.001, 0.01, 0.05, 0.1, Inf),
+          palette="-Blues", 
+          title = "local Moran's I p-values") +
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "Local Moran's I p-values",
+            legend.width= 0.25,
+            legend.height = 0.25)
+```
+
+## p values at 95% confidence level
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+tm_shape(hunan.localMI) +
+  tm_fill(col = "Pr.Ii", 
+          breaks = c(-Inf, 0.05, Inf),
+          palette = c('lightblue', 'grey'), 
+          title = "Local Moran's I p-values") +
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "Significant Local Moran's I \np-values at 95% Confidence level",
+            main.title.size = 1,
+            legend.width = 0.25,
+            legend.height = 0.25)
+```
+:::
+
+#### 10.6.1.4 Mapping both local Moran\'s I values and p-values
+
+For effective interpretation, it is better to plot both the local Moran\'s I values map and its corresponding p-values map next to each other.
+
+The code chunk below will be used to create such visualisation.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+localMI.map<- tm_shape(hunan.localMI) +
+  tm_fill(col='Ii',
+          style = 'pretty',
+          #palette = 'RdBu', # << reger to colourbrewer
+          title = 'Local Moran statistics') +
+  tm_borders(alpha= 0.5) + 
+  tm_layout(main.title = "Local Moran's I",
+            legend.width= 0.25,
+            legend.height = 0.25)
+
+pvalue.map <-tm_shape(hunan.localMI) +
+  tm_fill(col = "Pr.Ii", 
+          breaks = c(-Inf, 0.05, Inf),
+          palette = c('lightblue', 'grey'), 
+          title = "Local Moran's I p-values") +
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "Significant Local Moran's I \np-values at 95% Confidence level",
+            main.title.size = 1,
+            legend.width = 0.25,
+            legend.height = 0.25)
+
+tmap_arrange(localMI.map, pvalue.map, asp=1,ncol=2)
+```
 
 ```{r}
 #| eval: false

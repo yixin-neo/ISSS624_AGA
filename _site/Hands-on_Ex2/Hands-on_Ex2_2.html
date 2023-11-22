@@ -9,7 +9,7 @@
 <meta name="author" content="NeoYX">
 <meta name="dcterms.date" content="2023-11-22">
 
-<title>NYX Geospatial App - Hands-on Exercise 2.2: Global Measures of Spatial Autocorrelation</title>
+<title>NYX Geospatial App - Hands-on Exercise 2.2 and 2.3: Global and Local Measures of Spatial Autocorrelation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -209,7 +209,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Hands-on Exercise 2.2: Global Measures of Spatial Autocorrelation</h1>
+      <h1 class="quarto-secondary-nav-title">Hands-on Exercise 2.2 and 2.3: Global and Local Measures of Spatial Autocorrelation</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -247,7 +247,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../Hands-on_Ex2/Hands-on_Ex2_2.html" class="sidebar-item-text sidebar-link active">Hands-on Exercise 2.2: Global Measures of Spatial Autocorrelation</a>
+  <a href="../Hands-on_Ex2/Hands-on_Ex2_2.html" class="sidebar-item-text sidebar-link active">Hands-on Exercise 2.2 and 2.3: Global and Local Measures of Spatial Autocorrelation</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -270,6 +270,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
    
   <ul>
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><strong>9.1 Overview</strong></a></li>
+  <li><a href="#hands-on_ex2_2-global-measures-of-spatial-autocorrelation" id="toc-hands-on_ex2_2-global-measures-of-spatial-autocorrelation" class="nav-link" data-scroll-target="#hands-on_ex2_2-global-measures-of-spatial-autocorrelation">9 Hands-on_EX2_2: Global measures of spatial autocorrelation</a>
+  <ul class="collapse">
   <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started"><strong>9.2 Getting Started</strong></a>
   <ul class="collapse">
   <li><a href="#the-analytical-question" id="toc-the-analytical-question" class="nav-link" data-scroll-target="#the-analytical-question">9.2.1 The analytical question</a></li>
@@ -294,7 +296,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#spatial-correlogram" id="toc-spatial-correlogram" class="nav-link" data-scroll-target="#spatial-correlogram"><strong>9.5 Spatial Correlogram</strong></a>
   <ul class="collapse">
   <li><a href="#compute-morans-i-correlogram" id="toc-compute-morans-i-correlogram" class="nav-link" data-scroll-target="#compute-morans-i-correlogram"><strong>9.5.1 Compute Moran’s I correlogram</strong></a></li>
-  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1"></a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1"></a>
+  <ul class="collapse">
+  <li><a href="#cluster-and-outlier-analysis" id="toc-cluster-and-outlier-analysis" class="nav-link" data-scroll-target="#cluster-and-outlier-analysis"><strong>10.6 Cluster and Outlier Analysis</strong></a>
+  <ul class="collapse">
+  <li><a href="#computing-local-morans-i" id="toc-computing-local-morans-i" class="nav-link" data-scroll-target="#computing-local-morans-i"><strong>10.6.1 Computing local Moran's I</strong></a></li>
+  <li><a href="#section-2" id="toc-section-2" class="nav-link" data-scroll-target="#section-2"></a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -304,7 +314,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">Hands-on Exercise 2.2: Global Measures of Spatial Autocorrelation</h1>
+<h1 class="title d-none d-lg-block">Hands-on Exercise 2.2 and 2.3: Global and Local Measures of Spatial Autocorrelation</h1>
 </div>
 
 
@@ -351,6 +361,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p>to visualise the analysis output by using <strong>tmap</strong> package.</p></li>
 </ul>
 </section>
+<section id="hands-on_ex2_2-global-measures-of-spatial-autocorrelation" class="level1">
+<h1>9 Hands-on_EX2_2: Global measures of spatial autocorrelation</h1>
 <section id="getting-started" class="level2">
 <h2 class="anchored" data-anchor-id="getting-started"><strong>9.2 Getting Started</strong></h2>
 <section id="the-analytical-question" class="level3">
@@ -940,8 +952,8 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p>As we consider order lag from 1 to 3, there is significant positive autocorrelation (similar values cluster) and we note the Moran’s I values decreases as order increases. For order 5 and 6, there is significant negative autocorrelation (dissimilar values cluster)</p>
 <p><u>Possible reason for the change of polarity:</u></p>
 <p>Local clusters could dominate at smaller distances while at larger distances, can detect dispersion more.</p>
-<p><strong>9.5.2 Compute Geary's C correlogram and plot</strong></p>
-<p>In the code chunk below, <em>sp.correlogram()</em> of <strong>spdep</strong> package is used to compute a 6-lag spatial correlogram of GDPPC. The global spatial autocorrelation used in Geary's C. The <strong>plot()</strong> of base Graph is then used to plot the output.</p>
+<p><strong>9.5.2 Compute Geary’s C correlogram and plot</strong></p>
+<p>In the code chunk below, <em>sp.correlogram()</em> of <strong>spdep</strong> package is used to compute a 6-lag spatial correlogram of GDPPC. The global spatial autocorrelation used in Geary’s C. The <strong>plot()</strong> of base Graph is then used to plot the output.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a>GC_corr <span class="ot">&lt;-</span> <span class="fu">sp.correlogram</span>(wm_q, </span>
 <span id="cb53-2"><a href="#cb53-2"></a>                          hunan<span class="sc">$</span>GDPPC, </span>
@@ -976,14 +988,443 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p>All lag orders except Lag order of 3, 4 and 6 are statistically significant at 95% confidence level.</p>
 <p>Lag order 1 and 2: clustering of similar values, order 2 is less clustered than order 1. (Moran’s I and Geary’s C are inversely related.)</p>
 <p>Lag order 5: clustering of dissimilar values.</p>
+</section>
+</section>
+</section>
+<section id="section-1" class="level1">
+<h1></h1>
+<p>10 Hands-on_Ex2_3: <strong>Local Measures of Spatial Autocorrelation</strong></p>
+<section id="cluster-and-outlier-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="cluster-and-outlier-analysis"><strong>10.6 Cluster and Outlier Analysis</strong></h2>
+<p>Local Indicators of Spatial Association or LISA are statistics that evaluate the existence of clusters in the spatial arrangement of a given variable. For instance if we are studying cancer rates among census tracts in a given city local clusters in the rates mean that there are <strong>localised areas</strong> that have higher or lower rates than is to be expected by chance alone; that is, the values occurring are above or below those of a random distribution in space.</p>
+<p>In this section, we will learn how to apply appropriate Local Indicators for Spatial Association (LISA), especially local Moran'I to detect cluster (HH or LL) and/or outlier (HL, LH) from GDP per capita 2012 of Hunan Province, PRC.</p>
+<section id="computing-local-morans-i" class="level3">
+<h3 class="anchored" data-anchor-id="computing-local-morans-i"><strong>10.6.1 Computing local Moran's I</strong></h3>
+<p>To compute local Moran's I, the <a href="https://r-spatial.github.io/spdep/reference/localmoran.html"><em>localmoran()</em></a> function of <strong>spdep</strong> will be used. It computes <strong><em>Ii</em></strong> values, given a set of <strong><em>zi</em></strong> values (variable) and a <strong>listw</strong> object (spatial weights matrix) providing neighbour weighting information for the polygon associated with the zi values.</p>
+<p>The code chunks below are used to compute local Moran's I of <em>GDPPC2012</em> at the county level.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1"></a>fips <span class="ot">&lt;-</span> <span class="fu">order</span>(hunan<span class="sc">$</span>County)</span>
+<span id="cb56-2"><a href="#cb56-2"></a>localMI <span class="ot">&lt;-</span> <span class="fu">localmoran</span>(hunan<span class="sc">$</span>GDPPC, rswm_q)</span>
+<span id="cb56-3"><a href="#cb56-3"></a><span class="fu">head</span>(localMI)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            Ii          E.Ii       Var.Ii        Z.Ii Pr(z != E(Ii))
+1 -0.001468468 -2.815006e-05 4.723841e-04 -0.06626904      0.9471636
+2  0.025878173 -6.061953e-04 1.016664e-02  0.26266425      0.7928094
+3 -0.011987646 -5.366648e-03 1.133362e-01 -0.01966705      0.9843090
+4  0.001022468 -2.404783e-07 5.105969e-06  0.45259801      0.6508382
+5  0.014814881 -6.829362e-05 1.449949e-03  0.39085814      0.6959021
+6 -0.038793829 -3.860263e-04 6.475559e-03 -0.47728835      0.6331568</code></pre>
+</div>
+</div>
+<p><em>localmoran()</em> function returns a matrix of values whose columns are:</p>
+<ul>
+<li><p>Ii: the local Moran's I statistics</p></li>
+<li><p>E.Ii: the expectation of local moran statistic under the randomisation hypothesis</p></li>
+<li><p>Var.Ii: the variance of local moran statistic under the randomisation hypothesis</p></li>
+<li><p>Z.Ii:the standard deviate of local moran statistic</p></li>
+<li><p>Pr(z != E(Ii)): the p-value of local moran statistic</p></li>
+</ul>
+<p>Note there is no County’s name in the output above.</p>
+<p>We must first create a dataframe that appends the County’s name to its local moran (li) values.</p>
+<ul>
+<li><p>Fips is an object of integer class. It contains the row ids if rows are to be arranged in alphabetical order.</p></li>
+<li><p>localMI[Fips,] would arrange the rows of <code>localMI</code> in alphabetical order of its countys’ name, retaining all the columns.</p></li>
+<li><p>The row names would take the countys’ name.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb58-2"><a href="#cb58-2"></a>  localMI[fips,],</span>
+<span id="cb58-3"><a href="#cb58-3"></a>  <span class="at">row.names=</span>hunan<span class="sc">$</span>County[fips])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                         Ii          E.Ii       Var.Ii         Z.Ii
+Anhua         -2.249264e-02 -5.004845e-03 5.823550e-02 -0.072467148
+Anren         -3.993226e-01 -7.011066e-03 7.034768e-02 -1.479129376
+Anxiang       -1.468468e-03 -2.815006e-05 4.723841e-04 -0.066269038
+Baojing        3.473702e-01 -5.008916e-03 8.363556e-02  1.218469473
+Chaling        2.055902e-02 -9.681197e-04 2.771090e-02  0.129318589
+Changning     -2.986822e-05 -9.001050e-09 1.510502e-07 -0.076827706
+Changsha       4.902202e+00 -2.134796e-01 2.319447e+00  3.359009720
+Chengbu        7.372487e-01 -1.053447e-02 2.213175e-01  1.589526537
+Chenxi         1.454365e-01 -2.815570e-03 4.711616e-02  0.682992264
+Cili           7.317634e-02 -1.674718e-03 4.790227e-02  0.341995115
+Dao            2.142022e-01 -2.082417e-03 4.412297e-02  1.029658605
+Dongan         1.520993e-01 -6.348547e-04 1.347103e-02  1.315938472
+Dongkou        5.291750e-01 -6.446092e-03 1.074771e-01  1.633803048
+Fenghuang      1.801308e-01 -6.283165e-03 1.325694e-01  0.511984469
+Guidong       -5.916014e-01 -1.308623e-02 3.700293e-01 -0.951035346
+Guiyang        1.824044e-01 -3.690810e-03 3.261010e-02  1.030526392
+Guzhang        2.846615e-01 -8.505419e-03 1.415188e-01  0.779305680
+Hanshou        2.587817e-02 -6.061953e-04 1.016664e-02  0.262664253
+Hengdong       9.996391e-03 -4.906253e-04 6.774150e-03  0.127416164
+Hengnan        2.806438e-02 -3.216027e-04 3.759726e-03  0.462941265
+Hengshan      -5.820079e-03 -3.043712e-05 5.107618e-04 -0.256178406
+Hengyang       6.299738e-02 -1.304629e-03 2.186493e-02  0.434860999
+Hongjiang      1.878961e-01 -2.301871e-03 3.172474e-02  1.067841398
+Huarong       -1.538876e-02 -1.866731e-03 8.102957e-02 -0.047502891
+Huayuan        8.377211e-02 -8.556865e-04 2.449544e-02  0.540717545
+Huitong        2.599702e-01 -5.244723e-03 1.107748e-01  0.796851342
+Jiahe         -1.243083e-01 -3.055038e-03 5.111118e-02 -0.536334231
+Jianghua       2.865113e-01 -3.828030e-03 8.096774e-02  1.020351540
+Jiangyong      2.433662e-01 -2.708245e-03 1.174582e-01  0.718000620
+Jingzhou       1.826997e-01 -8.510650e-04 2.436325e-02  1.175949207
+Jinshi        -1.198765e-02 -5.366648e-03 1.133362e-01 -0.019667048
+Jishou        -2.867986e-01 -2.630512e-03 4.402754e-02 -1.354294669
+Lanshan        6.333362e-02 -9.636499e-04 2.044104e-02  0.449718820
+Leiyang        1.158072e-02 -1.494826e-04 2.508151e-03  0.234222483
+Lengshuijiang -1.790335e+00 -8.212937e-02 2.159843e+00 -1.162328599
+Li             1.022468e-03 -2.404783e-07 5.105969e-06  0.452598007
+Lianyuan      -1.467236e-01 -1.898315e-03 1.914540e-02 -1.046676007
+Liling         1.377428e+00 -1.509679e-02 4.260107e-01  2.133500656
+Linli          1.481488e-02 -6.829362e-05 1.449949e-03  0.390858141
+Linwu         -2.462072e-03 -9.070298e-06 1.925839e-04 -0.176761556
+Linxiang       6.590403e-02 -2.902766e-03 2.547019e-01  0.136337469
+Liuyang        3.368822e+00 -7.750185e-02 1.518028e+00  2.797152251
+Longhui        8.080051e-01 -1.137734e-02 1.553779e-01  2.078700865
+Longshan       7.566311e-01 -1.109985e-02 3.144936e-01  1.368999072
+Luxi           1.817670e-01 -2.485491e-03 3.424912e-02  0.995608811
+Mayang         2.185183e-01 -5.877251e-03 9.804880e-02  0.716626785
+Miluo          1.870372e+00 -1.692686e-02 2.792482e-01  3.571457247
+Nan           -9.578927e-03 -4.949718e-04 6.834133e-03 -0.109883702
+Ningxiang      1.560690e+00 -7.387766e-02 8.001247e-01  1.827359328
+Ningyuan       2.091020e-01 -7.088350e-03 8.230608e-02  0.753564419
+Pingjiang     -9.896383e-01 -2.645739e-03 5.602719e-02 -4.169792730
+Qidong         1.180601e-01 -2.120657e-03 2.474712e-02  0.763963227
+Qiyang         6.196618e-02 -7.337376e-04 8.574290e-03  0.677123545
+Rucheng       -3.699166e-01 -8.899851e-03 2.527217e-01 -0.718135003
+Sangzhi        2.505332e-01 -4.947017e-03 6.799980e-02  0.979723392
+Shaodong      -3.265891e-02 -3.659195e-05 5.054610e-04 -1.451012157
+Shaoshan       2.122266e+00 -5.022659e-02 1.366772e+00  1.858276363
+Shaoyang       5.949950e-01 -1.125342e-02 1.301205e-01  1.680651936
+Shimen        -3.879383e-02 -3.860263e-04 6.475559e-03 -0.477288352
+Shuangfeng     9.283541e-03 -2.286715e-03 3.151635e-02  0.065174101
+Shuangpai      8.059081e-02 -3.136568e-04 8.983814e-03  0.853575843
+Suining        3.758488e-01 -3.593266e-03 4.186992e-02  1.854361477
+Taojiang      -2.539369e-01 -1.239489e-03 1.447705e-02 -2.100199974
+Taoyuan        1.472940e-02 -1.203908e-04 8.510322e-04  0.509034668
+Tongdao        4.648244e-01 -6.987001e-03 1.987870e-01  1.058216149
+Wangcheng      4.421959e+00 -1.106694e-01 1.359593e+00  3.887278186
+Wugang         7.100317e-01 -7.814410e-03 1.071043e-01  2.193450460
+Xiangtan       2.453007e-01 -3.645745e-04 3.231947e-03  4.321272793
+Xiangxiang     2.627078e-01 -1.270254e-03 2.128955e-02  1.809191360
+Xiangyin       5.452517e-01 -4.744181e-03 7.923627e-02  1.953877950
+Xinhua         1.181023e-01 -6.264938e-03 8.600137e-02  0.424085257
+Xinhuang       1.572539e-01 -4.182005e-03 3.664774e-01  0.266671512
+Xinning        6.892785e-01 -9.667394e-03 2.032791e-01  1.550233652
+Xinshao        5.757821e-02 -8.593187e-03 1.176858e-01  0.192889342
+Xintian       -7.405021e-03 -5.149337e-03 1.087706e-01 -0.006839472
+Xupu           3.240616e-01 -5.746775e-03 5.773544e-02  1.372588531
+Yanling       -6.902089e-02 -5.921138e-04 9.930612e-03 -0.686674286
+Yizhang       -2.684366e-01 -2.246318e-03 4.758794e-02 -1.220235660
+Yongshun       6.306427e-01 -1.134974e-02 1.883028e-01  1.479454202
+Yongxing       4.341080e-01 -9.073529e-03 1.508849e-01  1.140929407
+You            7.875041e-02 -7.272845e-03 1.211609e-01  0.247135252
+Yuanjiang      2.000423e-04 -1.775969e-04 2.979795e-03  0.006918053
+Yuanling       8.729849e-03 -2.298071e-06 2.322115e-05  1.812087685
+Yueyang        4.118877e-02 -1.976849e-04 2.311339e-03  0.860847775
+Zhijiang       1.047626e-01 -7.812319e-04 1.309992e-02  0.922143185
+Zhongfang     -2.268458e-01 -2.145491e-03 3.592709e-02 -1.185475978
+Zhuzhou        3.286415e-01 -5.243157e-04 7.239075e-03  3.868772438
+Zixing        -7.684863e-01 -8.821029e-02 9.405678e-01 -0.701439354
+              Pr.z....E.Ii..
+Anhua           9.422301e-01
+Anren           1.391057e-01
+Anxiang         9.471636e-01
+Baojing         2.230456e-01
+Chaling         8.971056e-01
+Changning       9.387606e-01
+Changsha        7.822232e-04
+Chengbu         1.119416e-01
+Chenxi          4.946117e-01
+Cili            7.323546e-01
+Dao             3.031703e-01
+Dongan          1.881947e-01
+Dongkou         1.023002e-01
+Fenghuang       6.086619e-01
+Guidong         3.415864e-01
+Guiyang         3.027630e-01
+Guzhang         4.357997e-01
+Hanshou         7.928094e-01
+Hengdong        8.986110e-01
+Hengnan         6.434065e-01
+Hengshan        7.978131e-01
+Hengyang        6.636633e-01
+Hongjiang       2.855921e-01
+Huarong         9.621124e-01
+Huayuan         5.887023e-01
+Huitong         4.255374e-01
+Jiahe           5.917276e-01
+Jianghua        3.075618e-01
+Jiangyong       4.727569e-01
+Jingzhou        2.396152e-01
+Jinshi          9.843090e-01
+Jishou          1.756424e-01
+Lanshan         6.529132e-01
+Leiyang         8.148123e-01
+Lengshuijiang   2.451020e-01
+Li              6.508382e-01
+Lianyuan        2.952490e-01
+Liling          3.288368e-02
+Linli           6.959021e-01
+Linwu           8.596957e-01
+Linxiang        8.915545e-01
+Liuyang         5.155523e-03
+Longhui         3.764485e-02
+Longshan        1.709996e-01
+Luxi            3.194403e-01
+Mayang          4.736044e-01
+Miluo           3.550005e-04
+Nan             9.125016e-01
+Ningxiang       6.764576e-02
+Ningyuan        4.511108e-01
+Pingjiang       3.048768e-05
+Qidong          4.448892e-01
+Qiyang          4.983276e-01
+Rucheng         4.726740e-01
+Sangzhi         3.272227e-01
+Shaodong        1.467765e-01
+Shaoshan        6.312978e-02
+Shaoyang        9.283054e-02
+Shimen          6.331568e-01
+Shuangfeng      9.480354e-01
+Shuangpai       3.933400e-01
+Suining         6.368746e-02
+Taojiang        3.571125e-02
+Taoyuan         6.107279e-01
+Tongdao         2.899569e-01
+Wangcheng       1.013746e-04
+Wugang          2.827494e-02
+Xiangtan        1.551317e-05
+Xiangxiang      7.042128e-02
+Xiangyin        5.071565e-02
+Xinhua          6.715036e-01
+Xinhuang        7.897221e-01
+Xinning         1.210854e-01
+Xinshao         8.470456e-01
+Xintian         9.945429e-01
+Xupu            1.698803e-01
+Yanling         4.922880e-01
+Yizhang         2.223756e-01
+Yongshun        1.390190e-01
+Yongxing        2.538993e-01
+You             8.048036e-01
+Yuanjiang       9.944802e-01
+Yuanling        6.997265e-02
+Yueyang         3.893219e-01
+Zhijiang        3.564539e-01
+Zhongfang       2.358293e-01
+Zhuzhou         1.093847e-04
+Zixing          4.830289e-01</code></pre>
+</div>
+</div>
+<p>The code chunk below list the content of the local Moran matrix derived by using <a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/printCoefmat"><em>printCoefmat()</em></a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a><span class="fu">printCoefmat</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb60-2"><a href="#cb60-2"></a>  localMI[fips,], </span>
+<span id="cb60-3"><a href="#cb60-3"></a>  <span class="at">row.names=</span>hunan<span class="sc">$</span>County[fips]),</span>
+<span id="cb60-4"><a href="#cb60-4"></a>  <span class="at">check.names=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                       Ii        E.Ii      Var.Ii        Z.Ii Pr.z....E.Ii..
+Anhua         -2.2493e-02 -5.0048e-03  5.8235e-02 -7.2467e-02         0.9422
+Anren         -3.9932e-01 -7.0111e-03  7.0348e-02 -1.4791e+00         0.1391
+Anxiang       -1.4685e-03 -2.8150e-05  4.7238e-04 -6.6269e-02         0.9472
+Baojing        3.4737e-01 -5.0089e-03  8.3636e-02  1.2185e+00         0.2230
+Chaling        2.0559e-02 -9.6812e-04  2.7711e-02  1.2932e-01         0.8971
+Changning     -2.9868e-05 -9.0010e-09  1.5105e-07 -7.6828e-02         0.9388
+Changsha       4.9022e+00 -2.1348e-01  2.3194e+00  3.3590e+00         0.0008
+Chengbu        7.3725e-01 -1.0534e-02  2.2132e-01  1.5895e+00         0.1119
+Chenxi         1.4544e-01 -2.8156e-03  4.7116e-02  6.8299e-01         0.4946
+Cili           7.3176e-02 -1.6747e-03  4.7902e-02  3.4200e-01         0.7324
+Dao            2.1420e-01 -2.0824e-03  4.4123e-02  1.0297e+00         0.3032
+Dongan         1.5210e-01 -6.3485e-04  1.3471e-02  1.3159e+00         0.1882
+Dongkou        5.2918e-01 -6.4461e-03  1.0748e-01  1.6338e+00         0.1023
+Fenghuang      1.8013e-01 -6.2832e-03  1.3257e-01  5.1198e-01         0.6087
+Guidong       -5.9160e-01 -1.3086e-02  3.7003e-01 -9.5104e-01         0.3416
+Guiyang        1.8240e-01 -3.6908e-03  3.2610e-02  1.0305e+00         0.3028
+Guzhang        2.8466e-01 -8.5054e-03  1.4152e-01  7.7931e-01         0.4358
+Hanshou        2.5878e-02 -6.0620e-04  1.0167e-02  2.6266e-01         0.7928
+Hengdong       9.9964e-03 -4.9063e-04  6.7742e-03  1.2742e-01         0.8986
+Hengnan        2.8064e-02 -3.2160e-04  3.7597e-03  4.6294e-01         0.6434
+Hengshan      -5.8201e-03 -3.0437e-05  5.1076e-04 -2.5618e-01         0.7978
+Hengyang       6.2997e-02 -1.3046e-03  2.1865e-02  4.3486e-01         0.6637
+Hongjiang      1.8790e-01 -2.3019e-03  3.1725e-02  1.0678e+00         0.2856
+Huarong       -1.5389e-02 -1.8667e-03  8.1030e-02 -4.7503e-02         0.9621
+Huayuan        8.3772e-02 -8.5569e-04  2.4495e-02  5.4072e-01         0.5887
+Huitong        2.5997e-01 -5.2447e-03  1.1077e-01  7.9685e-01         0.4255
+Jiahe         -1.2431e-01 -3.0550e-03  5.1111e-02 -5.3633e-01         0.5917
+Jianghua       2.8651e-01 -3.8280e-03  8.0968e-02  1.0204e+00         0.3076
+Jiangyong      2.4337e-01 -2.7082e-03  1.1746e-01  7.1800e-01         0.4728
+Jingzhou       1.8270e-01 -8.5106e-04  2.4363e-02  1.1759e+00         0.2396
+Jinshi        -1.1988e-02 -5.3666e-03  1.1334e-01 -1.9667e-02         0.9843
+Jishou        -2.8680e-01 -2.6305e-03  4.4028e-02 -1.3543e+00         0.1756
+Lanshan        6.3334e-02 -9.6365e-04  2.0441e-02  4.4972e-01         0.6529
+Leiyang        1.1581e-02 -1.4948e-04  2.5082e-03  2.3422e-01         0.8148
+Lengshuijiang -1.7903e+00 -8.2129e-02  2.1598e+00 -1.1623e+00         0.2451
+Li             1.0225e-03 -2.4048e-07  5.1060e-06  4.5260e-01         0.6508
+Lianyuan      -1.4672e-01 -1.8983e-03  1.9145e-02 -1.0467e+00         0.2952
+Liling         1.3774e+00 -1.5097e-02  4.2601e-01  2.1335e+00         0.0329
+Linli          1.4815e-02 -6.8294e-05  1.4499e-03  3.9086e-01         0.6959
+Linwu         -2.4621e-03 -9.0703e-06  1.9258e-04 -1.7676e-01         0.8597
+Linxiang       6.5904e-02 -2.9028e-03  2.5470e-01  1.3634e-01         0.8916
+Liuyang        3.3688e+00 -7.7502e-02  1.5180e+00  2.7972e+00         0.0052
+Longhui        8.0801e-01 -1.1377e-02  1.5538e-01  2.0787e+00         0.0376
+Longshan       7.5663e-01 -1.1100e-02  3.1449e-01  1.3690e+00         0.1710
+Luxi           1.8177e-01 -2.4855e-03  3.4249e-02  9.9561e-01         0.3194
+Mayang         2.1852e-01 -5.8773e-03  9.8049e-02  7.1663e-01         0.4736
+Miluo          1.8704e+00 -1.6927e-02  2.7925e-01  3.5715e+00         0.0004
+Nan           -9.5789e-03 -4.9497e-04  6.8341e-03 -1.0988e-01         0.9125
+Ningxiang      1.5607e+00 -7.3878e-02  8.0012e-01  1.8274e+00         0.0676
+Ningyuan       2.0910e-01 -7.0884e-03  8.2306e-02  7.5356e-01         0.4511
+Pingjiang     -9.8964e-01 -2.6457e-03  5.6027e-02 -4.1698e+00         0.0000
+Qidong         1.1806e-01 -2.1207e-03  2.4747e-02  7.6396e-01         0.4449
+Qiyang         6.1966e-02 -7.3374e-04  8.5743e-03  6.7712e-01         0.4983
+Rucheng       -3.6992e-01 -8.8999e-03  2.5272e-01 -7.1814e-01         0.4727
+Sangzhi        2.5053e-01 -4.9470e-03  6.8000e-02  9.7972e-01         0.3272
+Shaodong      -3.2659e-02 -3.6592e-05  5.0546e-04 -1.4510e+00         0.1468
+Shaoshan       2.1223e+00 -5.0227e-02  1.3668e+00  1.8583e+00         0.0631
+Shaoyang       5.9499e-01 -1.1253e-02  1.3012e-01  1.6807e+00         0.0928
+Shimen        -3.8794e-02 -3.8603e-04  6.4756e-03 -4.7729e-01         0.6332
+Shuangfeng     9.2835e-03 -2.2867e-03  3.1516e-02  6.5174e-02         0.9480
+Shuangpai      8.0591e-02 -3.1366e-04  8.9838e-03  8.5358e-01         0.3933
+Suining        3.7585e-01 -3.5933e-03  4.1870e-02  1.8544e+00         0.0637
+Taojiang      -2.5394e-01 -1.2395e-03  1.4477e-02 -2.1002e+00         0.0357
+Taoyuan        1.4729e-02 -1.2039e-04  8.5103e-04  5.0903e-01         0.6107
+Tongdao        4.6482e-01 -6.9870e-03  1.9879e-01  1.0582e+00         0.2900
+Wangcheng      4.4220e+00 -1.1067e-01  1.3596e+00  3.8873e+00         0.0001
+Wugang         7.1003e-01 -7.8144e-03  1.0710e-01  2.1935e+00         0.0283
+Xiangtan       2.4530e-01 -3.6457e-04  3.2319e-03  4.3213e+00         0.0000
+Xiangxiang     2.6271e-01 -1.2703e-03  2.1290e-02  1.8092e+00         0.0704
+Xiangyin       5.4525e-01 -4.7442e-03  7.9236e-02  1.9539e+00         0.0507
+Xinhua         1.1810e-01 -6.2649e-03  8.6001e-02  4.2409e-01         0.6715
+Xinhuang       1.5725e-01 -4.1820e-03  3.6648e-01  2.6667e-01         0.7897
+Xinning        6.8928e-01 -9.6674e-03  2.0328e-01  1.5502e+00         0.1211
+Xinshao        5.7578e-02 -8.5932e-03  1.1769e-01  1.9289e-01         0.8470
+Xintian       -7.4050e-03 -5.1493e-03  1.0877e-01 -6.8395e-03         0.9945
+Xupu           3.2406e-01 -5.7468e-03  5.7735e-02  1.3726e+00         0.1699
+Yanling       -6.9021e-02 -5.9211e-04  9.9306e-03 -6.8667e-01         0.4923
+Yizhang       -2.6844e-01 -2.2463e-03  4.7588e-02 -1.2202e+00         0.2224
+Yongshun       6.3064e-01 -1.1350e-02  1.8830e-01  1.4795e+00         0.1390
+Yongxing       4.3411e-01 -9.0735e-03  1.5088e-01  1.1409e+00         0.2539
+You            7.8750e-02 -7.2728e-03  1.2116e-01  2.4714e-01         0.8048
+Yuanjiang      2.0004e-04 -1.7760e-04  2.9798e-03  6.9181e-03         0.9945
+Yuanling       8.7298e-03 -2.2981e-06  2.3221e-05  1.8121e+00         0.0700
+Yueyang        4.1189e-02 -1.9768e-04  2.3113e-03  8.6085e-01         0.3893
+Zhijiang       1.0476e-01 -7.8123e-04  1.3100e-02  9.2214e-01         0.3565
+Zhongfang     -2.2685e-01 -2.1455e-03  3.5927e-02 -1.1855e+00         0.2358
+Zhuzhou        3.2864e-01 -5.2432e-04  7.2391e-03  3.8688e+00         0.0001
+Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</code></pre>
+</div>
+</div>
+<section id="mapping-the-local-morans-i" class="level4">
+<h4 class="anchored" data-anchor-id="mapping-the-local-morans-i">10.6.1.1 Mapping the local Moran's I</h4>
+<p>Before mapping the local Moran's I map, it is wise to append the local Moran's I dataframe (i.e.&nbsp;localMI) onto hunan SpatialPolygonDataFrame. The code chunks below can be used to perform the task. The out SpatialPolygonDataFrame is called <em>hunan.localMI</em>.</p>
+<p>The <code>Pr.z….E.Ii..</code> containing p-value of the local moran I is renamed to <code>PR.Ii</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a>hunan.localMI <span class="ot">&lt;-</span> <span class="fu">cbind</span>(hunan,localMI) <span class="sc">%&gt;%</span> </span>
+<span id="cb62-2"><a href="#cb62-2"></a>    <span class="fu">rename</span>(<span class="at">Pr.Ii =</span> Pr.z....E.Ii..)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="mapping-local-morans-i-values" class="level4">
+<h4 class="anchored" data-anchor-id="mapping-local-morans-i-values">10.6.1.2 Mapping local Moran's I values</h4>
+<p>Using choropleth mapping functions of <strong>tmap</strong> package, we can plot the local Moran's I values by using the code chunks below. For paletter colours, refer to colorbrewers <a href="https://r-graph-gallery.com/38-rcolorbrewers-palettes.html">link</a>.</p>
+<div class="cell" data-fig.asp="0.68">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1"></a><span class="fu">tm_shape</span>(hunan.localMI) <span class="sc">+</span></span>
+<span id="cb63-2"><a href="#cb63-2"></a>  <span class="fu">tm_fill</span>(<span class="at">col=</span><span class="st">'Ii'</span>,</span>
+<span id="cb63-3"><a href="#cb63-3"></a>          <span class="at">style =</span> <span class="st">'pretty'</span>,</span>
+<span id="cb63-4"><a href="#cb63-4"></a>          <span class="co">#palette = 'RdBu', # &lt;&lt; refer to colourbrewer</span></span>
+<span id="cb63-5"><a href="#cb63-5"></a>          <span class="at">title =</span> <span class="st">'Local Moran statistics'</span>) <span class="sc">+</span></span>
+<span id="cb63-6"><a href="#cb63-6"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha=</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
+<span id="cb63-7"><a href="#cb63-7"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Local Moran's I"</span>,</span>
+<span id="cb63-8"><a href="#cb63-8"></a>            <span class="at">legend.width=</span> <span class="fl">0.25</span>,</span>
+<span id="cb63-9"><a href="#cb63-9"></a>            <span class="at">legend.height =</span> <span class="fl">0.25</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid" width="1344"></p>
+</div>
+</div>
+</section>
+<section id="mapping-local-morans-i-p-values" class="level4">
+<h4 class="anchored" data-anchor-id="mapping-local-morans-i-p-values">10.6.1.3 Mapping local Moran's I p-values</h4>
+<p>The choropleth shows there is evidence for both positive and negative Ii values. However, it is useful to <strong>consider the p-values</strong> for each of these values, as consider above.</p>
+<p>The code chunks below produce a choropleth map of Moran's I p-values by using functions of <strong>tmap</strong> package.</p>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Various p values</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">p values at 95% confidence level</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell" data-fig.asp="0.68">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1"></a><span class="fu">tm_shape</span>(hunan.localMI) <span class="sc">+</span></span>
+<span id="cb64-2"><a href="#cb64-2"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">"Pr.Ii"</span>, </span>
+<span id="cb64-3"><a href="#cb64-3"></a>          <span class="at">breaks=</span><span class="fu">c</span>(<span class="sc">-</span><span class="cn">Inf</span>, <span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="cn">Inf</span>),</span>
+<span id="cb64-4"><a href="#cb64-4"></a>          <span class="at">palette=</span><span class="st">"-Blues"</span>, </span>
+<span id="cb64-5"><a href="#cb64-5"></a>          <span class="at">title =</span> <span class="st">"local Moran's I p-values"</span>) <span class="sc">+</span></span>
+<span id="cb64-6"><a href="#cb64-6"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb64-7"><a href="#cb64-7"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Local Moran's I p-values"</span>,</span>
+<span id="cb64-8"><a href="#cb64-8"></a>            <span class="at">legend.width=</span> <span class="fl">0.25</span>,</span>
+<span id="cb64-9"><a href="#cb64-9"></a>            <span class="at">legend.height =</span> <span class="fl">0.25</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid" width="1344"></p>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell" data-fig.asp="0.68">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1"></a><span class="fu">tm_shape</span>(hunan.localMI) <span class="sc">+</span></span>
+<span id="cb65-2"><a href="#cb65-2"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">"Pr.Ii"</span>, </span>
+<span id="cb65-3"><a href="#cb65-3"></a>          <span class="at">breaks =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="cn">Inf</span>, <span class="fl">0.05</span>, <span class="cn">Inf</span>),</span>
+<span id="cb65-4"><a href="#cb65-4"></a>          <span class="at">palette =</span> <span class="fu">c</span>(<span class="st">'lightblue'</span>, <span class="st">'grey'</span>), </span>
+<span id="cb65-5"><a href="#cb65-5"></a>          <span class="at">title =</span> <span class="st">"Local Moran's I p-values"</span>) <span class="sc">+</span></span>
+<span id="cb65-6"><a href="#cb65-6"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb65-7"><a href="#cb65-7"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Significant Local Moran's I </span><span class="sc">\n</span><span class="st">p-values at 95% Confidence level"</span>,</span>
+<span id="cb65-8"><a href="#cb65-8"></a>            <span class="at">main.title.size =</span> <span class="dv">1</span>,</span>
+<span id="cb65-9"><a href="#cb65-9"></a>            <span class="at">legend.width =</span> <span class="fl">0.25</span>,</span>
+<span id="cb65-10"><a href="#cb65-10"></a>            <span class="at">legend.height =</span> <span class="fl">0.25</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid" width="1344"></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="mapping-both-local-morans-i-values-and-p-values" class="level4">
+<h4 class="anchored" data-anchor-id="mapping-both-local-morans-i-values-and-p-values">10.6.1.4 Mapping both local Moran's I values and p-values</h4>
+<p>For effective interpretation, it is better to plot both the local Moran's I values map and its corresponding p-values map next to each other.</p>
+<p>The code chunk below will be used to create such visualisation.</p>
+<div class="cell" data-fig.asp="0.68">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1"></a>localMI.map<span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(hunan.localMI) <span class="sc">+</span></span>
+<span id="cb66-2"><a href="#cb66-2"></a>  <span class="fu">tm_fill</span>(<span class="at">col=</span><span class="st">'Ii'</span>,</span>
+<span id="cb66-3"><a href="#cb66-3"></a>          <span class="at">style =</span> <span class="st">'pretty'</span>,</span>
+<span id="cb66-4"><a href="#cb66-4"></a>          <span class="co">#palette = 'RdBu', # &lt;&lt; reger to colourbrewer</span></span>
+<span id="cb66-5"><a href="#cb66-5"></a>          <span class="at">title =</span> <span class="st">'Local Moran statistics'</span>) <span class="sc">+</span></span>
+<span id="cb66-6"><a href="#cb66-6"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha=</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
+<span id="cb66-7"><a href="#cb66-7"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Local Moran's I"</span>,</span>
+<span id="cb66-8"><a href="#cb66-8"></a>            <span class="at">legend.width=</span> <span class="fl">0.25</span>,</span>
+<span id="cb66-9"><a href="#cb66-9"></a>            <span class="at">legend.height =</span> <span class="fl">0.25</span>)</span>
+<span id="cb66-10"><a href="#cb66-10"></a></span>
+<span id="cb66-11"><a href="#cb66-11"></a>pvalue.map <span class="ot">&lt;-</span><span class="fu">tm_shape</span>(hunan.localMI) <span class="sc">+</span></span>
+<span id="cb66-12"><a href="#cb66-12"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">"Pr.Ii"</span>, </span>
+<span id="cb66-13"><a href="#cb66-13"></a>          <span class="at">breaks =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="cn">Inf</span>, <span class="fl">0.05</span>, <span class="cn">Inf</span>),</span>
+<span id="cb66-14"><a href="#cb66-14"></a>          <span class="at">palette =</span> <span class="fu">c</span>(<span class="st">'lightblue'</span>, <span class="st">'grey'</span>), </span>
+<span id="cb66-15"><a href="#cb66-15"></a>          <span class="at">title =</span> <span class="st">"Local Moran's I p-values"</span>) <span class="sc">+</span></span>
+<span id="cb66-16"><a href="#cb66-16"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb66-17"><a href="#cb66-17"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Significant Local Moran's I </span><span class="sc">\n</span><span class="st">p-values at 95% Confidence level"</span>,</span>
+<span id="cb66-18"><a href="#cb66-18"></a>            <span class="at">main.title.size =</span> <span class="dv">1</span>,</span>
+<span id="cb66-19"><a href="#cb66-19"></a>            <span class="at">legend.width =</span> <span class="fl">0.25</span>,</span>
+<span id="cb66-20"><a href="#cb66-20"></a>            <span class="at">legend.height =</span> <span class="fl">0.25</span>)</span>
+<span id="cb66-21"><a href="#cb66-21"></a></span>
+<span id="cb66-22"><a href="#cb66-22"></a><span class="fu">tmap_arrange</span>(localMI.map, pvalue.map, <span class="at">asp=</span><span class="dv">1</span>,<span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid" width="1344"></p>
+</div>
+</div>
 <div class="cell" data-fig.asp="0.68">
 
 </div>
 </section>
-<section id="section-1" class="level3">
-<h3 class="anchored" data-anchor-id="section-1"></h3>
+</section>
+<section id="section-2" class="level3">
+<h3 class="anchored" data-anchor-id="section-2"></h3>
 
 
+</section>
 </section>
 </section>
 

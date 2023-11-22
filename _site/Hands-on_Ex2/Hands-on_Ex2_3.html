@@ -247,7 +247,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../Hands-on_Ex2/Hands-on_Ex2_2.html" class="sidebar-item-text sidebar-link">Hands-on Exercise 2.2: Global Measures of Spatial Autocorrelation</a>
+  <a href="../Hands-on_Ex2/Hands-on_Ex2_2.html" class="sidebar-item-text sidebar-link">Hands-on Exercise 2.2 and 2.3: Global and Local Measures of Spatial Autocorrelation</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -269,13 +269,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
-  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">Getting Started</a></li>
-  <li><a href="#learning-outcome" id="toc-learning-outcome" class="nav-link" data-scroll-target="#learning-outcome">1.1 Learning Outcome</a></li>
-  <li><a href="#importing-geospatial-data" id="toc-importing-geospatial-data" class="nav-link" data-scroll-target="#importing-geospatial-data">Importing Geospatial data</a></li>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><strong>10.1 Overview</strong></a></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started"><strong>10.2 Getting Started</strong></a>
+  <ul class="collapse">
+  <li><a href="#the-analytical-question" id="toc-the-analytical-question" class="nav-link" data-scroll-target="#the-analytical-question"><strong>10.2.1 The analytical question</strong></a></li>
+  <li><a href="#the-study-area-and-data" id="toc-the-study-area-and-data" class="nav-link" data-scroll-target="#the-study-area-and-data"><strong>10.2.2 The Study Area and Data</strong></a></li>
+  <li><a href="#setting-the-analytical-toolls" id="toc-setting-the-analytical-toolls" class="nav-link" data-scroll-target="#setting-the-analytical-toolls"><strong>10.2.3 Setting the Analytical Toolls</strong></a></li>
+  </ul></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a>
+  <ul class="collapse">
+  <li><a href="#import-shapefile-into-r-environment" id="toc-import-shapefile-into-r-environment" class="nav-link" data-scroll-target="#import-shapefile-into-r-environment"><strong>10.3.1 Import shapefile into r environment</strong></a></li>
+  <li><a href="#import-csv-file-into-r-environment" id="toc-import-csv-file-into-r-environment" class="nav-link" data-scroll-target="#import-csv-file-into-r-environment"><strong>10.3.2 Import csv file into r environment</strong></a></li>
+  <li><a href="#performing-relational-join" id="toc-performing-relational-join" class="nav-link" data-scroll-target="#performing-relational-join"><strong>10.3.3 Performing relational join</strong></a></li>
+  <li><a href="#visualising-regional-development-indicator" id="toc-visualising-regional-development-indicator" class="nav-link" data-scroll-target="#visualising-regional-development-indicator"><strong>10.3.4 Visualising Regional Development Indicator</strong></a></li>
+  </ul></li>
   <li><a href="#theories" id="toc-theories" class="nav-link" data-scroll-target="#theories">Theories</a>
   <ul class="collapse">
-  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
+  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1"></a></li>
   </ul></li>
   </ul>
 </nav>
@@ -319,33 +329,145 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </header>
 
 <section id="overview" class="level2">
-<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<h2 class="anchored" data-anchor-id="overview"><strong>10.1 Overview</strong></h2>
+<p>In this hands-on exercise, wewill learn how to compute Global and Local Measure of Spatial Autocorrelation (GLSA) by using <strong>spdep</strong> package. By the end to this hands-on exercise, we will be able to:</p>
+<ul>
+<li><p>compute Global Spatial Autocorrelation (GSA) statistics by using appropriate functions of <strong>spdep</strong> package,</p>
+<ul>
+<li><p>plot Moran scatterplot,</p></li>
+<li><p>compute and plot spatial correlogram using appropriate function of <strong>spdep</strong> package.</p></li>
+</ul></li>
+<li><p>compute Local Indicator of Spatial Association (LISA) statistics for detecting clusters and outliers by using appropriate functions <strong>spdep</strong> package;</p></li>
+<li><p>compute Getis-Ord's Gi-statistics for detecting hot spot or/and cold spot area by using appropriate functions of <strong>spdep</strong> package; and</p></li>
+<li><p>to visualise the analysis output by using <strong>tmap</strong> package.</p></li>
+</ul>
 </section>
 <section id="getting-started" class="level2">
-<h2 class="anchored" data-anchor-id="getting-started">Getting Started</h2>
+<h2 class="anchored" data-anchor-id="getting-started"><strong>10.2 Getting Started</strong></h2>
+<section id="the-analytical-question" class="level3">
+<h3 class="anchored" data-anchor-id="the-analytical-question"><strong>10.2.1 The analytical question</strong></h3>
+<ul>
+<li><p>In spatial policy, local government/planners aims to ensure equal distribution of development in the province.</p></li>
+<li><p>we should apply appropriate spatial statistical methods to discover if development are even distributed geographically in the province</p></li>
+<li><p>if answer is NO, we ask "is there sign of clustering?" (GLOBAL spatial autocorrelation)</p></li>
+<li><p>if YES, "Where are the clusters" (LOCAL spatial autocorrelation)</p></li>
+</ul>
+<p>In this case study, we are interested to examine the spatial pattern of a selected development indicator (i.e.&nbsp;GDP per capita) of Hunan Provice, People Republic of China. (https://en.wikipedia.org/wiki/Hunan)</p>
+</section>
+<section id="the-study-area-and-data" class="level3">
+<h3 class="anchored" data-anchor-id="the-study-area-and-data"><strong>10.2.2 The Study Area and Data</strong></h3>
+<p>Two data sets will be used in this hands-on exercise, they are:</p>
+<ol type="1">
+<li><p>Geospatial data: Hunan province administrative boundary layer at county level. This is a geospatial data set in ESRI shapefile format.</p></li>
+<li><p>Aspatial data: Hunan_2012.csv: This csv file contains selected Hunan's local development indicators in 2012.</p></li>
+</ol>
+</section>
+<section id="setting-the-analytical-toolls" class="level3">
+<h3 class="anchored" data-anchor-id="setting-the-analytical-toolls"><strong>10.2.3 Setting the Analytical Toolls</strong></h3>
+<p>Packages that we will be using are:</p>
+<ul>
+<li><p>sf is use for importing and handling geospatial data in R,</p></li>
+<li><p>tidyverse is mainly use for wrangling attribute data in R,</p></li>
+<li><p>spdep will be used to compute spatial weights, global and local spatial autocorrelation statistics, and</p></li>
+<li><p>tmap will be used to prepare cartographic quality chropleth map.</p></li>
+</ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, spdep, tmap, tidyverse, knitr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="learning-outcome" class="level2">
-<h2 class="anchored" data-anchor-id="learning-outcome">1.1 Learning Outcome</h2>
 </section>
-<section id="importing-geospatial-data" class="level2">
-<h2 class="anchored" data-anchor-id="importing-geospatial-data">Importing Geospatial data</h2>
+<section id="section" class="level2">
+<h2 class="anchored" data-anchor-id="section"></h2>
+<p><strong>10.3 Getting the Data Into R Environment</strong></p>
+<p>The geospatial data is in ESRI shapefile format and the attribute table is in csv fomat.</p>
+<section id="import-shapefile-into-r-environment" class="level3">
+<h3 class="anchored" data-anchor-id="import-shapefile-into-r-environment"><strong>10.3.1 Import shapefile into r environment</strong></h3>
+<p>The code chunk below uses <a href="https://r-spatial.github.io/sf/reference/st_read.html"><em>st_read()</em></a> of <strong>sf</strong> package to import Hunan shapefile into R. The imported shapefile will be <strong>simple features</strong> Object of <strong>sf</strong>.</p>
+<p><code>hunan</code> is in WSG84 geographical system.</p>
 <div class="cell">
-
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>hunan <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn=</span><span class="st">'data/geospatial'</span>,</span>
+<span id="cb2-2"><a href="#cb2-2"></a>                 <span class="at">layer=</span><span class="st">'Hunan'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `Hunan' from data source 
+  `C:\yixin-neo\ISSS624_AGA\Hands-on_Ex2\data\geospatial' using driver `ESRI Shapefile'
+Simple feature collection with 88 features and 7 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: 108.7831 ymin: 24.6342 xmax: 114.2544 ymax: 30.12812
+Geodetic CRS:  WGS 84</code></pre>
 </div>
+</div>
+</section>
+<section id="import-csv-file-into-r-environment" class="level3">
+<h3 class="anchored" data-anchor-id="import-csv-file-into-r-environment"><strong>10.3.2 Import csv file into r environment</strong></h3>
+<p>Next, we will import <em>Hunan_2012.csv</em> into R by using <em>read_csv()</em> of <strong>readr</strong> package. The output is R data frame class.</p>
 <div class="cell">
-
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>hunan2012 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'data/aspatial/Hunan_2012.csv'</span>)</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">head</span>(hunan2012,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 29
+  County  City  avg_wage deposite   FAI Gov_Rev Gov_Exp    GDP GDPPC   GIO  Loan
+  &lt;chr&gt;   &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 Anhua   Yiya…    30544   10967  6832.    457.   2703  13225  14567 9277. 3955.
+2 Anren   Chen…    28058    4599. 6386.    221.   1455.  4941. 12761 4189. 2555.
+3 Anxiang Chan…    31935    5517. 3541     244.   1780. 12482  23667 5109. 2807.
+# ℹ 18 more variables: NIPCR &lt;dbl&gt;, Bed &lt;dbl&gt;, Emp &lt;dbl&gt;, EmpR &lt;dbl&gt;,
+#   EmpRT &lt;dbl&gt;, Pri_Stu &lt;dbl&gt;, Sec_Stu &lt;dbl&gt;, Household &lt;dbl&gt;,
+#   Household_R &lt;dbl&gt;, NOIP &lt;dbl&gt;, Pop_R &lt;dbl&gt;, RSCG &lt;dbl&gt;, Pop_T &lt;dbl&gt;,
+#   Agri &lt;dbl&gt;, Service &lt;dbl&gt;, Disp_Inc &lt;dbl&gt;, RORP &lt;dbl&gt;, ROREmp &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="performing-relational-join" class="level3">
+<h3 class="anchored" data-anchor-id="performing-relational-join"><strong>10.3.3 Performing relational join</strong></h3>
+<p>The code chunk below will be used to update the attribute table of <em>hunan</em>'s SpatialPolygonsDataFrame (geospatial) with the attribute fields of <em>hunan2012</em> dataframe (aspatial) . This is performed by using <em>left_join()</em> of <strong>dplyr</strong> package. Since the join columns are not specified, identical columns names ('County') form both dataset will be used for the join.</p>
+<p>Column 7 and 15 are the 'County' and 'GDPPC' columns respectively.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>hunan <span class="ot">&lt;-</span> <span class="fu">left_join</span>(hunan,hunan2012) <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>  <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">7</span>, <span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="visualising-regional-development-indicator" class="level3">
+<h3 class="anchored" data-anchor-id="visualising-regional-development-indicator"><strong>10.3.4 Visualising Regional Development Indicator</strong></h3>
+<p>Now, we are going to prepare a basemap and a choropleth map showing the distribution of GDPPC 2012 by using <em>qtm()</em> of <strong>tmap</strong> package.</p>
+<ul>
+<li>tm_fill() 's <strong>n</strong> refer to the number of equal intervals</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>equal <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(hunan)<span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>  <span class="fu">tm_fill</span>(<span class="st">'GDPPC'</span>,</span>
+<span id="cb7-3"><a href="#cb7-3"></a>          <span class="at">n=</span><span class="dv">5</span>,</span>
+<span id="cb7-4"><a href="#cb7-4"></a>          <span class="at">style=</span><span class="st">'equal'</span>) <span class="sc">+</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">'Equal interval classification'</span>,</span>
+<span id="cb7-7"><a href="#cb7-7"></a>            <span class="at">main.title.size=</span><span class="fl">1.5</span>,</span>
+<span id="cb7-8"><a href="#cb7-8"></a>            <span class="at">legend.height =</span> <span class="fl">0.25</span>,</span>
+<span id="cb7-9"><a href="#cb7-9"></a>            <span class="at">legend.width =</span> <span class="fl">0.25</span>)</span>
+<span id="cb7-10"><a href="#cb7-10"></a></span>
+<span id="cb7-11"><a href="#cb7-11"></a>quantile <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(hunan)<span class="sc">+</span></span>
+<span id="cb7-12"><a href="#cb7-12"></a>  <span class="fu">tm_fill</span>(<span class="st">'GDPPC'</span>,</span>
+<span id="cb7-13"><a href="#cb7-13"></a>          <span class="at">n=</span><span class="dv">5</span>,</span>
+<span id="cb7-14"><a href="#cb7-14"></a>          <span class="at">style=</span><span class="st">'quantile'</span>) <span class="sc">+</span></span>
+<span id="cb7-15"><a href="#cb7-15"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb7-16"><a href="#cb7-16"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">'Equal quantile classification'</span>,</span>
+<span id="cb7-17"><a href="#cb7-17"></a>            <span class="at">main.title.size=</span><span class="fl">1.5</span>,</span>
+<span id="cb7-18"><a href="#cb7-18"></a>            <span class="at">legend.height =</span> <span class="fl">0.25</span>,</span>
+<span id="cb7-19"><a href="#cb7-19"></a>            <span class="at">legend.width =</span> <span class="fl">0.25</span>)</span>
+<span id="cb7-20"><a href="#cb7-20"></a></span>
+<span id="cb7-21"><a href="#cb7-21"></a><span class="fu">tmap_arrange</span>(equal, quantile, <span class="at">asp =</span><span class="dv">1</span>, <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex2_3_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
 </div>
 <div class="cell" data-fig.asp="0.68">
 
 </div>
 </section>
+</section>
 <section id="theories" class="level2">
 <h2 class="anchored" data-anchor-id="theories">Theories</h2>
-<section id="section" class="level3">
-<h3 class="anchored" data-anchor-id="section"></h3>
+<section id="section-1" class="level3">
+<h3 class="anchored" data-anchor-id="section-1"></h3>
 
 
 </section>
