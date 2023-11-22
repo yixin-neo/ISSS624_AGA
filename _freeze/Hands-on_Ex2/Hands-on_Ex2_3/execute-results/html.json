@@ -1,7 +1,7 @@
 {
-  "hash": "1c98f8cd97704ae89b650f6194a45210",
+  "hash": "6a1497d7143717d727098f61c1efc400",
   "result": {
-    "markdown": "---\ntitle: \"Hands-on Exercise 2.3:Local Measures of Spatial Autocorrelation\"\nauthor: \"NeoYX\"\ndate: '20 Nov 2023'\ndate-modified: \"2023-11-15\"\neditor: visual\nexecute: \n  freeze: auto\n  warning: false\n  #echo: false\n  #message: false\nformat: \n  html:\n    code-fold: True\n    code-overflow: scroll\n    code-summary: \"Show the code\"\n    code-line-numbers: true\n---\n\n\n## Overview\n\n## Getting Started\n\n\n::: {.cell}\n\n```{.r .cell-code}\npacman::p_load(sf, tidyverse)\n```\n:::\n\n\n## 1.1 Learning Outcome\n\n## Importing Geospatial data\n\n\n::: {.cell}\n\n:::\n\n::: {.cell}\n\n:::\n\n::: {.cell}\n\n:::\n\n\n## Theories\n\n### \n",
+    "markdown": "---\ntitle: \"Hands-on Exercise 2.3:Local Measures of Spatial Autocorrelation\"\nauthor: \"NeoYX\"\ndate: '22 Nov 2023'\ndate-modified: \"2023-11-22\"\neditor: visual\nexecute: \n  freeze: auto\n  warning: false\n  #echo: false\n  #message: false\nformat: \n  html:\n    code-fold: False\n    code-overflow: scroll\n    code-summary: \"Show the code\"\n    code-line-numbers: true\n---\n\n\n## Overview\n\n## Getting Started\n\n\n::: {.cell}\n\n```{.r .cell-code}\npacman::p_load(sf, tidyverse)\n```\n:::\n\n\n## 1.1 Learning Outcome\n\n## Importing Geospatial data\n\n\n::: {.cell}\n\n:::\n\n::: {.cell}\n\n:::\n\n::: {.cell fig.asp='0.68'}\n\n:::\n\n\n## Theories\n\n### \n",
     "supporting": [
       "Hands-on_Ex2_3_files"
     ],

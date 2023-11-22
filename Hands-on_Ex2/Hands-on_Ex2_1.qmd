@@ -911,3 +911,7 @@ Both charts do not use row-standardised spatial matrix, instead they use binary 
 Summary of deriving spatial weights matrix
 
 ![](images/Summary%20of%20deriving%20weights%20matrix.png)
+
+Summary of deriving lag variables
+
+![](images/Summary%20of%20deriving%20lag%20variables.png)

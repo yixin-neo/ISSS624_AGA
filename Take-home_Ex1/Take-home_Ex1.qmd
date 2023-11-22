@@ -1,7 +1,7 @@
 ---
-title: "Hands-on Exercise 2.3:Local Measures of Spatial Autocorrelation"
+title: "Take-home_Ex1: Geospatial Analytics for Public Good "
 author: "NeoYX"
-date: '22 Nov 2023'
+date: '23 Nov 2023'
 date-modified: "`r Sys.Date()`"
 editor: visual
 execute: 
