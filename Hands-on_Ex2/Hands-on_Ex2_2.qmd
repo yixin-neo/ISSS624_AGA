@@ -51,7 +51,7 @@ In this case study, we are interested to examine the spatial pattern of a select
 
 ### 
 
-9.2.2 The Study Area and Data
+### 9.2.2 The Study Area and Data
 
 Two data sets will be used in this hands-on exercise:
 
@@ -491,19 +491,20 @@ Lag order 1 and 2: clustering of similar values, order 2 is less clustered than 
 Lag order 5: clustering of dissimilar values.
 
 # 
-10 Hands-on_Ex2_3:  **Local Measures of Spatial Autocorrelation**
+
+# 10 Hands-on_Ex2_3: **Local Measures of Spatial Autocorrelation**
 
 ## **10.6 Cluster and Outlier Analysis**
 
 Local Indicators of Spatial Association or LISA are statistics that evaluate the existence of clusters in the spatial arrangement of a given variable. For instance if we are studying cancer rates among census tracts in a given city local clusters in the rates mean that there are **localised areas** that have higher or lower rates than is to be expected by chance alone; that is, the values occurring are above or below those of a random distribution in space.
 
-In this section, we will learn how to apply appropriate Local Indicators for Spatial Association (LISA), especially local Moran\'I to detect cluster (HH or LL) and/or outlier (HL, LH) from GDP per capita 2012 of Hunan Province, PRC.
+In this section, we will learn how to apply appropriate Local Indicators for Spatial Association (LISA), especially local Moran'I to detect cluster (HH or LL) and/or outlier (HL, LH) from GDP per capita 2012 of Hunan Province, PRC.
 
-### **10.6.1 Computing local Moran\'s I**
+### **10.6.1 Computing local Moran's I**
 
-To compute local Moran\'s I, the [*localmoran()*](https://r-spatial.github.io/spdep/reference/localmoran.html) function of **spdep** will be used. It computes ***Ii*** values, given a set of ***zi*** values (variable) and a **listw** object (spatial weights matrix) providing neighbour weighting information for the polygon associated with the zi values.
+To compute local Moran's I, the [*localmoran()*](https://r-spatial.github.io/spdep/reference/localmoran.html) function of **spdep** will be used. It computes ***Ii*** values, given a set of ***zi*** values (variable) and a **listw** object (spatial weights matrix) providing neighbour weighting information for the polygon associated with the zi values.
 
-The code chunks below are used to compute local Moran\'s I of *GDPPC2012* at the county level.
+The code chunks below are used to compute local Moran's I of *GDPPC2012* at the county level.
 
 ```{r}
 fips <- order(hunan$County)
@@ -514,7 +515,7 @@ head(localMI)
 
 *localmoran()* function returns a matrix of values whose columns are:
 
--   Ii: the local Moran\'s I statistics
+-   Ii: the local Moran's I statistics
 
 -   E.Ii: the expectation of local moran statistic under the randomisation hypothesis
 
@@ -549,9 +550,9 @@ printCoefmat(data.frame(
   check.names=FALSE)
 ```
 
-#### 10.6.1.1 Mapping the local Moran\'s I
+#### 10.6.1.1 Mapping the local Moran's I
 
-Before mapping the local Moran\'s I map, it is wise to append the local Moran\'s I dataframe (i.e. localMI) onto hunan SpatialPolygonDataFrame. The code chunks below can be used to perform the task. The out SpatialPolygonDataFrame is called *hunan.localMI*.
+Before mapping the local Moran's I map, it is wise to append the local Moran's I dataframe (i.e. localMI) onto hunan SpatialPolygonDataFrame. The code chunks below can be used to perform the task. The out SpatialPolygonDataFrame is called *hunan.localMI*.
 
 The `Pr.z….E.Ii..` containing p-value of the local moran I is renamed to `PR.Ii`
 
@@ -560,9 +561,9 @@ hunan.localMI <- cbind(hunan,localMI) %>%
     rename(Pr.Ii = Pr.z....E.Ii..)
 ```
 
-#### 10.6.1.2 Mapping local Moran\'s I values
+#### 10.6.1.2 Mapping local Moran's I values
 
-Using choropleth mapping functions of **tmap** package, we can plot the local Moran\'s I values by using the code chunks below. For paletter colours, refer to colorbrewers [link](https://r-graph-gallery.com/38-rcolorbrewers-palettes.html).
+Using choropleth mapping functions of **tmap** package, we can plot the local Moran's I values by using the code chunks below. For paletter colours, refer to colorbrewers [link](https://r-graph-gallery.com/38-rcolorbrewers-palettes.html).
 
 ```{r}
 #| fig-width: 14
@@ -579,11 +580,11 @@ tm_shape(hunan.localMI) +
     
 ```
 
-#### 10.6.1.3 Mapping local Moran\'s I p-values
+#### 10.6.1.3 Mapping local Moran's I p-values
 
 The choropleth shows there is evidence for both positive and negative Ii values. However, it is useful to **consider the p-values** for each of these values, as consider above.
 
-The code chunks below produce a choropleth map of Moran\'s I p-values by using functions of **tmap** package.
+The code chunks below produce a choropleth map of Moran's I p-values by using functions of **tmap** package.
 
 ::: panel-tabset
 ## Various p values
@@ -620,16 +621,16 @@ tm_shape(hunan.localMI) +
 ```
 :::
 
-#### 10.6.1.4 Mapping both local Moran\'s I values and p-values
+#### 10.6.1.4 Mapping both local Moran's I values and p-values
 
-For effective interpretation, it is better to plot both the local Moran\'s I values map and its corresponding p-values map next to each other.
+For effective interpretation, it is better to plot both the local Moran's I values map and its corresponding p-values map next to each other.
 
 The code chunk below will be used to create such visualisation.
 
 ```{r}
 #| fig-width: 14
 #| fig-asp: 0.68
-localMI.map<- tm_shape(hunan.localMI) +
+localMI.map <- tm_shape(hunan.localMI) +
   tm_fill(col='Ii',
           style = 'pretty',
           #palette = 'RdBu', # << reger to colourbrewer
@@ -653,6 +654,205 @@ pvalue.map <-tm_shape(hunan.localMI) +
 tmap_arrange(localMI.map, pvalue.map, asp=1,ncol=2)
 ```
 
+## **10.7 Creating a LISA Cluster Map**
+
+The LISA Cluster Map shows the **significant** locations color coded by type of spatial autocorrelation. The first step before we can generate the LISA cluster map is to plot the **Moran scatterplot**.
+
+### **10.7.1 Plotting Moran scatterplot**
+
+The Moran scatterplot is an illustration of the **relationship** between the values of the **chosen attribute at each location** and the **average value of the same attribute at neighboring locations.**
+
+The code chunk below plots the Moran scatterplot of GDPPC 2012 by using [*moran.plot()*](https://r-spatial.github.io/spdep/reference/moran.plot.html) of **spdep**.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+nci <- moran.plot(hunan$GDPPC,
+                  listw = rswm_q,
+                  labels = as.character(hunan$County),
+                  xlab = 'GDPPC 2012',
+                  ylab = 'Spatially lag GDPPC 2012')
+```
+
+The x -axis shows the original variable value at a particular spatial unit and the y-axis is the (weighted or without) average of the neighbouring variable values. The neighbour definition and relationship is embedded in the 'listw' argument where it could be
+
+-   spatial lag with row-standardised weights
+
+-   spatial lag as sum of neighbours values (binary)
+
+-   spatial window average (self-included)
+
+-   spatial window sum (self-included and binary)
+
+-   inverse-distance
+
+Notice that the plot is split in 4 quadrants.
+
+-   Clusters and + spatial autocorrelation: The top right corner belongs to areas that have high GDPPC and are surrounded by other areas that have the average level of GDPPC. This are the high-high locations in the lesson slide.
+
+-   Cluster and + spatial autocorrelation: Bottom left are the Low-low.
+
+-   Outlier and - spatial autocorrelation: Top left contains spatial units with low GDPPC and surrounded by higher values.
+
+-   Outlier and - spatial autocorrelation: Bottom right contains spatial units with higher GDPPC and surrounded by relatively lower values.
+
+### **10.7.2 Plotting Moran scatterplot with standardised variable**
+
+First we will use [*scale()*](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/scale) to centers and scales the variable. Here centering is done by [subtracting the mean]{.underline} (omitting NAs) the corresponding columns, and scaling is done by dividing the (centered) variable by their [standard deviations]{.underline}.
+
+**`hunan$GDPPC`** will have a **mean of 0** and a **standard deviation of 1**.
+
+```{r}
+hunan$Z.GDPPC <- scale(hunan$GDPPC) %>% 
+  as.vector 
+```
+
+The [*as.vector()*](https://www.rdocumentation.org/packages/pbdDMAT/versions/0.5-1/topics/as.vector) added to the end is to make sure that the data type we get out of this is a vector, that map neatly into our `hunan` dataframe
+
+Without setting as vector, scale(hunan\$GDPPC) is a matrix array.
+
+Now, plot the Moran scatterplot again by using the code chunk below.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+nci2 <- moran.plot(hunan$Z.GDPPC,
+                  listw = rswm_q,
+                  labels = as.character(hunan$County),
+                  xlab = 'GDPPC 2012',
+                  ylab = 'Spatially lag z-GDPPC 2012')
+
+```
+
+We notice that both axes are standardised with mean =0 and sd of 1.
+
+**10.7.3 Preparing LISA map classes**
+
+The code chunks below show the steps to prepare a LISA cluster map.
+
+1.  The code initializes a numeric vector named **`quadrant`** with a length equal to the number of rows in the **`localMI`** data frame. The vector is initially filled with **`NA.`**
+
+```{r}
+quadrant <- vector(mode="numeric",length=nrow(localMI))
+```
+
+Next, derives the spatially lagged variable of interest (i.e. GDPPC) using `lag.listw()` from the *spdep* package and centers the spatially lagged variable around its mean via subtraction.
+
+```{r}
+hunan$lag_GDPPC <- lag.listw(rswm_q, hunan$GDPPC)
+DV <- hunan$lag_GDPPC - mean(hunan$lag_GDPPC)     
+class(DV)
+```
+
+Retrieve the first column (li aka Moran's I values) from the `localMI` matrix and centered around its mean via subtraction.
+
+```{r}
+#colnames(localMI)
+LM_I <- localMI[,1] - mean(localMI[,1])
+class(LM_I)
+```
+
+Next, we will set a statistical significance level for the local Moran.
+
+```{r}
+signif <- 0.05
+```
+
+These four command lines define the low-low (1), low-high (2), high-low (3) and high-high (4) categories. Comparing the local Moran's I values with its lag-variable values.
+
+```{r}
+quadrant[DV <0 & LM_I>0] <- 1 # LL
+quadrant[DV >0 & LM_I<0] <- 2 # HL
+quadrant[DV <0 & LM_I<0] <- 3 # LH
+quadrant[DV >0 & LM_I>0] <- 4 # HH
+```
+
+| LM_I \> 0 : cluster of **similar** values.
+| When DV \< 0 and LM_I \> 0, low values of spatial lag variables cluster together. Thus Low-low.
+| When DV \> 0 and LM_I \> 0, high values of spatial lag-variables cluster together. Thus high-high.
+| LM_I \<0 : cluster of **dissimilar** values.
+| When DV \> 0 and LM \< 0, high values of spatial lag variables are among low ones, thus high-low.
+| When DV \< 0 and LM_I \< 0 , low values of spatial lag variables are among the high ones, thus low-high.
+
+```{r}
+quadrant
+```
+
+Lastly, places non-significant Moran in the category 0. The fifth column of the `localMI` matrix is the significant value.
+
+```{r}
+quadrant[localMI[,5]>signif] <- 0
+quadrant
+```
+
+Combining all the steps above into one code chunk:
+
+```{r}
+quadrant <- vector(mode="numeric",length=nrow(localMI))
+hunan$lag_GDPPC <- lag.listw(rswm_q, hunan$GDPPC)
+DV <- hunan$lag_GDPPC - mean(hunan$lag_GDPPC)     
+LM_I <- localMI[,1]   
+signif <- 0.05       
+quadrant[DV <0 & LM_I>0] <- 1 # LL
+quadrant[DV >0 & LM_I<0] <- 2 # HL
+quadrant[DV <0 & LM_I<0] <- 3 # LH
+quadrant[DV >0 & LM_I>0] <- 4 # HH
+quadrant[localMI[,5]>signif] <- 0 # non-sig
+```
+
+### **10.7.4 Plotting LISA map**
+
+Now, we can build the LISA map by using the code chunks below.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+hunan.localMI$quadrant <- quadrant
+colors <- c("#ffffff", "#2c7bb6", "#abd9e9", "#fdae61", "#d7191c")
+clusters <- c("insignificant", "low-low", "low-high", "high-low", "high-high")
+
+LISAmap <- tm_shape(hunan.localMI) +
+  tm_fill(col = "quadrant", 
+          style = "cat", 
+          palette = colors[c(sort(unique(quadrant)))+1], #index starts from 1
+          labels = clusters[c(sort(unique(quadrant)))+1],
+          popup.vars = c("")) +
+  tm_view(set.zoom.limits = c(11,17)) +
+  tm_borders(alpha=0.5) +
+  tm_layout(main.title='LISA map (significant)',
+            legend.width = 0.25,
+            legend.height = 0.25)
+
+LISAmap
+```
+
+For effective interpretation, it is better to plot both the **local Moran\'s I values map** and its corresponding LISA map next to each other.
+
+The code chunk below will be used to create such visualisation.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+tmap_arrange(localMI.map, LISAmap,
+             asp=1,
+             ncol=2 )
+```
+
+The GDPPC and LISA Map can also be placed side by side .
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+gdppc <- qtm(hunan, 'GDPPC')
+tmap_arrange(gdppc, LISAmap,
+             asp=1,
+             ncol=2)
+```
+
+The dark blue and red regions are clusters of LL and HH respectively.
+
+The light blue regions are outliers (LH), where those regions have relatively lower values than their neighbours.
+
 ```{r}
 #| eval: false
 #| echo: false
@@ -660,5 +860,3 @@ tmap_arrange(localMI.map, pvalue.map, asp=1,ncol=2)
 #| fig-width: 14
 #| fig-asp: 0.68
 ```
-
-### 

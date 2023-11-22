@@ -276,6 +276,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#the-analytical-question" id="toc-the-analytical-question" class="nav-link" data-scroll-target="#the-analytical-question">9.2.1 The analytical question</a></li>
   <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
+  <li><a href="#the-study-area-and-data" id="toc-the-study-area-and-data" class="nav-link" data-scroll-target="#the-study-area-and-data">9.2.2 The Study Area and Data</a></li>
   <li><a href="#setting-the-analytical-tools" id="toc-setting-the-analytical-tools" class="nav-link" data-scroll-target="#setting-the-analytical-tools">9.2.3 Setting the Analytical Tools</a></li>
   </ul></li>
   <li><a href="#getting-the-data-into-r-environment" id="toc-getting-the-data-into-r-environment" class="nav-link" data-scroll-target="#getting-the-data-into-r-environment"><strong>9.3 Getting the Data Into R Environment</strong></a>
@@ -298,12 +299,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#compute-morans-i-correlogram" id="toc-compute-morans-i-correlogram" class="nav-link" data-scroll-target="#compute-morans-i-correlogram"><strong>9.5.1 Compute Moran’s I correlogram</strong></a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1"></a>
+  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1"></a></li>
+  <li><a href="#hands-on_ex2_3-local-measures-of-spatial-autocorrelation" id="toc-hands-on_ex2_3-local-measures-of-spatial-autocorrelation" class="nav-link" data-scroll-target="#hands-on_ex2_3-local-measures-of-spatial-autocorrelation">10 Hands-on_Ex2_3: <strong>Local Measures of Spatial Autocorrelation</strong></a>
   <ul class="collapse">
   <li><a href="#cluster-and-outlier-analysis" id="toc-cluster-and-outlier-analysis" class="nav-link" data-scroll-target="#cluster-and-outlier-analysis"><strong>10.6 Cluster and Outlier Analysis</strong></a>
   <ul class="collapse">
-  <li><a href="#computing-local-morans-i" id="toc-computing-local-morans-i" class="nav-link" data-scroll-target="#computing-local-morans-i"><strong>10.6.1 Computing local Moran's I</strong></a></li>
-  <li><a href="#section-2" id="toc-section-2" class="nav-link" data-scroll-target="#section-2"></a></li>
+  <li><a href="#computing-local-morans-i" id="toc-computing-local-morans-i" class="nav-link" data-scroll-target="#computing-local-morans-i"><strong>10.6.1 Computing local Moran’s I</strong></a></li>
+  </ul></li>
+  <li><a href="#creating-a-lisa-cluster-map" id="toc-creating-a-lisa-cluster-map" class="nav-link" data-scroll-target="#creating-a-lisa-cluster-map"><strong>10.7 Creating a LISA Cluster Map</strong></a>
+  <ul class="collapse">
+  <li><a href="#plotting-moran-scatterplot" id="toc-plotting-moran-scatterplot" class="nav-link" data-scroll-target="#plotting-moran-scatterplot"><strong>10.7.1 Plotting Moran scatterplot</strong></a></li>
+  <li><a href="#plotting-moran-scatterplot-with-standardised-variable" id="toc-plotting-moran-scatterplot-with-standardised-variable" class="nav-link" data-scroll-target="#plotting-moran-scatterplot-with-standardised-variable"><strong>10.7.2 Plotting Moran scatterplot with standardised variable</strong></a></li>
+  <li><a href="#plotting-lisa-map" id="toc-plotting-lisa-map" class="nav-link" data-scroll-target="#plotting-lisa-map"><strong>10.7.4 Plotting LISA map</strong></a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -377,7 +384,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="section" class="level3">
 <h3 class="anchored" data-anchor-id="section"></h3>
-<p>9.2.2 The Study Area and Data</p>
+</section>
+<section id="the-study-area-and-data" class="level3">
+<h3 class="anchored" data-anchor-id="the-study-area-and-data">9.2.2 The Study Area and Data</h3>
 <p>Two data sets will be used in this hands-on exercise:</p>
 <ol type="1">
 <li><p>Geospatial data: Hunan province administrative boundary layer at county level in ESRI shapefile format</p></li>
@@ -993,15 +1002,17 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </section>
 <section id="section-1" class="level1">
 <h1></h1>
-<p>10 Hands-on_Ex2_3: <strong>Local Measures of Spatial Autocorrelation</strong></p>
+</section>
+<section id="hands-on_ex2_3-local-measures-of-spatial-autocorrelation" class="level1">
+<h1>10 Hands-on_Ex2_3: <strong>Local Measures of Spatial Autocorrelation</strong></h1>
 <section id="cluster-and-outlier-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="cluster-and-outlier-analysis"><strong>10.6 Cluster and Outlier Analysis</strong></h2>
 <p>Local Indicators of Spatial Association or LISA are statistics that evaluate the existence of clusters in the spatial arrangement of a given variable. For instance if we are studying cancer rates among census tracts in a given city local clusters in the rates mean that there are <strong>localised areas</strong> that have higher or lower rates than is to be expected by chance alone; that is, the values occurring are above or below those of a random distribution in space.</p>
-<p>In this section, we will learn how to apply appropriate Local Indicators for Spatial Association (LISA), especially local Moran'I to detect cluster (HH or LL) and/or outlier (HL, LH) from GDP per capita 2012 of Hunan Province, PRC.</p>
+<p>In this section, we will learn how to apply appropriate Local Indicators for Spatial Association (LISA), especially local Moran’I to detect cluster (HH or LL) and/or outlier (HL, LH) from GDP per capita 2012 of Hunan Province, PRC.</p>
 <section id="computing-local-morans-i" class="level3">
-<h3 class="anchored" data-anchor-id="computing-local-morans-i"><strong>10.6.1 Computing local Moran's I</strong></h3>
-<p>To compute local Moran's I, the <a href="https://r-spatial.github.io/spdep/reference/localmoran.html"><em>localmoran()</em></a> function of <strong>spdep</strong> will be used. It computes <strong><em>Ii</em></strong> values, given a set of <strong><em>zi</em></strong> values (variable) and a <strong>listw</strong> object (spatial weights matrix) providing neighbour weighting information for the polygon associated with the zi values.</p>
-<p>The code chunks below are used to compute local Moran's I of <em>GDPPC2012</em> at the county level.</p>
+<h3 class="anchored" data-anchor-id="computing-local-morans-i"><strong>10.6.1 Computing local Moran’s I</strong></h3>
+<p>To compute local Moran’s I, the <a href="https://r-spatial.github.io/spdep/reference/localmoran.html"><em>localmoran()</em></a> function of <strong>spdep</strong> will be used. It computes <strong><em>Ii</em></strong> values, given a set of <strong><em>zi</em></strong> values (variable) and a <strong>listw</strong> object (spatial weights matrix) providing neighbour weighting information for the polygon associated with the zi values.</p>
+<p>The code chunks below are used to compute local Moran’s I of <em>GDPPC2012</em> at the county level.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1"></a>fips <span class="ot">&lt;-</span> <span class="fu">order</span>(hunan<span class="sc">$</span>County)</span>
 <span id="cb56-2"><a href="#cb56-2"></a>localMI <span class="ot">&lt;-</span> <span class="fu">localmoran</span>(hunan<span class="sc">$</span>GDPPC, rswm_q)</span>
@@ -1018,7 +1029,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 <p><em>localmoran()</em> function returns a matrix of values whose columns are:</p>
 <ul>
-<li><p>Ii: the local Moran's I statistics</p></li>
+<li><p>Ii: the local Moran’s I statistics</p></li>
 <li><p>E.Ii: the expectation of local moran statistic under the randomisation hypothesis</p></li>
 <li><p>Var.Ii: the variance of local moran statistic under the randomisation hypothesis</p></li>
 <li><p>Z.Ii:the standard deviate of local moran statistic</p></li>
@@ -1315,8 +1326,8 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 </div>
 </div>
 <section id="mapping-the-local-morans-i" class="level4">
-<h4 class="anchored" data-anchor-id="mapping-the-local-morans-i">10.6.1.1 Mapping the local Moran's I</h4>
-<p>Before mapping the local Moran's I map, it is wise to append the local Moran's I dataframe (i.e.&nbsp;localMI) onto hunan SpatialPolygonDataFrame. The code chunks below can be used to perform the task. The out SpatialPolygonDataFrame is called <em>hunan.localMI</em>.</p>
+<h4 class="anchored" data-anchor-id="mapping-the-local-morans-i">10.6.1.1 Mapping the local Moran’s I</h4>
+<p>Before mapping the local Moran’s I map, it is wise to append the local Moran’s I dataframe (i.e.&nbsp;localMI) onto hunan SpatialPolygonDataFrame. The code chunks below can be used to perform the task. The out SpatialPolygonDataFrame is called <em>hunan.localMI</em>.</p>
 <p>The <code>Pr.z….E.Ii..</code> containing p-value of the local moran I is renamed to <code>PR.Ii</code></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a>hunan.localMI <span class="ot">&lt;-</span> <span class="fu">cbind</span>(hunan,localMI) <span class="sc">%&gt;%</span> </span>
@@ -1324,8 +1335,8 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 </div>
 </section>
 <section id="mapping-local-morans-i-values" class="level4">
-<h4 class="anchored" data-anchor-id="mapping-local-morans-i-values">10.6.1.2 Mapping local Moran's I values</h4>
-<p>Using choropleth mapping functions of <strong>tmap</strong> package, we can plot the local Moran's I values by using the code chunks below. For paletter colours, refer to colorbrewers <a href="https://r-graph-gallery.com/38-rcolorbrewers-palettes.html">link</a>.</p>
+<h4 class="anchored" data-anchor-id="mapping-local-morans-i-values">10.6.1.2 Mapping local Moran’s I values</h4>
+<p>Using choropleth mapping functions of <strong>tmap</strong> package, we can plot the local Moran’s I values by using the code chunks below. For paletter colours, refer to colorbrewers <a href="https://r-graph-gallery.com/38-rcolorbrewers-palettes.html">link</a>.</p>
 <div class="cell" data-fig.asp="0.68">
 <div class="sourceCode cell-code" id="cb63"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1"></a><span class="fu">tm_shape</span>(hunan.localMI) <span class="sc">+</span></span>
 <span id="cb63-2"><a href="#cb63-2"></a>  <span class="fu">tm_fill</span>(<span class="at">col=</span><span class="st">'Ii'</span>,</span>
@@ -1342,9 +1353,9 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 </div>
 </section>
 <section id="mapping-local-morans-i-p-values" class="level4">
-<h4 class="anchored" data-anchor-id="mapping-local-morans-i-p-values">10.6.1.3 Mapping local Moran's I p-values</h4>
+<h4 class="anchored" data-anchor-id="mapping-local-morans-i-p-values">10.6.1.3 Mapping local Moran’s I p-values</h4>
 <p>The choropleth shows there is evidence for both positive and negative Ii values. However, it is useful to <strong>consider the p-values</strong> for each of these values, as consider above.</p>
-<p>The code chunks below produce a choropleth map of Moran's I p-values by using functions of <strong>tmap</strong> package.</p>
+<p>The code chunks below produce a choropleth map of Moran’s I p-values by using functions of <strong>tmap</strong> package.</p>
 <div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Various p values</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">p values at 95% confidence level</a></li></ul>
 <div class="tab-content">
@@ -1385,11 +1396,11 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 </div>
 </section>
 <section id="mapping-both-local-morans-i-values-and-p-values" class="level4">
-<h4 class="anchored" data-anchor-id="mapping-both-local-morans-i-values-and-p-values">10.6.1.4 Mapping both local Moran's I values and p-values</h4>
-<p>For effective interpretation, it is better to plot both the local Moran's I values map and its corresponding p-values map next to each other.</p>
+<h4 class="anchored" data-anchor-id="mapping-both-local-morans-i-values-and-p-values">10.6.1.4 Mapping both local Moran’s I values and p-values</h4>
+<p>For effective interpretation, it is better to plot both the local Moran’s I values map and its corresponding p-values map next to each other.</p>
 <p>The code chunk below will be used to create such visualisation.</p>
 <div class="cell" data-fig.asp="0.68">
-<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1"></a>localMI.map<span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(hunan.localMI) <span class="sc">+</span></span>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1"></a>localMI.map <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(hunan.localMI) <span class="sc">+</span></span>
 <span id="cb66-2"><a href="#cb66-2"></a>  <span class="fu">tm_fill</span>(<span class="at">col=</span><span class="st">'Ii'</span>,</span>
 <span id="cb66-3"><a href="#cb66-3"></a>          <span class="at">style =</span> <span class="st">'pretty'</span>,</span>
 <span id="cb66-4"><a href="#cb66-4"></a>          <span class="co">#palette = 'RdBu', # &lt;&lt; reger to colourbrewer</span></span>
@@ -1415,13 +1426,189 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 <p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid" width="1344"></p>
 </div>
 </div>
+</section>
+</section>
+</section>
+<section id="creating-a-lisa-cluster-map" class="level2">
+<h2 class="anchored" data-anchor-id="creating-a-lisa-cluster-map"><strong>10.7 Creating a LISA Cluster Map</strong></h2>
+<p>The LISA Cluster Map shows the <strong>significant</strong> locations color coded by type of spatial autocorrelation. The first step before we can generate the LISA cluster map is to plot the <strong>Moran scatterplot</strong>.</p>
+<section id="plotting-moran-scatterplot" class="level3">
+<h3 class="anchored" data-anchor-id="plotting-moran-scatterplot"><strong>10.7.1 Plotting Moran scatterplot</strong></h3>
+<p>The Moran scatterplot is an illustration of the <strong>relationship</strong> between the values of the <strong>chosen attribute at each location</strong> and the <strong>average value of the same attribute at neighboring locations.</strong></p>
+<p>The code chunk below plots the Moran scatterplot of GDPPC 2012 by using <a href="https://r-spatial.github.io/spdep/reference/moran.plot.html"><em>moran.plot()</em></a> of <strong>spdep</strong>.</p>
+<div class="cell" data-fig.asp="0.68">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1"></a>nci <span class="ot">&lt;-</span> <span class="fu">moran.plot</span>(hunan<span class="sc">$</span>GDPPC,</span>
+<span id="cb67-2"><a href="#cb67-2"></a>                  <span class="at">listw =</span> rswm_q,</span>
+<span id="cb67-3"><a href="#cb67-3"></a>                  <span class="at">labels =</span> <span class="fu">as.character</span>(hunan<span class="sc">$</span>County),</span>
+<span id="cb67-4"><a href="#cb67-4"></a>                  <span class="at">xlab =</span> <span class="st">'GDPPC 2012'</span>,</span>
+<span id="cb67-5"><a href="#cb67-5"></a>                  <span class="at">ylab =</span> <span class="st">'Spatially lag GDPPC 2012'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid" width="1344"></p>
+</div>
+</div>
+<p>The x -axis shows the original variable value at a particular spatial unit and the y-axis is the (weighted or without) average of the neighbouring variable values. The neighbour definition and relationship is embedded in the ‘listw’ argument where it could be</p>
+<ul>
+<li><p>spatial lag with row-standardised weights</p></li>
+<li><p>spatial lag as sum of neighbours values (binary)</p></li>
+<li><p>spatial window average (self-included)</p></li>
+<li><p>spatial window sum (self-included and binary)</p></li>
+<li><p>inverse-distance</p></li>
+</ul>
+<p>Notice that the plot is split in 4 quadrants.</p>
+<ul>
+<li><p>Clusters and + spatial autocorrelation: The top right corner belongs to areas that have high GDPPC and are surrounded by other areas that have the average level of GDPPC. This are the high-high locations in the lesson slide.</p></li>
+<li><p>Cluster and + spatial autocorrelation: Bottom left are the Low-low.</p></li>
+<li><p>Outlier and - spatial autocorrelation: Top left contains spatial units with low GDPPC and surrounded by higher values.</p></li>
+<li><p>Outlier and - spatial autocorrelation: Bottom right contains spatial units with higher GDPPC and surrounded by relatively lower values.</p></li>
+</ul>
+</section>
+<section id="plotting-moran-scatterplot-with-standardised-variable" class="level3">
+<h3 class="anchored" data-anchor-id="plotting-moran-scatterplot-with-standardised-variable"><strong>10.7.2 Plotting Moran scatterplot with standardised variable</strong></h3>
+<p>First we will use <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/scale"><em>scale()</em></a> to centers and scales the variable. Here centering is done by <u>subtracting the mean</u> (omitting NAs) the corresponding columns, and scaling is done by dividing the (centered) variable by their <u>standard deviations</u>.</p>
+<p><strong><code>hunan$GDPPC</code></strong> will have a <strong>mean of 0</strong> and a <strong>standard deviation of 1</strong>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1"></a>hunan<span class="sc">$</span>Z.GDPPC <span class="ot">&lt;-</span> <span class="fu">scale</span>(hunan<span class="sc">$</span>GDPPC) <span class="sc">%&gt;%</span> </span>
+<span id="cb68-2"><a href="#cb68-2"></a>  as.vector </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <a href="https://www.rdocumentation.org/packages/pbdDMAT/versions/0.5-1/topics/as.vector"><em>as.vector()</em></a> added to the end is to make sure that the data type we get out of this is a vector, that map neatly into our <code>hunan</code> dataframe</p>
+<p>Without setting as vector, scale(hunan$GDPPC) is a matrix array.</p>
+<p>Now, plot the Moran scatterplot again by using the code chunk below.</p>
+<div class="cell" data-fig.asp="0.68">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1"></a>nci2 <span class="ot">&lt;-</span> <span class="fu">moran.plot</span>(hunan<span class="sc">$</span>Z.GDPPC,</span>
+<span id="cb69-2"><a href="#cb69-2"></a>                  <span class="at">listw =</span> rswm_q,</span>
+<span id="cb69-3"><a href="#cb69-3"></a>                  <span class="at">labels =</span> <span class="fu">as.character</span>(hunan<span class="sc">$</span>County),</span>
+<span id="cb69-4"><a href="#cb69-4"></a>                  <span class="at">xlab =</span> <span class="st">'GDPPC 2012'</span>,</span>
+<span id="cb69-5"><a href="#cb69-5"></a>                  <span class="at">ylab =</span> <span class="st">'Spatially lag z-GDPPC 2012'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid" width="1344"></p>
+</div>
+</div>
+<p>We notice that both axes are standardised with mean =0 and sd of 1.</p>
+<p><strong>10.7.3 Preparing LISA map classes</strong></p>
+<p>The code chunks below show the steps to prepare a LISA cluster map.</p>
+<ol type="1">
+<li>The code initializes a numeric vector named <strong><code>quadrant</code></strong> with a length equal to the number of rows in the <strong><code>localMI</code></strong> data frame. The vector is initially filled with <strong><code>NA.</code></strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1"></a>quadrant <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="at">mode=</span><span class="st">"numeric"</span>,<span class="at">length=</span><span class="fu">nrow</span>(localMI))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, derives the spatially lagged variable of interest (i.e.&nbsp;GDPPC) using <code>lag.listw()</code> from the <em>spdep</em> package and centers the spatially lagged variable around its mean via subtraction.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a>hunan<span class="sc">$</span>lag_GDPPC <span class="ot">&lt;-</span> <span class="fu">lag.listw</span>(rswm_q, hunan<span class="sc">$</span>GDPPC)</span>
+<span id="cb71-2"><a href="#cb71-2"></a>DV <span class="ot">&lt;-</span> hunan<span class="sc">$</span>lag_GDPPC <span class="sc">-</span> <span class="fu">mean</span>(hunan<span class="sc">$</span>lag_GDPPC)     </span>
+<span id="cb71-3"><a href="#cb71-3"></a><span class="fu">class</span>(DV)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "numeric"</code></pre>
+</div>
+</div>
+<p>Retrieve the first column (li aka Moran’s I values) from the <code>localMI</code> matrix and centered around its mean via subtraction.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1"></a><span class="co">#colnames(localMI)</span></span>
+<span id="cb73-2"><a href="#cb73-2"></a>LM_I <span class="ot">&lt;-</span> localMI[,<span class="dv">1</span>] <span class="sc">-</span> <span class="fu">mean</span>(localMI[,<span class="dv">1</span>])</span>
+<span id="cb73-3"><a href="#cb73-3"></a><span class="fu">class</span>(LM_I)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "numeric"</code></pre>
+</div>
+</div>
+<p>Next, we will set a statistical significance level for the local Moran.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1"></a>signif <span class="ot">&lt;-</span> <span class="fl">0.05</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>These four command lines define the low-low (1), low-high (2), high-low (3) and high-high (4) categories. Comparing the local Moran’s I values with its lag-variable values.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1"></a>quadrant[DV <span class="sc">&lt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&gt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="co"># LL</span></span>
+<span id="cb76-2"><a href="#cb76-2"></a>quadrant[DV <span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&lt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="co"># HL</span></span>
+<span id="cb76-3"><a href="#cb76-3"></a>quadrant[DV <span class="sc">&lt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&lt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="co"># LH</span></span>
+<span id="cb76-4"><a href="#cb76-4"></a>quadrant[DV <span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&gt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">4</span> <span class="co"># HH</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>LM_I &gt; 0 : cluster of <strong>similar</strong> values.<br>
+When DV &lt; 0 and LM_I &gt; 0, low values of spatial lag variables cluster together. Thus Low-low.<br>
+When DV &gt; 0 and LM_I &gt; 0, high values of spatial lag-variables cluster together. Thus high-high.<br>
+LM_I &lt;0 : cluster of <strong>dissimilar</strong> values.<br>
+When DV &gt; 0 and LM &lt; 0, high values of spatial lag variables are among low ones, thus high-low.<br>
+When DV &lt; 0 and LM_I &lt; 0 , low values of spatial lag variables are among the high ones, thus low-high.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1"></a>quadrant</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 2 3 3 2 2 3 4 4 4 2 2 3 2 2 2 4 3 3 2 3 3 2 3 3 3 3 3 3 1 3 1 3 3 3 3 3 1 3
+[39] 1 1 3 1 1 1 3 4 2 1 3 3 3 3 1 3 1 2 2 2 3 3 3 3 2 3 2 4 2 4 3 3 4 2 2 4 3 2
+[77] 3 2 1 2 3 3 2 4 3 2 3 3</code></pre>
+</div>
+</div>
+<p>Lastly, places non-significant Moran in the category 0. The fifth column of the <code>localMI</code> matrix is the significant value.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1"></a>quadrant[localMI[,<span class="dv">5</span>]<span class="sc">&gt;</span>signif] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb79-2"><a href="#cb79-2"></a>quadrant</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 0 0 0 0 0 0 4 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+[39] 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 2 0 0 0 4 0 0 4 0 0
+[77] 0 2 0 0 0 0 0 4 0 2 0 0</code></pre>
+</div>
+</div>
+<p>Combining all the steps above into one code chunk:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1"></a>quadrant <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="at">mode=</span><span class="st">"numeric"</span>,<span class="at">length=</span><span class="fu">nrow</span>(localMI))</span>
+<span id="cb81-2"><a href="#cb81-2"></a>hunan<span class="sc">$</span>lag_GDPPC <span class="ot">&lt;-</span> <span class="fu">lag.listw</span>(rswm_q, hunan<span class="sc">$</span>GDPPC)</span>
+<span id="cb81-3"><a href="#cb81-3"></a>DV <span class="ot">&lt;-</span> hunan<span class="sc">$</span>lag_GDPPC <span class="sc">-</span> <span class="fu">mean</span>(hunan<span class="sc">$</span>lag_GDPPC)     </span>
+<span id="cb81-4"><a href="#cb81-4"></a>LM_I <span class="ot">&lt;-</span> localMI[,<span class="dv">1</span>]   </span>
+<span id="cb81-5"><a href="#cb81-5"></a>signif <span class="ot">&lt;-</span> <span class="fl">0.05</span>       </span>
+<span id="cb81-6"><a href="#cb81-6"></a>quadrant[DV <span class="sc">&lt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&gt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="co"># LL</span></span>
+<span id="cb81-7"><a href="#cb81-7"></a>quadrant[DV <span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&lt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="co"># HL</span></span>
+<span id="cb81-8"><a href="#cb81-8"></a>quadrant[DV <span class="sc">&lt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&lt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="co"># LH</span></span>
+<span id="cb81-9"><a href="#cb81-9"></a>quadrant[DV <span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&gt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">4</span> <span class="co"># HH</span></span>
+<span id="cb81-10"><a href="#cb81-10"></a>quadrant[localMI[,<span class="dv">5</span>]<span class="sc">&gt;</span>signif] <span class="ot">&lt;-</span> <span class="dv">0</span> <span class="co"># non-sig</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="plotting-lisa-map" class="level3">
+<h3 class="anchored" data-anchor-id="plotting-lisa-map"><strong>10.7.4 Plotting LISA map</strong></h3>
+<p>Now, we can build the LISA map by using the code chunks below.</p>
+<div class="cell" data-fig.asp="0.68">
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1"></a>hunan.localMI<span class="sc">$</span>quadrant <span class="ot">&lt;-</span> quadrant</span>
+<span id="cb82-2"><a href="#cb82-2"></a>colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"#ffffff"</span>, <span class="st">"#2c7bb6"</span>, <span class="st">"#abd9e9"</span>, <span class="st">"#fdae61"</span>, <span class="st">"#d7191c"</span>)</span>
+<span id="cb82-3"><a href="#cb82-3"></a>clusters <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"insignificant"</span>, <span class="st">"low-low"</span>, <span class="st">"low-high"</span>, <span class="st">"high-low"</span>, <span class="st">"high-high"</span>)</span>
+<span id="cb82-4"><a href="#cb82-4"></a></span>
+<span id="cb82-5"><a href="#cb82-5"></a>LISAmap <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(hunan.localMI) <span class="sc">+</span></span>
+<span id="cb82-6"><a href="#cb82-6"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">"quadrant"</span>, </span>
+<span id="cb82-7"><a href="#cb82-7"></a>          <span class="at">style =</span> <span class="st">"cat"</span>, </span>
+<span id="cb82-8"><a href="#cb82-8"></a>          <span class="at">palette =</span> colors[<span class="fu">c</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(quadrant)))<span class="sc">+</span><span class="dv">1</span>], <span class="co">#index starts from 1</span></span>
+<span id="cb82-9"><a href="#cb82-9"></a>          <span class="at">labels =</span> clusters[<span class="fu">c</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(quadrant)))<span class="sc">+</span><span class="dv">1</span>],</span>
+<span id="cb82-10"><a href="#cb82-10"></a>          <span class="at">popup.vars =</span> <span class="fu">c</span>(<span class="st">""</span>)) <span class="sc">+</span></span>
+<span id="cb82-11"><a href="#cb82-11"></a>  <span class="fu">tm_view</span>(<span class="at">set.zoom.limits =</span> <span class="fu">c</span>(<span class="dv">11</span>,<span class="dv">17</span>)) <span class="sc">+</span></span>
+<span id="cb82-12"><a href="#cb82-12"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb82-13"><a href="#cb82-13"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title=</span><span class="st">'LISA map (significant)'</span>,</span>
+<span id="cb82-14"><a href="#cb82-14"></a>            <span class="at">legend.width =</span> <span class="fl">0.25</span>,</span>
+<span id="cb82-15"><a href="#cb82-15"></a>            <span class="at">legend.height =</span> <span class="fl">0.25</span>)</span>
+<span id="cb82-16"><a href="#cb82-16"></a></span>
+<span id="cb82-17"><a href="#cb82-17"></a>LISAmap</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-47-1.png" class="img-fluid" width="1344"></p>
+</div>
+</div>
+<p>For effective interpretation, it is better to plot both the <strong>local Moran's I values map</strong> and its corresponding LISA map next to each other.</p>
+<p>The code chunk below will be used to create such visualisation.</p>
+<div class="cell" data-fig.asp="0.68">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1"></a><span class="fu">tmap_arrange</span>(localMI.map, LISAmap,</span>
+<span id="cb83-2"><a href="#cb83-2"></a>             <span class="at">asp=</span><span class="dv">1</span>,</span>
+<span id="cb83-3"><a href="#cb83-3"></a>             <span class="at">ncol=</span><span class="dv">2</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-48-1.png" class="img-fluid" width="1344"></p>
+</div>
+</div>
+<p>The GDPPC and LISA Map can also be placed side by side .</p>
+<div class="cell" data-fig.asp="0.68">
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1"></a>gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">'GDPPC'</span>)</span>
+<span id="cb84-2"><a href="#cb84-2"></a><span class="fu">tmap_arrange</span>(gdppc, LISAmap,</span>
+<span id="cb84-3"><a href="#cb84-3"></a>             <span class="at">asp=</span><span class="dv">1</span>,</span>
+<span id="cb84-4"><a href="#cb84-4"></a>             <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-49-1.png" class="img-fluid" width="1344"></p>
+</div>
+</div>
+<p>The dark blue and red regions are clusters of LL and HH respectively.</p>
+<p>The light blue regions are outliers (LH), where those regions have relatively lower values than their neighbours.</p>
 <div class="cell" data-fig.asp="0.68">
 
 </div>
-</section>
-</section>
-<section id="section-2" class="level3">
-<h3 class="anchored" data-anchor-id="section-2"></h3>
 
 
 </section>
