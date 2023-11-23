@@ -375,7 +375,7 @@
     "href": "Hands-on_Ex2/Hands-on_Ex2_3.html",
     "title": "Hands-on Exercise 2.3:Local Measures of Spatial Autocorrelation",
     "section": "",
-    "text": "In this hands-on exercise, wewill learn how to compute Global and Local Measure of Spatial Autocorrelation (GLSA) by using spdep package. By the end to this hands-on exercise, we will be able to:\n\ncompute Global Spatial Autocorrelation (GSA) statistics by using appropriate functions of spdep package,\n\nplot Moran scatterplot,\ncompute and plot spatial correlogram using appropriate function of spdep package.\n\ncompute Local Indicator of Spatial Association (LISA) statistics for detecting clusters and outliers by using appropriate functions spdep package;\ncompute Getis-Ord's Gi-statistics for detecting hot spot or/and cold spot area by using appropriate functions of spdep package; and\nto visualise the analysis output by using tmap package."
+    "text": "This hands-on exercise is combined with Hands-on_Ex2_2."
   },
   {
     "objectID": "Hands-on_Ex2/Hands-on_Ex2_3.html#section",
