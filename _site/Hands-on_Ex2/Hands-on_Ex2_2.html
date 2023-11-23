@@ -314,7 +314,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </ul></li>
   <li><a href="#hot-spot-and-cold-spot-area-analysis" id="toc-hot-spot-and-cold-spot-area-analysis" class="nav-link" data-scroll-target="#hot-spot-and-cold-spot-area-analysis"><strong>10.8 Hot Spot and Cold Spot Area Analysis</strong></a>
   <ul class="collapse">
-  <li><a href="#getis-and-ords-g-statistics" id="toc-getis-and-ords-g-statistics" class="nav-link" data-scroll-target="#getis-and-ords-g-statistics"><strong>10.8.1 Getis and Ord's G-Statistics</strong></a></li>
+  <li><a href="#getis-and-ords-g-statistics" id="toc-getis-and-ords-g-statistics" class="nav-link" data-scroll-target="#getis-and-ords-g-statistics"><strong>10.8.1 Getis and Ord’s G-Statistics</strong></a></li>
   <li><a href="#deriving-distance-based-weight-matrix" id="toc-deriving-distance-based-weight-matrix" class="nav-link" data-scroll-target="#deriving-distance-based-weight-matrix"><strong>10.8.2 Deriving distance-based weight matrix</strong></a></li>
   <li><a href="#computing-adaptive-distance-weight-matrix-fixed-of-nb" id="toc-computing-adaptive-distance-weight-matrix-fixed-of-nb" class="nav-link" data-scroll-target="#computing-adaptive-distance-weight-matrix-fixed-of-nb"><strong>10.8.3 Computing adaptive distance weight matrix (Fixed # of nb)</strong></a></li>
   </ul></li>
@@ -1476,10 +1476,10 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 <section id="hot-spot-and-cold-spot-area-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="hot-spot-and-cold-spot-area-analysis"><strong>10.8 Hot Spot and Cold Spot Area Analysis</strong></h2>
 <p>Beside detecting cluster and outliers, localised spatial statistics can be also used to detect hot spot (high values amongst high) and/or cold spot areas (low values amongst low).</p>
-<p>The term 'hot spot' has been used generically across disciplines to describe a region or value that is higher relative to its surroundings (Lepers et al 2005, Aben et al 2012, Isobe et al 2015).</p>
+<p>The term ‘hot spot’ has been used generically across disciplines to describe a region or value that is higher relative to its surroundings (Lepers et al 2005, Aben et al 2012, Isobe et al 2015).</p>
 <section id="getis-and-ords-g-statistics" class="level3">
-<h3 class="anchored" data-anchor-id="getis-and-ords-g-statistics"><strong>10.8.1 Getis and Ord's G-Statistics</strong></h3>
-<p>An alternative spatial statistics to detect spatial anomalies is the Getis and Ord's G-statistics (Getis and Ord, 1972; Ord and Getis, 1995). It looks at neighbours within a <strong>defined proximity (use of distance)</strong> to identify where either high or low values cluster spatially. Here, statistically significant hot-spots are recognised as areas of high values where other areas within a neighbourhood range also share high values too.</p>
+<h3 class="anchored" data-anchor-id="getis-and-ords-g-statistics"><strong>10.8.1 Getis and Ord’s G-Statistics</strong></h3>
+<p>An alternative spatial statistics to detect spatial anomalies is the Getis and Ord’s G-statistics (Getis and Ord, 1972; Ord and Getis, 1995). It looks at neighbours within a <strong>defined proximity (use of distance)</strong> to identify where either high or low values cluster spatially. Here, statistically significant hot-spots are recognised as areas of high values where other areas within a neighbourhood range also share high values too.</p>
 <p>The analysis consists of three steps:</p>
 <ul>
 <li><p>Deriving spatial weight matrix</p></li>
@@ -1834,7 +1834,7 @@ attr(,"class")
 </div>
 <div class="sourceCode cell-code" id="cb110"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1"></a><span class="co">#attributes(gi.fixed)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>The output of localG() is a vector of G or Gstar values, with attributes "gstari" set to FALSE (as default), "call" set to the function call, and class "localG".</p>
+<p>The output of localG() is a vector of G or Gstar values, with attributes “gstari” set to FALSE (as default), “call” set to the function call, and class “localG”.</p>
 <p>The Gi statistics is represented as a <strong>Z-score.</strong> Greater values represent a greater intensity of clustering and the direction (positive or negative) indicates high or low clusters.</p>
 <p>Next, we will join the Gi values to their corresponding hunan sf data frame by using the code chunk below.</p>
 <div class="cell">
@@ -1956,8 +1956,8 @@ attr(,"class")
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">11 References</h2>
-<p>Tin Seong Kam. "9 Global Measures of Spatial Autocorrelation" From <strong>R for Geospatial Data Science and Analytics</strong> <a href="https://r4gdsa.netlify.app/chap09" class="uri">https://r4gdsa.netlify.app/chap09</a></p>
-<p>Tin Seong Kam. "10 Local Measures of Spatial Autocorrelation" From <strong>R for Geospatial Data Science and Analytics</strong> <a href="https://r4gdsa.netlify.app/chap10" class="uri">https://r4gdsa.netlify.app/chap10</a></p>
+<p>Tin Seong Kam. “9 Global Measures of Spatial Autocorrelation” From <strong>R for Geospatial Data Science and Analytics</strong> <a href="https://r4gdsa.netlify.app/chap09" class="uri">https://r4gdsa.netlify.app/chap09</a></p>
+<p>Tin Seong Kam. “10 Local Measures of Spatial Autocorrelation” From <strong>R for Geospatial Data Science and Analytics</strong> <a href="https://r4gdsa.netlify.app/chap10" class="uri">https://r4gdsa.netlify.app/chap10</a></p>
 </section>
 <section id="summary" class="level2">
 <h2 class="anchored" data-anchor-id="summary">12 Summary</h2>
