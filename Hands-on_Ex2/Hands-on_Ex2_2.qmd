@@ -219,7 +219,7 @@ In this section, we will learn how to perform Moran's I statistics testing by us
 
 **The Moran's I assumes data follows a normal distribution and are randomised.**
 
-Moran's I values range from -1 to 1 while Geary's C ranges from 0 to 2.
+Moran's I values range from -1 to 1 while Geary's C ranges from 0 to 2. The chart below summarises our lecture material.
 
 ![](images/Global%20Moran%20stats%20test.png){width="357"}
 
@@ -538,7 +538,8 @@ We must first create a dataframe that appends the County's name to its local mor
 ```{r}
 data.frame(
   localMI[fips,],
-  row.names=hunan$County[fips])
+  row.names=hunan$County[fips]) %>% 
+  head()
 ```
 
 The code chunk below list the content of the local Moran matrix derived by using [*printCoefmat()*](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/printCoefmat).
@@ -546,8 +547,7 @@ The code chunk below list the content of the local Moran matrix derived by using
 ```{r}
 printCoefmat(data.frame(
   localMI[fips,], 
-  row.names=hunan$County[fips]),
-  check.names=FALSE)
+  row.names=hunan$County[fips]))
 ```
 
 #### 10.6.1.1 Mapping the local Moran's I
@@ -654,6 +654,8 @@ pvalue.map <-tm_shape(hunan.localMI) +
 tmap_arrange(localMI.map, pvalue.map, asp=1,ncol=2)
 ```
 
+> For the choropleth chart on the left, dark green represents clustering of similar values (HH or LL, to be determine by Moran scatterplot or LISAmap) while orange represents outlier regions (LH or HL). THe chart on the right would show us the significant clusters or outliers.
+
 ## **10.7 Creating a LISA Cluster Map**
 
 The LISA Cluster Map shows the **significant** locations color coded by type of spatial autocorrelation. The first step before we can generate the LISA cluster map is to plot the **Moran scatterplot**.
@@ -674,27 +676,27 @@ nci <- moran.plot(hunan$GDPPC,
                   ylab = 'Spatially lag GDPPC 2012')
 ```
 
-The x -axis shows the original variable value at a particular spatial unit and the y-axis is the (weighted or without) average of the neighbouring variable values. The neighbour definition and relationship is embedded in the 'listw' argument where it could be
-
--   spatial lag with row-standardised weights
-
--   spatial lag as sum of neighbours values (binary)
-
--   spatial window average (self-included)
-
--   spatial window sum (self-included and binary)
-
--   inverse-distance
-
-Notice that the plot is split in 4 quadrants.
-
--   Clusters and + spatial autocorrelation: The top right corner belongs to areas that have high GDPPC and are surrounded by other areas that have the average level of GDPPC. This are the high-high locations in the lesson slide.
-
--   Cluster and + spatial autocorrelation: Bottom left are the Low-low.
-
--   Outlier and - spatial autocorrelation: Top left contains spatial units with low GDPPC and surrounded by higher values.
-
--   Outlier and - spatial autocorrelation: Bottom right contains spatial units with higher GDPPC and surrounded by relatively lower values.
+> The x -axis shows the original variable value at a particular spatial unit and the y-axis is the (weighted or without) average of the neighbouring variable values. The neighbour definition and relationship is embedded in the 'listw' argument where it could be
+>
+> -   spatial lag with row-standardised weights
+>
+> -   spatial lag as sum of neighbours values (binary)
+>
+> -   spatial window average (self-included)
+>
+> -   spatial window sum (self-included and binary)
+>
+> -   inverse-distance
+>
+> Notice that the plot is split in 4 quadrants.
+>
+> -   Clusters and + spatial autocorrelation: The top right corner belongs to areas that have high GDPPC and are surrounded by other areas that have the average level of GDPPC. This are the high-high locations in the lesson slide.
+>
+> -   Cluster and + spatial autocorrelation: Bottom left are the Low-low.
+>
+> -   Outlier and - spatial autocorrelation: Top left contains spatial units with low GDPPC and surrounded by higher values.
+>
+> -   Outlier and - spatial autocorrelation: Bottom right contains spatial units with higher GDPPC and surrounded by relatively lower values.
 
 ### **10.7.2 Plotting Moran scatterplot with standardised variable**
 
@@ -724,7 +726,7 @@ nci2 <- moran.plot(hunan$Z.GDPPC,
 
 ```
 
-We notice that both axes are standardised with mean =0 and sd of 1.
+> We notice that both axes are standardised with mean =0 and sd of 1.
 
 **10.7.3 Preparing LISA map classes**
 
@@ -736,7 +738,7 @@ The code chunks below show the steps to prepare a LISA cluster map.
 quadrant <- vector(mode="numeric",length=nrow(localMI))
 ```
 
-Next, derives the spatially lagged variable of interest (i.e. GDPPC) using `lag.listw()` from the *spdep* package and centers the spatially lagged variable around its mean via subtraction.
+Next, derive the spatially lagged variable of interest (i.e. GDPPC) using `lag.listw()` from the *spdep* package and centers the spatially lagged variable around its mean via subtraction.
 
 ```{r}
 hunan$lag_GDPPC <- lag.listw(rswm_q, hunan$GDPPC)
@@ -758,21 +760,26 @@ Next, we will set a statistical significance level for the local Moran.
 signif <- 0.05
 ```
 
-These four command lines define the low-low (1), low-high (2), high-low (3) and high-high (4) categories. Comparing the local Moran's I values with its lag-variable values.
+These four command lines define the (1) low-low, (2) low-high , (3) high-low and (4) high-high categories. Comparing the local Moran's I values with its lag-variable values.
 
 ```{r}
 quadrant[DV <0 & LM_I>0] <- 1 # LL
-quadrant[DV >0 & LM_I<0] <- 2 # HL
-quadrant[DV <0 & LM_I<0] <- 3 # LH
+quadrant[DV >0 & LM_I<0] <- 2 # LH
+quadrant[DV <0 & LM_I<0] <- 3 # HL
 quadrant[DV >0 & LM_I>0] <- 4 # HH
 ```
 
-| LM_I \> 0 : cluster of **similar** values.
-| When DV \< 0 and LM_I \> 0, low values of spatial lag variables cluster together. Thus Low-low.
-| When DV \> 0 and LM_I \> 0, high values of spatial lag-variables cluster together. Thus high-high.
-| LM_I \<0 : cluster of **dissimilar** values.
-| When DV \> 0 and LM \< 0, high values of spatial lag variables are among low ones, thus high-low.
-| When DV \< 0 and LM_I \< 0 , low values of spatial lag variables are among the high ones, thus low-high.
+> LM_I \> 0 : cluster of **similar** values.
+>
+> **(1)** When DV \< 0 and LM_I \> 0, low values of spatial **lag** variables cluster together with low non-lag variable. Thus Low-low.
+>
+> **(4)** When DV \> 0 and LM_I \> 0, high values of spatial **lag** variables cluster together with high non-lag variable. Thus high-high.
+>
+> LM_I \<0 : cluster of **dissimilar** values.
+>
+> **(2)** When DV \> 0 and LM \< 0, high values of spatial lag variables are among low non-lag variable, thus low-high. (see moran scatterplot's Y axis)
+>
+> **(3**) When DV \< 0 and LM_I \< 0 , low values of spatial lag variables are among the high non-lag variable, thus high-low.
 
 ```{r}
 quadrant
@@ -794,8 +801,8 @@ DV <- hunan$lag_GDPPC - mean(hunan$lag_GDPPC)
 LM_I <- localMI[,1]   
 signif <- 0.05       
 quadrant[DV <0 & LM_I>0] <- 1 # LL
-quadrant[DV >0 & LM_I<0] <- 2 # HL
-quadrant[DV <0 & LM_I<0] <- 3 # LH
+quadrant[DV >0 & LM_I<0] <- 2 # LH
+quadrant[DV <0 & LM_I<0] <- 3 # HL
 quadrant[DV >0 & LM_I>0] <- 4 # HH
 quadrant[localMI[,5]>signif] <- 0 # non-sig
 ```
@@ -811,12 +818,15 @@ hunan.localMI$quadrant <- quadrant
 colors <- c("#ffffff", "#2c7bb6", "#abd9e9", "#fdae61", "#d7191c")
 clusters <- c("insignificant", "low-low", "low-high", "high-low", "high-high")
 
+
 LISAmap <- tm_shape(hunan.localMI) +
   tm_fill(col = "quadrant", 
           style = "cat", 
           palette = colors[c(sort(unique(quadrant)))+1], #index starts from 1
           labels = clusters[c(sort(unique(quadrant)))+1],
           popup.vars = c("")) +
+  tm_text('County',
+          size = 0.5)+
   tm_view(set.zoom.limits = c(11,17)) +
   tm_borders(alpha=0.5) +
   tm_layout(main.title='LISA map (significant)',
@@ -826,7 +836,7 @@ LISAmap <- tm_shape(hunan.localMI) +
 LISAmap
 ```
 
-For effective interpretation, it is better to plot both the **local Moran\'s I values map** and its corresponding LISA map next to each other.
+For effective interpretation, it is better to plot both the **local Moran's I values map** and its corresponding LISA map next to each other.
 
 The code chunk below will be used to create such visualisation.
 
@@ -837,6 +847,11 @@ tmap_arrange(localMI.map, LISAmap,
              asp=1,
              ncol=2 )
 ```
+
+>
+> 'Clustering of dissimilar values' (Local Moran I \< 0) is also known as 'dispersion' or 'outlier' region.
+>
+> The darker green regions shows signs of clustering of similar values while the orange regions shows signs of dispersion (cluster of dissimilar values). The LISA map on the right will be able to give more detailed insights, for e.g. for cluster regions whether is it HH or LL and for the outliers region whether its LH or HL.
 
 The GDPPC and LISA Map can also be placed side by side .
 
@@ -849,9 +864,11 @@ tmap_arrange(gdppc, LISAmap,
              ncol=2)
 ```
 
-The dark blue and red regions are clusters of LL and HH respectively.
-
-The light blue regions are outliers (LH), where those regions have relatively lower values than their neighbours.
+> LISAmap:
+>
+> The dark blue and red regions are clusters of LL and HH respectively.
+>
+> The light blue regions are outliers (LH), where those regions have relatively lower values than their neighbours.
 
 ```{r}
 #| eval: false

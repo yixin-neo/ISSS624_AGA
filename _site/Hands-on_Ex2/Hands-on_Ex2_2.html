@@ -345,7 +345,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">November 22, 2023</p>
+      <p class="date-modified">November 23, 2023</p>
     </div>
   </div>
     
@@ -654,7 +654,7 @@ see '?methods' for accessing help and source code</code></pre>
 <h3 class="anchored" data-anchor-id="morans-i-test"><strong>9.4.4 Moran’s I test</strong></h3>
 <p><strong>Global</strong> spatial association assesses the overall spatial pattern of a variable across the entire study area. It provides a single value or metric that summarizes the extent to which similar values cluster together or are dispersed across the entire geographic space.</p>
 <p><strong>The Moran’s I assumes data follows a normal distribution and are randomised.</strong></p>
-<p>Moran’s I values range from -1 to 1 while Geary’s C ranges from 0 to 2.</p>
+<p>Moran’s I values range from -1 to 1 while Geary’s C ranges from 0 to 2. The chart below summarises our lecture material.</p>
 <p><img src="images/Global Moran stats test.png" class="img-fluid" width="357"></p>
 <p>The code chunk below performs Moran’s I statistical testing using <a href="https://r-spatial.github.io/spdep/reference/moran.test.html"><em>moran.test()</em></a> of <strong>spdep</strong>. It takes in the main arguments:</p>
 <ul>
@@ -1045,194 +1045,23 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a><span class="fu">data.frame</span>(</span>
 <span id="cb58-2"><a href="#cb58-2"></a>  localMI[fips,],</span>
-<span id="cb58-3"><a href="#cb58-3"></a>  <span class="at">row.names=</span>hunan<span class="sc">$</span>County[fips])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb58-3"><a href="#cb58-3"></a>  <span class="at">row.names=</span>hunan<span class="sc">$</span>County[fips]) <span class="sc">%&gt;%</span> </span>
+<span id="cb58-4"><a href="#cb58-4"></a>  <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                         Ii          E.Ii       Var.Ii         Z.Ii
-Anhua         -2.249264e-02 -5.004845e-03 5.823550e-02 -0.072467148
-Anren         -3.993226e-01 -7.011066e-03 7.034768e-02 -1.479129376
-Anxiang       -1.468468e-03 -2.815006e-05 4.723841e-04 -0.066269038
-Baojing        3.473702e-01 -5.008916e-03 8.363556e-02  1.218469473
-Chaling        2.055902e-02 -9.681197e-04 2.771090e-02  0.129318589
-Changning     -2.986822e-05 -9.001050e-09 1.510502e-07 -0.076827706
-Changsha       4.902202e+00 -2.134796e-01 2.319447e+00  3.359009720
-Chengbu        7.372487e-01 -1.053447e-02 2.213175e-01  1.589526537
-Chenxi         1.454365e-01 -2.815570e-03 4.711616e-02  0.682992264
-Cili           7.317634e-02 -1.674718e-03 4.790227e-02  0.341995115
-Dao            2.142022e-01 -2.082417e-03 4.412297e-02  1.029658605
-Dongan         1.520993e-01 -6.348547e-04 1.347103e-02  1.315938472
-Dongkou        5.291750e-01 -6.446092e-03 1.074771e-01  1.633803048
-Fenghuang      1.801308e-01 -6.283165e-03 1.325694e-01  0.511984469
-Guidong       -5.916014e-01 -1.308623e-02 3.700293e-01 -0.951035346
-Guiyang        1.824044e-01 -3.690810e-03 3.261010e-02  1.030526392
-Guzhang        2.846615e-01 -8.505419e-03 1.415188e-01  0.779305680
-Hanshou        2.587817e-02 -6.061953e-04 1.016664e-02  0.262664253
-Hengdong       9.996391e-03 -4.906253e-04 6.774150e-03  0.127416164
-Hengnan        2.806438e-02 -3.216027e-04 3.759726e-03  0.462941265
-Hengshan      -5.820079e-03 -3.043712e-05 5.107618e-04 -0.256178406
-Hengyang       6.299738e-02 -1.304629e-03 2.186493e-02  0.434860999
-Hongjiang      1.878961e-01 -2.301871e-03 3.172474e-02  1.067841398
-Huarong       -1.538876e-02 -1.866731e-03 8.102957e-02 -0.047502891
-Huayuan        8.377211e-02 -8.556865e-04 2.449544e-02  0.540717545
-Huitong        2.599702e-01 -5.244723e-03 1.107748e-01  0.796851342
-Jiahe         -1.243083e-01 -3.055038e-03 5.111118e-02 -0.536334231
-Jianghua       2.865113e-01 -3.828030e-03 8.096774e-02  1.020351540
-Jiangyong      2.433662e-01 -2.708245e-03 1.174582e-01  0.718000620
-Jingzhou       1.826997e-01 -8.510650e-04 2.436325e-02  1.175949207
-Jinshi        -1.198765e-02 -5.366648e-03 1.133362e-01 -0.019667048
-Jishou        -2.867986e-01 -2.630512e-03 4.402754e-02 -1.354294669
-Lanshan        6.333362e-02 -9.636499e-04 2.044104e-02  0.449718820
-Leiyang        1.158072e-02 -1.494826e-04 2.508151e-03  0.234222483
-Lengshuijiang -1.790335e+00 -8.212937e-02 2.159843e+00 -1.162328599
-Li             1.022468e-03 -2.404783e-07 5.105969e-06  0.452598007
-Lianyuan      -1.467236e-01 -1.898315e-03 1.914540e-02 -1.046676007
-Liling         1.377428e+00 -1.509679e-02 4.260107e-01  2.133500656
-Linli          1.481488e-02 -6.829362e-05 1.449949e-03  0.390858141
-Linwu         -2.462072e-03 -9.070298e-06 1.925839e-04 -0.176761556
-Linxiang       6.590403e-02 -2.902766e-03 2.547019e-01  0.136337469
-Liuyang        3.368822e+00 -7.750185e-02 1.518028e+00  2.797152251
-Longhui        8.080051e-01 -1.137734e-02 1.553779e-01  2.078700865
-Longshan       7.566311e-01 -1.109985e-02 3.144936e-01  1.368999072
-Luxi           1.817670e-01 -2.485491e-03 3.424912e-02  0.995608811
-Mayang         2.185183e-01 -5.877251e-03 9.804880e-02  0.716626785
-Miluo          1.870372e+00 -1.692686e-02 2.792482e-01  3.571457247
-Nan           -9.578927e-03 -4.949718e-04 6.834133e-03 -0.109883702
-Ningxiang      1.560690e+00 -7.387766e-02 8.001247e-01  1.827359328
-Ningyuan       2.091020e-01 -7.088350e-03 8.230608e-02  0.753564419
-Pingjiang     -9.896383e-01 -2.645739e-03 5.602719e-02 -4.169792730
-Qidong         1.180601e-01 -2.120657e-03 2.474712e-02  0.763963227
-Qiyang         6.196618e-02 -7.337376e-04 8.574290e-03  0.677123545
-Rucheng       -3.699166e-01 -8.899851e-03 2.527217e-01 -0.718135003
-Sangzhi        2.505332e-01 -4.947017e-03 6.799980e-02  0.979723392
-Shaodong      -3.265891e-02 -3.659195e-05 5.054610e-04 -1.451012157
-Shaoshan       2.122266e+00 -5.022659e-02 1.366772e+00  1.858276363
-Shaoyang       5.949950e-01 -1.125342e-02 1.301205e-01  1.680651936
-Shimen        -3.879383e-02 -3.860263e-04 6.475559e-03 -0.477288352
-Shuangfeng     9.283541e-03 -2.286715e-03 3.151635e-02  0.065174101
-Shuangpai      8.059081e-02 -3.136568e-04 8.983814e-03  0.853575843
-Suining        3.758488e-01 -3.593266e-03 4.186992e-02  1.854361477
-Taojiang      -2.539369e-01 -1.239489e-03 1.447705e-02 -2.100199974
-Taoyuan        1.472940e-02 -1.203908e-04 8.510322e-04  0.509034668
-Tongdao        4.648244e-01 -6.987001e-03 1.987870e-01  1.058216149
-Wangcheng      4.421959e+00 -1.106694e-01 1.359593e+00  3.887278186
-Wugang         7.100317e-01 -7.814410e-03 1.071043e-01  2.193450460
-Xiangtan       2.453007e-01 -3.645745e-04 3.231947e-03  4.321272793
-Xiangxiang     2.627078e-01 -1.270254e-03 2.128955e-02  1.809191360
-Xiangyin       5.452517e-01 -4.744181e-03 7.923627e-02  1.953877950
-Xinhua         1.181023e-01 -6.264938e-03 8.600137e-02  0.424085257
-Xinhuang       1.572539e-01 -4.182005e-03 3.664774e-01  0.266671512
-Xinning        6.892785e-01 -9.667394e-03 2.032791e-01  1.550233652
-Xinshao        5.757821e-02 -8.593187e-03 1.176858e-01  0.192889342
-Xintian       -7.405021e-03 -5.149337e-03 1.087706e-01 -0.006839472
-Xupu           3.240616e-01 -5.746775e-03 5.773544e-02  1.372588531
-Yanling       -6.902089e-02 -5.921138e-04 9.930612e-03 -0.686674286
-Yizhang       -2.684366e-01 -2.246318e-03 4.758794e-02 -1.220235660
-Yongshun       6.306427e-01 -1.134974e-02 1.883028e-01  1.479454202
-Yongxing       4.341080e-01 -9.073529e-03 1.508849e-01  1.140929407
-You            7.875041e-02 -7.272845e-03 1.211609e-01  0.247135252
-Yuanjiang      2.000423e-04 -1.775969e-04 2.979795e-03  0.006918053
-Yuanling       8.729849e-03 -2.298071e-06 2.322115e-05  1.812087685
-Yueyang        4.118877e-02 -1.976849e-04 2.311339e-03  0.860847775
-Zhijiang       1.047626e-01 -7.812319e-04 1.309992e-02  0.922143185
-Zhongfang     -2.268458e-01 -2.145491e-03 3.592709e-02 -1.185475978
-Zhuzhou        3.286415e-01 -5.243157e-04 7.239075e-03  3.868772438
-Zixing        -7.684863e-01 -8.821029e-02 9.405678e-01 -0.701439354
-              Pr.z....E.Ii..
-Anhua           9.422301e-01
-Anren           1.391057e-01
-Anxiang         9.471636e-01
-Baojing         2.230456e-01
-Chaling         8.971056e-01
-Changning       9.387606e-01
-Changsha        7.822232e-04
-Chengbu         1.119416e-01
-Chenxi          4.946117e-01
-Cili            7.323546e-01
-Dao             3.031703e-01
-Dongan          1.881947e-01
-Dongkou         1.023002e-01
-Fenghuang       6.086619e-01
-Guidong         3.415864e-01
-Guiyang         3.027630e-01
-Guzhang         4.357997e-01
-Hanshou         7.928094e-01
-Hengdong        8.986110e-01
-Hengnan         6.434065e-01
-Hengshan        7.978131e-01
-Hengyang        6.636633e-01
-Hongjiang       2.855921e-01
-Huarong         9.621124e-01
-Huayuan         5.887023e-01
-Huitong         4.255374e-01
-Jiahe           5.917276e-01
-Jianghua        3.075618e-01
-Jiangyong       4.727569e-01
-Jingzhou        2.396152e-01
-Jinshi          9.843090e-01
-Jishou          1.756424e-01
-Lanshan         6.529132e-01
-Leiyang         8.148123e-01
-Lengshuijiang   2.451020e-01
-Li              6.508382e-01
-Lianyuan        2.952490e-01
-Liling          3.288368e-02
-Linli           6.959021e-01
-Linwu           8.596957e-01
-Linxiang        8.915545e-01
-Liuyang         5.155523e-03
-Longhui         3.764485e-02
-Longshan        1.709996e-01
-Luxi            3.194403e-01
-Mayang          4.736044e-01
-Miluo           3.550005e-04
-Nan             9.125016e-01
-Ningxiang       6.764576e-02
-Ningyuan        4.511108e-01
-Pingjiang       3.048768e-05
-Qidong          4.448892e-01
-Qiyang          4.983276e-01
-Rucheng         4.726740e-01
-Sangzhi         3.272227e-01
-Shaodong        1.467765e-01
-Shaoshan        6.312978e-02
-Shaoyang        9.283054e-02
-Shimen          6.331568e-01
-Shuangfeng      9.480354e-01
-Shuangpai       3.933400e-01
-Suining         6.368746e-02
-Taojiang        3.571125e-02
-Taoyuan         6.107279e-01
-Tongdao         2.899569e-01
-Wangcheng       1.013746e-04
-Wugang          2.827494e-02
-Xiangtan        1.551317e-05
-Xiangxiang      7.042128e-02
-Xiangyin        5.071565e-02
-Xinhua          6.715036e-01
-Xinhuang        7.897221e-01
-Xinning         1.210854e-01
-Xinshao         8.470456e-01
-Xintian         9.945429e-01
-Xupu            1.698803e-01
-Yanling         4.922880e-01
-Yizhang         2.223756e-01
-Yongshun        1.390190e-01
-Yongxing        2.538993e-01
-You             8.048036e-01
-Yuanjiang       9.944802e-01
-Yuanling        6.997265e-02
-Yueyang         3.893219e-01
-Zhijiang        3.564539e-01
-Zhongfang       2.358293e-01
-Zhuzhou         1.093847e-04
-Zixing          4.830289e-01</code></pre>
+<pre><code>                     Ii          E.Ii       Var.Ii        Z.Ii Pr.z....E.Ii..
+Anhua     -2.249264e-02 -5.004845e-03 5.823550e-02 -0.07246715      0.9422301
+Anren     -3.993226e-01 -7.011066e-03 7.034768e-02 -1.47912938      0.1391057
+Anxiang   -1.468468e-03 -2.815006e-05 4.723841e-04 -0.06626904      0.9471636
+Baojing    3.473702e-01 -5.008916e-03 8.363556e-02  1.21846947      0.2230456
+Chaling    2.055902e-02 -9.681197e-04 2.771090e-02  0.12931859      0.8971056
+Changning -2.986822e-05 -9.001050e-09 1.510502e-07 -0.07682771      0.9387606</code></pre>
 </div>
 </div>
 <p>The code chunk below list the content of the local Moran matrix derived by using <a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/printCoefmat"><em>printCoefmat()</em></a>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a><span class="fu">printCoefmat</span>(<span class="fu">data.frame</span>(</span>
 <span id="cb60-2"><a href="#cb60-2"></a>  localMI[fips,], </span>
-<span id="cb60-3"><a href="#cb60-3"></a>  <span class="at">row.names=</span>hunan<span class="sc">$</span>County[fips]),</span>
-<span id="cb60-4"><a href="#cb60-4"></a>  <span class="at">check.names=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb60-3"><a href="#cb60-3"></a>  <span class="at">row.names=</span>hunan<span class="sc">$</span>County[fips]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                       Ii        E.Ii      Var.Ii        Z.Ii Pr.z....E.Ii..
 Anhua         -2.2493e-02 -5.0048e-03  5.8235e-02 -7.2467e-02         0.9422
@@ -1426,6 +1255,9 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 <p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid" width="1344"></p>
 </div>
 </div>
+<blockquote class="blockquote">
+<p>For the choropleth chart on the left, dark green represents clustering of similar values (HH or LL, to be determine by Moran scatterplot or LISAmap) while orange represents outlier regions (LH or HL). THe chart on the right would show us the significant clusters or outliers.</p>
+</blockquote>
 </section>
 </section>
 </section>
@@ -1446,6 +1278,7 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 <p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid" width="1344"></p>
 </div>
 </div>
+<blockquote class="blockquote">
 <p>The x -axis shows the original variable value at a particular spatial unit and the y-axis is the (weighted or without) average of the neighbouring variable values. The neighbour definition and relationship is embedded in the ‘listw’ argument where it could be</p>
 <ul>
 <li><p>spatial lag with row-standardised weights</p></li>
@@ -1461,6 +1294,7 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 <li><p>Outlier and - spatial autocorrelation: Top left contains spatial units with low GDPPC and surrounded by higher values.</p></li>
 <li><p>Outlier and - spatial autocorrelation: Bottom right contains spatial units with higher GDPPC and surrounded by relatively lower values.</p></li>
 </ul>
+</blockquote>
 </section>
 <section id="plotting-moran-scatterplot-with-standardised-variable" class="level3">
 <h3 class="anchored" data-anchor-id="plotting-moran-scatterplot-with-standardised-variable"><strong>10.7.2 Plotting Moran scatterplot with standardised variable</strong></h3>
@@ -1483,7 +1317,9 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 <p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid" width="1344"></p>
 </div>
 </div>
+<blockquote class="blockquote">
 <p>We notice that both axes are standardised with mean =0 and sd of 1.</p>
+</blockquote>
 <p><strong>10.7.3 Preparing LISA map classes</strong></p>
 <p>The code chunks below show the steps to prepare a LISA cluster map.</p>
 <ol type="1">
@@ -1492,7 +1328,7 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 <div class="cell">
 <div class="sourceCode cell-code" id="cb70"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1"></a>quadrant <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="at">mode=</span><span class="st">"numeric"</span>,<span class="at">length=</span><span class="fu">nrow</span>(localMI))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Next, derives the spatially lagged variable of interest (i.e.&nbsp;GDPPC) using <code>lag.listw()</code> from the <em>spdep</em> package and centers the spatially lagged variable around its mean via subtraction.</p>
+<p>Next, derive the spatially lagged variable of interest (i.e.&nbsp;GDPPC) using <code>lag.listw()</code> from the <em>spdep</em> package and centers the spatially lagged variable around its mean via subtraction.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a>hunan<span class="sc">$</span>lag_GDPPC <span class="ot">&lt;-</span> <span class="fu">lag.listw</span>(rswm_q, hunan<span class="sc">$</span>GDPPC)</span>
 <span id="cb71-2"><a href="#cb71-2"></a>DV <span class="ot">&lt;-</span> hunan<span class="sc">$</span>lag_GDPPC <span class="sc">-</span> <span class="fu">mean</span>(hunan<span class="sc">$</span>lag_GDPPC)     </span>
@@ -1514,19 +1350,21 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 <div class="cell">
 <div class="sourceCode cell-code" id="cb75"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1"></a>signif <span class="ot">&lt;-</span> <span class="fl">0.05</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>These four command lines define the low-low (1), low-high (2), high-low (3) and high-high (4) categories. Comparing the local Moran’s I values with its lag-variable values.</p>
+<p>These four command lines define the (1) low-low, (2) low-high , (3) high-low and (4) high-high categories. Comparing the local Moran’s I values with its lag-variable values.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb76"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1"></a>quadrant[DV <span class="sc">&lt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&gt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="co"># LL</span></span>
-<span id="cb76-2"><a href="#cb76-2"></a>quadrant[DV <span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&lt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="co"># HL</span></span>
-<span id="cb76-3"><a href="#cb76-3"></a>quadrant[DV <span class="sc">&lt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&lt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="co"># LH</span></span>
+<span id="cb76-2"><a href="#cb76-2"></a>quadrant[DV <span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&lt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="co"># LH</span></span>
+<span id="cb76-3"><a href="#cb76-3"></a>quadrant[DV <span class="sc">&lt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&lt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="co"># HL</span></span>
 <span id="cb76-4"><a href="#cb76-4"></a>quadrant[DV <span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&gt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">4</span> <span class="co"># HH</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>LM_I &gt; 0 : cluster of <strong>similar</strong> values.<br>
-When DV &lt; 0 and LM_I &gt; 0, low values of spatial lag variables cluster together. Thus Low-low.<br>
-When DV &gt; 0 and LM_I &gt; 0, high values of spatial lag-variables cluster together. Thus high-high.<br>
-LM_I &lt;0 : cluster of <strong>dissimilar</strong> values.<br>
-When DV &gt; 0 and LM &lt; 0, high values of spatial lag variables are among low ones, thus high-low.<br>
-When DV &lt; 0 and LM_I &lt; 0 , low values of spatial lag variables are among the high ones, thus low-high.</p>
+<blockquote class="blockquote">
+<p>LM_I &gt; 0 : cluster of <strong>similar</strong> values.</p>
+<p><strong>(1)</strong> When DV &lt; 0 and LM_I &gt; 0, low values of spatial <strong>lag</strong> variables cluster together with low non-lag variable. Thus Low-low.</p>
+<p><strong>(4)</strong> When DV &gt; 0 and LM_I &gt; 0, high values of spatial <strong>lag</strong> variables cluster together with high non-lag variable. Thus high-high.</p>
+<p>LM_I &lt;0 : cluster of <strong>dissimilar</strong> values.</p>
+<p><strong>(2)</strong> When DV &gt; 0 and LM &lt; 0, high values of spatial lag variables are among low non-lag variable, thus low-high. (see moran scatterplot’s Y axis)</p>
+<p><strong>(3</strong>) When DV &lt; 0 and LM_I &lt; 0 , low values of spatial lag variables are among the high non-lag variable, thus high-low.</p>
+</blockquote>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb77"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1"></a>quadrant</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1553,8 +1391,8 @@ When DV &lt; 0 and LM_I &lt; 0 , low values of spatial lag variables are among t
 <span id="cb81-4"><a href="#cb81-4"></a>LM_I <span class="ot">&lt;-</span> localMI[,<span class="dv">1</span>]   </span>
 <span id="cb81-5"><a href="#cb81-5"></a>signif <span class="ot">&lt;-</span> <span class="fl">0.05</span>       </span>
 <span id="cb81-6"><a href="#cb81-6"></a>quadrant[DV <span class="sc">&lt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&gt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="co"># LL</span></span>
-<span id="cb81-7"><a href="#cb81-7"></a>quadrant[DV <span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&lt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="co"># HL</span></span>
-<span id="cb81-8"><a href="#cb81-8"></a>quadrant[DV <span class="sc">&lt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&lt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="co"># LH</span></span>
+<span id="cb81-7"><a href="#cb81-7"></a>quadrant[DV <span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&lt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="co"># LH</span></span>
+<span id="cb81-8"><a href="#cb81-8"></a>quadrant[DV <span class="sc">&lt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&lt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="co"># HL</span></span>
 <span id="cb81-9"><a href="#cb81-9"></a>quadrant[DV <span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&gt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">4</span> <span class="co"># HH</span></span>
 <span id="cb81-10"><a href="#cb81-10"></a>quadrant[localMI[,<span class="dv">5</span>]<span class="sc">&gt;</span>signif] <span class="ot">&lt;-</span> <span class="dv">0</span> <span class="co"># non-sig</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -1567,24 +1405,27 @@ When DV &lt; 0 and LM_I &lt; 0 , low values of spatial lag variables are among t
 <span id="cb82-2"><a href="#cb82-2"></a>colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"#ffffff"</span>, <span class="st">"#2c7bb6"</span>, <span class="st">"#abd9e9"</span>, <span class="st">"#fdae61"</span>, <span class="st">"#d7191c"</span>)</span>
 <span id="cb82-3"><a href="#cb82-3"></a>clusters <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"insignificant"</span>, <span class="st">"low-low"</span>, <span class="st">"low-high"</span>, <span class="st">"high-low"</span>, <span class="st">"high-high"</span>)</span>
 <span id="cb82-4"><a href="#cb82-4"></a></span>
-<span id="cb82-5"><a href="#cb82-5"></a>LISAmap <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(hunan.localMI) <span class="sc">+</span></span>
-<span id="cb82-6"><a href="#cb82-6"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">"quadrant"</span>, </span>
-<span id="cb82-7"><a href="#cb82-7"></a>          <span class="at">style =</span> <span class="st">"cat"</span>, </span>
-<span id="cb82-8"><a href="#cb82-8"></a>          <span class="at">palette =</span> colors[<span class="fu">c</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(quadrant)))<span class="sc">+</span><span class="dv">1</span>], <span class="co">#index starts from 1</span></span>
-<span id="cb82-9"><a href="#cb82-9"></a>          <span class="at">labels =</span> clusters[<span class="fu">c</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(quadrant)))<span class="sc">+</span><span class="dv">1</span>],</span>
-<span id="cb82-10"><a href="#cb82-10"></a>          <span class="at">popup.vars =</span> <span class="fu">c</span>(<span class="st">""</span>)) <span class="sc">+</span></span>
-<span id="cb82-11"><a href="#cb82-11"></a>  <span class="fu">tm_view</span>(<span class="at">set.zoom.limits =</span> <span class="fu">c</span>(<span class="dv">11</span>,<span class="dv">17</span>)) <span class="sc">+</span></span>
-<span id="cb82-12"><a href="#cb82-12"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb82-13"><a href="#cb82-13"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title=</span><span class="st">'LISA map (significant)'</span>,</span>
-<span id="cb82-14"><a href="#cb82-14"></a>            <span class="at">legend.width =</span> <span class="fl">0.25</span>,</span>
-<span id="cb82-15"><a href="#cb82-15"></a>            <span class="at">legend.height =</span> <span class="fl">0.25</span>)</span>
-<span id="cb82-16"><a href="#cb82-16"></a></span>
-<span id="cb82-17"><a href="#cb82-17"></a>LISAmap</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb82-5"><a href="#cb82-5"></a></span>
+<span id="cb82-6"><a href="#cb82-6"></a>LISAmap <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(hunan.localMI) <span class="sc">+</span></span>
+<span id="cb82-7"><a href="#cb82-7"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">"quadrant"</span>, </span>
+<span id="cb82-8"><a href="#cb82-8"></a>          <span class="at">style =</span> <span class="st">"cat"</span>, </span>
+<span id="cb82-9"><a href="#cb82-9"></a>          <span class="at">palette =</span> colors[<span class="fu">c</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(quadrant)))<span class="sc">+</span><span class="dv">1</span>], <span class="co">#index starts from 1</span></span>
+<span id="cb82-10"><a href="#cb82-10"></a>          <span class="at">labels =</span> clusters[<span class="fu">c</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(quadrant)))<span class="sc">+</span><span class="dv">1</span>],</span>
+<span id="cb82-11"><a href="#cb82-11"></a>          <span class="at">popup.vars =</span> <span class="fu">c</span>(<span class="st">""</span>)) <span class="sc">+</span></span>
+<span id="cb82-12"><a href="#cb82-12"></a>  <span class="fu">tm_text</span>(<span class="st">'County'</span>,</span>
+<span id="cb82-13"><a href="#cb82-13"></a>          <span class="at">size =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb82-14"><a href="#cb82-14"></a>  <span class="fu">tm_view</span>(<span class="at">set.zoom.limits =</span> <span class="fu">c</span>(<span class="dv">11</span>,<span class="dv">17</span>)) <span class="sc">+</span></span>
+<span id="cb82-15"><a href="#cb82-15"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb82-16"><a href="#cb82-16"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title=</span><span class="st">'LISA map (significant)'</span>,</span>
+<span id="cb82-17"><a href="#cb82-17"></a>            <span class="at">legend.width =</span> <span class="fl">0.25</span>,</span>
+<span id="cb82-18"><a href="#cb82-18"></a>            <span class="at">legend.height =</span> <span class="fl">0.25</span>)</span>
+<span id="cb82-19"><a href="#cb82-19"></a></span>
+<span id="cb82-20"><a href="#cb82-20"></a>LISAmap</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-47-1.png" class="img-fluid" width="1344"></p>
 </div>
 </div>
-<p>For effective interpretation, it is better to plot both the <strong>local Moran's I values map</strong> and its corresponding LISA map next to each other.</p>
+<p>For effective interpretation, it is better to plot both the <strong>local Moran’s I values map</strong> and its corresponding LISA map next to each other.</p>
 <p>The code chunk below will be used to create such visualisation.</p>
 <div class="cell" data-fig.asp="0.68">
 <div class="sourceCode cell-code" id="cb83"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1"></a><span class="fu">tmap_arrange</span>(localMI.map, LISAmap,</span>
@@ -1594,6 +1435,10 @@ When DV &lt; 0 and LM_I &lt; 0 , low values of spatial lag variables are among t
 <p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-48-1.png" class="img-fluid" width="1344"></p>
 </div>
 </div>
+<blockquote class="blockquote">
+<p>‘Clustering of dissimilar values’ (Local Moran I &lt; 0) is also known as ‘dispersion’ or ‘outlier’ region.</p>
+<p>The darker green regions shows signs of clustering of similar values while the orange regions shows signs of dispersion (cluster of dissimilar values). The LISA map on the right will be able to give more detailed insights, for e.g.&nbsp;for cluster regions whether is it HH or LL and for the outliers region whether its LH or HL.</p>
+</blockquote>
 <p>The GDPPC and LISA Map can also be placed side by side .</p>
 <div class="cell" data-fig.asp="0.68">
 <div class="sourceCode cell-code" id="cb84"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1"></a>gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">'GDPPC'</span>)</span>
@@ -1604,8 +1449,11 @@ When DV &lt; 0 and LM_I &lt; 0 , low values of spatial lag variables are among t
 <p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-49-1.png" class="img-fluid" width="1344"></p>
 </div>
 </div>
+<blockquote class="blockquote">
+<p>LISAmap:</p>
 <p>The dark blue and red regions are clusters of LL and HH respectively.</p>
 <p>The light blue regions are outliers (LH), where those regions have relatively lower values than their neighbours.</p>
+</blockquote>
 <div class="cell" data-fig.asp="0.68">
 
 </div>
