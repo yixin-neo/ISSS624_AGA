@@ -22,8 +22,10 @@ format:
 ```
 
 ```{r}
-#| code-fold: True
 #| eval: false
 #| echo: false
+#| code-fold: True
+#| fig-width: 14
+#| fig-asp: 0.68
 
 ```

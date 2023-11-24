@@ -1,8 +1,10 @@
 {
-  "hash": "3bbe12a561d25b03f110d51d2aa3a21e",
+  "hash": "253f952bd686d4d6a3aae1450bcbfb6f",
   "result": {
-    "markdown": "---\ntitle: \"In-class Exercise 2:\"\nauthor: \"NeoYX\"\ndate: '25 Nov 2023'\ndate-modified: \"2023-11-17\"\neditor: visual\nexecute: \n  freeze: auto\n  warning: false\n  #echo: false\n  #message: false\nformat: \n  html:\n    code-fold: false\n    code-overflow: scroll\n    code-summary: \"Show the code\"\n    code-line-numbers: true\n---\n\n::: {.cell}\n\n```{.r .cell-code}\n#pacman::p_load(sf, tmap, tidyverse)\n```\n:::\n\n::: {.cell}\n\n:::\n",
-    "supporting": [],
+    "markdown": "---\ntitle: \"In-class Exercise 2:\"\nauthor: \"NeoYX\"\ndate: '25 Nov 2023'\ndate-modified: \"2023-11-25\"\neditor: visual\nexecute: \n  freeze: auto\n  warning: false\n  #echo: false\n  #message: false\nformat: \n  html:\n    code-fold: false\n    code-overflow: scroll\n    code-summary: \"Show the code\"\n    code-line-numbers: true\n---\n\n::: {.cell}\n\n```{.r .cell-code}\n#pacman::p_load(sf, tmap, tidyverse)\n```\n:::\n\n::: {.cell fig.asp='0.68'}\n\n:::\n",
+    "supporting": [
+      "In-class_Ex2_files"
+    ],
     "filters": [
       "rmarkdown/pagebreak.lua"
     ],
