@@ -192,7 +192,7 @@ busstop_mpsz
 -   five bus stops are excluded in the resultant data frame because they are outside of Singapore boundary. Points reduced from 5161 to 5156 after combine.
 :::
 
-Drop the geometry because we need to process the attribute data. To get back the geometry properties, we can always left_join() `mpsz` df with our processed df again later.
+Drop the geometry because `busstop_mpsz` is a POINT sf object, there is no polygon geometry. Furthermore, we have to process the attribute data. To get back the planning sub-zone POLYGON geometry data, we can always left_join() `mpsz` df with our processed `busstop_mpsz` df again later.
 
 ```{r}
 busstop_mpsz <- busstop_mpsz %>% 
@@ -288,9 +288,9 @@ skim(origin_data)
 
 There are 55 missing values in its '*ORIGIN_SZ'* field and this could be due to missing bus stop code in the `busstop_mpsz` df.
 
-==== Unsure whether we have to aggregate the TRIPS by planning sub-zone level ====
+**==== Unsure whether we have to aggregate the TRIPS by planning sub-zone level ====**
 
-Next, find the aggregate **sum** of the '*TRIPS*' field by the 'ORIGIN_SZ' in the `origin_data` df since we are plotting passenger trips originating at sub-zone level.
+Currently, there are many rows per planning sub-zone. Calculate the aggregate **sum** of the '*TRIPS*' field by the 'ORIGIN_SZ' in the `origin_data` df since we are plotting passenger trips originating at sub-zone level.
 
 ```{r}
 origin_data_sz <- origin_data %>% 
@@ -314,20 +314,7 @@ mpsz_origtrip <- left_join(mpsz, origin_data,
 mpsz_origtrip
 ```
 
-```{r}
-mpsz_origtrip_sz <- left_join(mpsz, origin_data_sz,
-                           by = c('SUBZONE_C' ='ORIGIN_SZ'))
-
-mpsz_origtrip_sz
-```
-
-Examine the missing values
-
-```{r}
-skim(mpsz_origtrip_sz)
-```
-
-Lets plot the chloropleth map
+Plotting the map
 
 ```{r}
 #| fig-width: 14
@@ -360,6 +347,21 @@ tm_shape(mpsz_origtrip)+
   tm_grid(alpha =0.2) +
   tm_credits("Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)\n and Population data from Department of Statistics DOS", 
              position = c("left", "bottom"))
+```
+
+If we are using the `origin_data_sz` df that contains the aggregated trips per subzone:
+
+```{r}
+mpsz_origtrip_sz <- left_join(mpsz, origin_data_sz,
+                           by = c('SUBZONE_C' ='ORIGIN_SZ'))
+
+mpsz_origtrip_sz
+```
+
+Examine any missing values.
+
+```{r}
+skim(mpsz_origtrip_sz)
 ```
 
 Plot using aggregated sum of TRIPS by sub-zones
