@@ -92,13 +92,13 @@ The code chunk below does the following:
     ```{r}
     #| echo: false
     #| eval: false
-    #odbus_aug %>% 
-      #filter(DAY_TYPE == 'WEEKDAY') %>% 
-      #filter(TIME_PER_HOUR >= 7 & TIME_PER_HOUR <= 9) %>% 
-      #group_by(ORIGIN_PT_CODE) %>% 
-      #mutate(TRIPS_SUM = sum(TOTAL_TRIPS)) %>%
-      #ungroup() %>% 
-      #arrange(ORIGIN_PT_CODE)
+    odbus_aug %>% 
+      filter(DAY_TYPE == 'WEEKDAY') %>% 
+      filter(TIME_PER_HOUR >= 7 & TIME_PER_HOUR <= 9) %>% 
+      group_by(ORIGIN_PT_CODE) %>% 
+      mutate(TRIPS_SUM = sum(TOTAL_TRIPS)) %>%
+      ungroup() %>% 
+      arrange(ORIGIN_PT_CODE)
     ```
 
 ```{r}
@@ -125,7 +125,6 @@ write_rds(origin7_9, "data/rds/origin7_9.rds")
 The code chunk below will be used to import the save origin7_9.rds into R environment.
 
 ```{r}
-#| eval: false
 origin7_9 <- read_rds("data/rds/origin7_9.rds")
 ```
 
@@ -205,7 +204,6 @@ datatable(busstop_mpsz, class = 'cell-border stripe', options = list(pageLength 
 Save the output into rds format.
 
 ```{r}
-#| eval: false
 write_rds(busstop_mpsz, 'data/rds/busstop_mpsz.csv')
 ```
 
@@ -226,11 +224,11 @@ After left_join(), `origin_data` has 5,031 rows.
 origin_data <- left_join(origin7_9, busstop_mpsz,
                          by = c('ORIGIN_PT_CODE' = 'BUS_STOP_N')) %>%
   rename(ORIGIN_BS = ORIGIN_PT_CODE,
-         ORIGIN_SZ = SUBZONE_C) #%>% 
-  #select(ORIGIN_SZ, 
-        # ORIGIN_BS, 
-        # TRIPS ) %>% 
- # arrange(desc(TRIPS))
+         ORIGIN_SZ = SUBZONE_C) %>% 
+  select(ORIGIN_SZ, 
+         ORIGIN_BS, 
+         TRIPS ) %>% 
+  arrange(desc(TRIPS))
 
 datatable(origin_data)
 ```
@@ -279,9 +277,7 @@ origin_data <- unique(origin_data)
 Double check there are indeed no more duplicates in `origin_data` df.
 
 ```{r}
-
 origin_data[duplicated(origin_data), ]
-
 ```
 
 Use the skim() from the skimr library
