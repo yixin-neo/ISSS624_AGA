@@ -18,7 +18,7 @@ format:
     code-line-numbers: true
 ---
 
-## Getting started
+# Getting started
 
 Installing and loading the required R packages.
 
@@ -115,7 +115,7 @@ nb2_queen <-  hunan_GDPPC %>%
 kable(head(nb2_queen,3))
 ```
 
-#### **1.2 Deriving Contiguity Spatial Weights**
+#### 1.2 Deriving Contiguity Spatial Weights
 
 Deriving Contiguity spatial weights using `sfdep` (wrapper of spdep: allows for mutate using spatial functions) instead of `spdep` library.
 
@@ -145,7 +145,7 @@ There are three popularly used distance-based spatial weights, they are:
 
 -   inverse distance weights (IDW).
 
-##### 1.3.1 **Deriving fixed distance weights**
+##### 1.3.1 Deriving fixed distance weights
 
 To determine the upper limit for distance band:
 
@@ -189,7 +189,7 @@ wm_fd <- hunan_GDPPC %>%
 
 ##### 
 
-1.3.2 **Deriving adaptive distance weights**
+##### 1.3.2 Deriving adaptive distance weights
 
 ```{r}
 wm_ad <- hunan_GDPPC %>% 
@@ -207,7 +207,7 @@ wm_ad <- hunan_GDPPC %>%
 
     -   the default `allow_zero` is set to TRUE, assigns zero as lagged value to zone without neighbors.
 
-##### **1.3.3 Calculate inverse distance weights**
+##### 1.3.3 Calculate inverse distance weights
 
 ```{r}
 wm_idw <- hunan_GDPPC %>%
@@ -226,7 +226,7 @@ wm_idw <- hunan_GDPPC %>%
 
 After deriving the spatial weights matrix `wm_q` (class: 'sf' and 'df' ) ('nb' and 'wt') using the Queen's method, we can calculate
 
-#### 2.1 C**omputing Global Moran' I (No simulation)**
+#### 2.1 Computing Global Moran' I (No simulation)
 
 Using the sfdep package, it can be calculated using the code chunk below
 
@@ -240,7 +240,7 @@ global_moran_test(wm_q$GDPPC,
 
 -   By default the `randomization` argument is **TRUE**. If FALSE, under the assumption of normality.
 
-#### 2.2 C**omputing Global Moran' I (Simulation)**
+#### 2.2 Computing Global Moran' I (Simulation)
 
 Monte carlo simulation should be used to perform the statistical test. For **sfdep**, it is supported by [`globel_moran_perm()`](https://sfdep.josiahparry.com/reference/global_moran_perm.html). Do not assume normality.
 
@@ -259,7 +259,7 @@ global_moran_perm(wm_q$GDPPC,
 
 Since p-value is smaller than 0.05 , we can reject the null hypothesis that the spatial patterns spatial independent. Because the Moran's I statistics is **greater than 0**. We can infer the spatial distribution shows sign of **clustering**.
 
-#### 2.3 Local Moran using sfdep.
+#### **2.3 Local Moran using sfdep.**
 
 ```{r}
 lisa <- wm_q %>% 
@@ -297,7 +297,7 @@ Usually we use mean for the Moran-Scatterplot. However, if the data GDPPC is **h
 kable(head(lisa,3))
 ```
 
-#### 2.4 **Visualising local Moran's I**
+#### 2.4 Visualising local Moran's I
 
 Use tmap core functions to build a choropleth, using the local moran's I (ii) field
 
@@ -314,7 +314,7 @@ map1 <- tm_shape(lisa) +
 map1
 ```
 
-#### 2.5 **Visualising the p-value of local Moran's I**
+#### 2.5 Visualising the p-value of local Moran's I
 
 ```{r}
 tmap_mode("plot")
@@ -339,7 +339,7 @@ Putting both maps side by side
 tmap_arrange(map1, map2, asp=1, ncol = 2)
 ```
 
-#### 2.6 Visualising LISA map
+#### **2.6 Visualising LISA map**
 
 LISA map is a categorical map showing outliers and clusters. There are two types of outliers namely: High-Low and Low-High outliers. Likewise, there are two type of clusters namely: High-High and Low-Low cluaters. In fact, LISA map is an interpreted map by combining local Moran's I of geographical areas and their respective p-values.
 
@@ -375,15 +375,13 @@ tm_shape(lisa_sig) +
   tm_borders(alpha = 0.4)
 ```
 
-#### 
-
-Part 3: **Hot Spot and Cold Spot Area Analysis (HCSA)**
+### Part 3: Hot Spot and Cold Spot Area Analysis (HCSA)
 
 HCSA uses spatial weights to identify locations of statistically significant hot spots and cold spots in an spatially weighted attribute that are in proximity to one another based on a calculated distance. The analysis groups features when similar high (hot) or low (cold) values are found in a cluster. The polygon features usually represent administration boundaries or a custom grid structure.
 
 #### 
 
-3.1 Computing Local Gi\* statistics
+#### **3.1 Computing Local Gi\* statistics**
 
 Using the inverse distance spatial weights matrix `wm_idw` derived in section 1.3.3, we can use the `local_gstar_perm()` of sfdep library to compute Gi\* values of each region stored in HCSA, class: 'sf', tbl_df', 'tbl', 'df'.
 
@@ -399,7 +397,7 @@ HCSA <- wm_idw %>%
 HCSA
 ```
 
-#### 3.3 **Visualising Local Gi\* (sig and not-sig)**
+#### 3.2 Visualising Local Gi\* (sig and not-sig)
 
 ```{r}
 tmap_mode("plot")
@@ -414,7 +412,7 @@ map1 <- tm_shape(HCSA) +
 map1
 ```
 
-#### 3.4 **Visualising p-value of HCSA (Gi\*)**
+#### 3.3 **Visualising p-value of HCSA (Gi\*)**
 
 ```{r}
 tmap_mode("plot")
@@ -441,7 +439,7 @@ tmap_arrange(map1, map2, ncol = 2)
 
 #### 
 
-3.5 **Visualising hot spot and cold spot areas**
+#### 3.4 Visualising hot spot and cold spot areas
 
 To plot only the significant (i.e. p-values less than 0.05) hot spot and cold spot areas by using appropriate tmap functions as shown below
 
@@ -632,7 +630,7 @@ datatable(ehsa)
 
 ##### 
 
-##### 4.3.1 Sort by top 5 emerging and significant hotspots
+##### 4.3.2 Sort by top 5 emerging and significant hotspots
 
 ```{r}
 emerging <- ehsa %>% 
@@ -644,11 +642,11 @@ kable(emerging)
 
 #### 4.4 Emerging hot spot analysis
 
-##### 4.4.2 **Calculating ehsa using spacetime cube**
+##### 4.4.1 **Calculating ehsa using spacetime cube**
 
 We will perform EHSA analysis by using [`emerging_hotspot_analysis()`](https://sfdep.josiahparry.com/reference/emerging_hotspot_analysis.html) of sfdep package. It requires
 
-1.   a spacetime object, x (i.e. GDPPC_st)
+1.  a spacetime object, x (i.e. GDPPC_st)
 2.  the quoted name of the variable of interest, .var (i.e. GDPPC)
 3.  k argument is used to specify the number of time lags which is set to 1 by default.
 4.  nsim map numbers of simulation to be performed.
@@ -691,8 +689,7 @@ hunan_ehsa <-left_join(hunan, ehsa,
 class(hunan_ehsa)
 ```
 
-Use tmap functions to plot choropleth map
-We can use the p-value inside to plot only the significant emerging hot/cold spots, by filtering rows with p_values \< 0.05
+Use tmap functions to plot choropleth map We can use the p-value inside to plot only the significant emerging hot/cold spots, by filtering rows with p_values \< 0.05
 
 Take note: no pattern (yellow) doesnt mean not-sig (grey)
 
