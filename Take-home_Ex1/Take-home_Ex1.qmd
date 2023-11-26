@@ -218,6 +218,8 @@ busstop[3470,]
 busstop[3472,]
 ```
 
+#### Creating hexagon layer
+
 Before we can plot the base layer, we have to create hexagonal grids of 250 m using the `busstop` points data using `sf`.
 
 First , create a grid which the extent equals to the bounding box of the busstop points using [st_make_grid()](https://r-spatial.github.io/sf/reference/st_make_grid.html).
@@ -283,7 +285,7 @@ The code chunk below performs points and hexagon polygon overlap and the output 
 
 [After overlapping:]{.underline}
 
-`busstop_hex` : 5161 points and this is good results because it shows that we are able to retain all the the bus stop data with out `bs_count` base map.
+`busstop_hex` : 5161 points and this is good results because it shows that we are able to retain all the the bus stop data with our `bs_count` base map.
 
 ```{r}
 busstop_hex <- st_intersection(busstop, bs_count) %>% 
@@ -423,6 +425,8 @@ datatable(origin_data_day_pm_hex, class = 'cell-border stripe', options = list(p
 
 In order to plot choropleth maps, we need the geometry data from `bs_count`sf polygon object.
 
+The function below performs a left join with `bs_count` and the attributes dataframes and also assign 0 TTRIPS value to a hexagon without any passengers.
+
 ```{r}
 get_hexgeo <- function(df) {
   result <- left_join(bs_count, df,
@@ -549,9 +553,9 @@ With reference to the box plor, summary statistics and upper bound values,
 
 -   Min : 1 , Max : 447,968
 
--   break points can be 250, 1500, 7600, 18650
+-   break points can be 230, 1520, 7350, 18600
 
--   break vector is thus c(0, 250 1500, 7600, 18650, 447968)
+-   break vector is thus c(0, 250 1500, 7600, 18600, 337056)
 
 The last interval would set the outliers (bus stops with very high passengers) apart.
 
@@ -559,7 +563,7 @@ The last interval would set the outliers (bus stops with very high passengers) a
 plotmap <- function(df, title) {
   result <- tm_shape(df)+
   tm_fill("TTRIPS", 
-          breaks = c(0, 250, 1500, 7600, 18650, 447968), #60000, 100000, 
+          breaks = c(0, 250, 1500, 7600, 18650,447968),  
           #style = "quantile", 
           palette = "Blues",
           alpha= 0.7,
@@ -599,6 +603,8 @@ p3 <- plotmap(end_am, 'Weekend-Morning-Peak Passenger Trips by Origin')
 p4 <- plotmap(end_am, 'Weekend-Afternoon-Peak Passenger Trips by Origin')
 ```
 
+**Map of Weekday-Morning-Peak Passenger Trips by Origin**
+
 ```{r}
 #| fig-width: 14
 #| fig-asp: 0.68
@@ -607,7 +613,7 @@ tmap_mode('view')
 p1
 ```
 
-\
+**Map of Weekday-Afternoon-Peak Passenger Trips by Origin**\
 
 ```{r}
 #| fig-width: 14
@@ -615,11 +621,15 @@ p1
 p2
 ```
 
+**Map of Weekend-Morning-Peak Passenger Trips by Origin**
+
 ```{r}
 #| fig-width: 14
 #| fig-asp: 0.68
 p3
 ```
+
+**Map of Weekend-Afternoon-Peak Passenger Trips by Origin**
 
 ```{r}
 #| fig-width: 14
