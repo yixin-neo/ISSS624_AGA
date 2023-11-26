@@ -29,7 +29,7 @@ Exploratory Spatial Data Analysis (ESDA) hold tremendous potential to address co
 
 ### **Aspatial data**
 
-For this take-home exercise, *Passenger Volume by Origin Destination Bus Stops* downloaded from [LTA DataMall](https://www.waterpointdata.org/access-data/) will be used. It contains the number of trips by [weekdays]{.underline} and [weekends]{.underline} from origin to destination bus stops.
+For this take-home exercise, *Passenger Volume by Origin Destination Bus Stops* downloaded from [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html) will be used. It contains the number of trips by [weekdays]{.underline} and [weekends]{.underline} from origin to destination bus stops.
 
 For this exercise, the data is collected in August 2023. The fields are YEAR_MONTH, DAY_TYPE, TIME_PER_HOUR, PT_TYPE , ORIGIN_PT_CODE, DESTINATION_PT_CODE, TOTAL_TRIPS . A sample row for bus dataset could be '2023-08, WEEKDAY, 16, BUS, 28299, 28009, 63'. TIME_PER_HOUR of 16 represents data is collected between 4 pm to 5pm.
 
@@ -80,8 +80,26 @@ With reference to the passenger trips by origin at the hexagon level for the fou
 
 ## Getting Started
 
+In this exercise, the following libraries will be used:
+
+1.   [`sf`](https://r-spatial.github.io/sf/) packageto perform geoprocessing tasks
+
+2.  [sfdep](https://sfdep.josiahparry.com/) package which builds upon `spdep` package (compute spatial weights matrix and spatially lagged variable for instance..)
+
+3.  [tmap](https://cran.r-project.org/web/packages/tmap/) to create geovisualisations
+
+4.   [`tidyverse`](https://www.tidyverse.org/) that supports data science, analysis and communication task including creating static statistical graphs.
+
+5.  `knitr` to create html tables
+
+6.  [DT](https://rstudio.github.io/DT/) library to create interactive html tables
+
+7.  [ggplot2](https://ggplot2.tidyverse.org/) to plot graphs
+
+8.  [plotly](https://plotly.com/r/) to plot interactive graphs
+
 ```{r}
-pacman::p_load(sf, tmap, tidyverse, knitr, h3jsr, DT, skimr, ggplot2)
+pacman::p_load(sf, sfdep, tmap, tidyverse, knitr, DT, ggplot2, plotly, h3jsr, skimr)
 ```
 
 ## Importing Data
@@ -170,22 +188,7 @@ glimpse(origin_end_pm)
 
 ### Geospatial data
 
-The code chunk below uses [*st_read()*](https://r-spatial.github.io/sf/reference/st_read.html) of **sf** package to import hexagon shapefile into R. The output will be a **sf polygon** object with 3125 polygons and 6 fields. There also 3125 unique values of the '*fid*' and '*id*' fields and 'fid' can be considered unique identifiers of the hexagons.
-
-```{r}
-hex <- st_read(dsn="data/geospatial/hexagon", layer = "hexagon") %>% 
-  st_transform(crs = 3414)
-
-hex
-```
-
-Take a look at the spatial units:
-
-```{r}
-plot(hex['id'])
-```
-
-Next, we will import the Bus Stop Location shapefiles into R. The output will be a **sf point** object with 5161 points and 3 fields. As the raw data is in WSG84 geographical coordinate system, we will convert it to EPSG 3414, the projected coordinate system for Singapore.
+First, we will import the Bus Stop Location shapefiles into R. The output will be a **sf point** object with 5161 points and 3 fields. As the raw data is in WSG84 geographical coordinate system, we will convert it to EPSG 3414, the projected coordinate system for Singapore.
 
 ```{r}
 busstop <- st_read(dsn="data/geospatial/BusStopLocation/BusStopLocation_Jul2023", layer = "BusStop") %>% 
@@ -194,7 +197,7 @@ busstop <- st_read(dsn="data/geospatial/BusStopLocation/BusStopLocation_Jul2023"
 busstop
 ```
 
-Checking for duplicates in the 'BUS_STOP_N' field reveals that there are about 16 repeated bus stop numbers. However, they have different geometry in the simple feature `busstop` object above. These could be due to temprorary bus stops . We should retain all these rows as they might have different hexagon '*fid*' values later.
+Checking for duplicates in the 'BUS_STOP_N' field reveals that there are about 16 repeated bus stop numbers. However, they have different geometry points in the simple feature `busstop` object above. These could be due to temprorary bus stops . We should retain all these rows as they might have different hexagon '*fid*' values later.
 
 ```{r}
 busstop %>% 
@@ -205,7 +208,7 @@ busstop %>%
   arrange(BUS_STOP_N)
 ```
 
-Take for instance bus stop number 51071 with two different geometry values.
+Take for instance bus stop number 51071 with two different point geometry values.
 
 ```{r}
 busstop[3470,]
@@ -215,9 +218,60 @@ busstop[3470,]
 busstop[3472,]
 ```
 
+Before we can plot the base layer, we have to create hexagonal grids of 250 m using the `busstop` points data using `sf`.
+
+First , create a grid which the extent equals to the bounding box of the busstop points using [st_make_grid()](https://r-spatial.github.io/sf/reference/st_make_grid.html).
+
+1.  To create hexagons of 250m (centre to edge), we should input 500 for 'cellsize' parameter. 'Cellsize' is defined as the distance from edge to edge.
+2.  Convert to `sf` object and add a unique identifier to each hexagon grid. The output has 5580 hexagon units.
+3.  Use st_intersects() to count the number of bus stops in each hexagon.
+4.  Filter to retain only hexagons with at least one bus stop. The output `bs_count` has 1524 hexagon units.
+
+```{r}
+area_hex_grid = st_make_grid(busstop,
+                             cellsize= 500, 
+                             what = "polygons", 
+                             square = FALSE)
+
+# To sf and add grid ID
+hex_grid_sf = st_sf(area_hex_grid) %>%
+  # add grid ID
+  mutate(grid_id = 1:length(lengths(area_hex_grid)))
+
+# count number of points in each grid
+hex_grid_sf$bs = lengths(st_intersects(hex_grid_sf, busstop))
+
+# remove grid without value of 0 (i.e. no points in side that grid)
+bs_count = filter(hex_grid_sf, bs > 0)
+bs_count
+```
+
+Visualisation of our hexagon base map.
+
+```{r}
+plot(bs_count['bs'])
+```
+
+We could save this hexagon layer to disk
+
+```{r}
+#| eval: false
+st_write(bs_count, 'data/bs_count.shp')
+```
+
+```{r}
+#| echo: false
+#| eval: false
+hex <- st_read(dsn="data/geospatial/hexagon", layer = "hexagon") %>% 
+  st_transform(crs = 3414)
+hex
+```
+
 #### Geospatial data wrangling
 
-##### Combining `busstop` and `hex`
+##### Combining `busstop` (polygon sf) and bs_count (point sf)
+
+We need to get the corresponding bus stop number of each hexagon in `bs_count` hexagon layer.
 
 The code chunk below performs points and hexagon polygon overlap and the output will be in **sf point** object.
 
@@ -225,20 +279,22 @@ The code chunk below performs points and hexagon polygon overlap and the output 
 
 `busstop` : 5161 points
 
-`hex` : 3125 hexagons
+`hex` : 1524 hexagons
 
 [After overlapping:]{.underline}
 
-`busstop_hex` : 5109 points. The reason for this reduction could be due to some points falling out of the boundary of the Singapore boundary in `hex`.
+`busstop_hex` : 5161 points and this is good results because it shows that we are able to retain all the the bus stop data with out `bs_count` base map.
 
 ```{r}
-busstop_hex <- st_intersection(busstop, hex) %>% 
-  select(BUS_STOP_N, fid, id, left, top, right, bottom)
+busstop_hex <- st_intersection(busstop, bs_count) %>% 
+  select(BUS_STOP_N, grid_id, bs)
 
 busstop_hex
 ```
 
-We will drop the geometry because `busstop_hex` is a POINT sf object, there is no hex polygon geometry data for us to plot based on hexagon level. Furthermore, we have to process the attribute data. To get back the hexagon POLYGON geometry data, we can always left_join() hex df with our processed df again later. We will then use `datatable()` function of the [DT](https://rstudio.github.io/DT/) library to print the data.
+We will drop the geometry because `busstop_hex` is a POINT sf object, there is no hex polygon geometry data for us to plot based on hexagon level. Furthermore, we have to process the attribute data. To get back the hexagon POLYGON geometry data, we can always left_join() `bs_count` df with our attribute table again later.
+
+We will also use `datatable()` function of the [DT](https://rstudio.github.io/DT/) library to print the data. The table is interactive and can perform basic sorting.
 
 ```{r}
 busstop_hex <- busstop_hex  %>% 
@@ -247,7 +303,7 @@ busstop_hex <- busstop_hex  %>%
 datatable(busstop_hex, class = 'cell-border stripe', options = list(pageLength = 5))
 ```
 
-Let us check for duplicates in `busstop_hex` df as it will be used to perform a left join later. The output shows that there are 10 duplicated rows.
+Let us check for duplicates in `busstop_hex` df as it will be used to perform a left join later. The output shows that there are 11 duplicated rows.
 
 ```{r}
 busstop_hex %>%
@@ -281,7 +337,7 @@ leftjoin <- function(asp_df) {
   result <- left_join(asp_df, busstop_hex,
                          by = c('ORIGIN_PT_CODE' = 'BUS_STOP_N')) %>%
   rename(ORIGIN_BS = ORIGIN_PT_CODE,
-         ORIGIN_HEXFID = fid) %>% 
+         ORIGIN_HEXFID = grid_id) %>% 
   select(ORIGIN_HEXFID, 
          ORIGIN_BS, 
          TRIPS)
@@ -290,9 +346,9 @@ leftjoin <- function(asp_df) {
 }
 ```
 
-Use the leftjoin function to get our dataframes containing hexagon fids and origin bus stop ids.
+Use the 'leftjoin' function to get our dataframes containing grid_id and origin bus stop ids.
 
-The number of rows increased after left join , this could be due to duplicates in the `BUS_STOP_N` field (but different geometry coordinates) that originated from `busstop` and `busstop_hex` dataframes earlier.
+The number of rows increased by 5 after left join , this is due to 5 bus stops, each with two distinct different point geometry coordinates, that originated from the `busstop` and `busstop_hex` dataframes earlier.
 
 ```{r}
 origin_data_day_am <- leftjoin(origin_day_am)
@@ -310,13 +366,15 @@ origin_data_end_am[duplicated(origin_data_end_am), ]
 origin_data_end_pm[duplicated(origin_data_end_pm), ]
 ```
 
-FYI: Which bus stop numbers are repeated?
+FYI: Which are the 5 bus stop numbers with two distinct point geometry coordinates?
 
 ```{r}
 busstop_hex['BUS_STOP_N'][duplicated(busstop_hex['BUS_STOP_N']), ]
 ```
 
-Since we are plotting the number of passenger trips generated by hexagon level, we should aggregate the total trips by '*ORIGIN_HEXFID*' and store these values in a new field called '*TTRIPS*'.
+Since we are plotting the number of passenger trips generated by **hexagon level**, we should aggregate the total trips by '*ORIGIN_HEXFID*' and store these values in a new field called '*TTRIPS*'.
+
+After the left join, the total distinct of hexagons for each time intervals are 1491, 1489, 1499 and 1444. The total hexagon in `bs_count` was 1524. This suggests that were some bus stops with no passengers at different time intervals.
 
 ```{r}
 get_ttrips <- function(df) {
@@ -327,10 +385,10 @@ get_ttrips <- function(df) {
   return(result) 
 }
 
-origin_data_day_am_hex <- get_ttrips(origin_data_day_am) # 5011 to 1453 rows
-origin_data_day_pm_hex <- get_ttrips(origin_data_day_pm) # 4971 to 1448 rows
-origin_data_end_am_hex <- get_ttrips(origin_data_end_am) # 5000 to 1463 rows
-origin_data_end_pm_hex <- get_ttrips(origin_data_end_pm) # 4628 to 1412 rows
+origin_data_day_am_hex <- get_ttrips(origin_data_day_am) # 5010 to 1491 rows
+origin_data_day_pm_hex <- get_ttrips(origin_data_day_pm) # 4970 to 1489 rows
+origin_data_end_am_hex <- get_ttrips(origin_data_end_am) # 4999 to 1499 rows
+origin_data_end_pm_hex <- get_ttrips(origin_data_end_pm) # 4627 to 1444 rows
 ```
 
 Print out the above four dataframes
@@ -361,16 +419,16 @@ datatable(origin_data_day_pm_hex, class = 'cell-border stripe', options = list(p
 ```
 :::
 
-##### Retrieve hexagon geometry coordinates 
+##### Retrieve hexagon geometry coordinates
 
-In order to plot choropleth maps, we need the geometry data from `hex` sf object.
-
-The code below
+In order to plot choropleth maps, we need the geometry data from `bs_count`sf polygon object.
 
 ```{r}
 get_hexgeo <- function(df) {
-  result <- left_join(hex,df,
-                      by = c('fid' = 'ORIGIN_HEXFID'))
+  result <- left_join(bs_count, df,
+                      by = c('grid_id' = 'ORIGIN_HEXFID')) %>%
+    mutate(TTRIPS = if_else(is.na(TTRIPS),0, TTRIPS))
+    
   return(result)
 }
 
@@ -380,11 +438,11 @@ end_am <- get_hexgeo(origin_data_end_am_hex)
 end_pm <- get_hexgeo(origin_data_end_pm_hex)
 ```
 
-### Choropleth maps 
+### Choropleth maps
 
-In this section , the choropleth maps will show the geographical distribution of the passenger trips by origin.
+In this section , the choropleth maps will show the geographical distribution of the passenger trips by origin. However, we need to plan for the classification for the maps. We could check the distribution of the 'TTRIPS' field across ALL four time intervals.
 
-Combine all the dfs and generate plots to check distribution of 'TTRIPS'.
+FIrst, combine all the 'TTRIPS' and create a new column 'source' to retain the name of the time interval.
 
 ```{r}
 origin_data_day_am_hex$source <- 'Wkday_am'
@@ -403,7 +461,7 @@ combine <- rbind(origin_data_day_am_hex,
 #| echo: false
 library(gt)
 library(rstatix)
-qq <- ggplot(combine,
+qq <- ggplot(combine %>% filter(source =='Wkday_am'),
              aes(sample=TTRIPS)) + 
   
   stat_qq() +
@@ -413,9 +471,20 @@ qq <- ggplot(combine,
 qq
 ```
 
-Plot boxplots to get a general sensing of 'TTRIPS' across different time intervals.
+```{r}
+#| eval: false
+#| echo: false
+st <- combine %>% filter(source =='Wkday_am')
+shapiro_test(st$TTRIPS) %>% 
+  as_tibble() %>% 
+  mutate(variable = "TTripS for Wkday_am") %>% gt()  
+```
+
+Plot boxplots to get a general sensing of the distribution of 'TTRIPS' across different time intervals.
 
 ```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
 ggplot(data=combine, 
        aes(y=TTRIPS,
            x=source)) +
@@ -423,16 +492,46 @@ ggplot(data=combine,
   geom_point(stat="summary",        
              fun.y="mean",           
              colour ="red",          
-             size=2)
+             size=2) + 
+  labs(x = "Time Intervals", y = "Total Trips", title='Total origin trips by time intervals') +
+  theme_minimal() +
+  theme(legend.key.size = unit(0.5,'cm'),
+        legend.position="bottom",
+        plot.title = element_text(size = 12,
+                                  face='bold'),
+        axis.title = element_text(size = 11 , face = "bold"),
+        axis.text = element_text(size = 10),
+        axis.text.x = element_text(angle = 0, hjust = 1))
 ```
 
-Check summary statistics of `TTRIPS` before setting customed break points.
+From the chart above, both the weekday ridership and the number of bus stops utilised severely outweighs the weekend period.
+
+```{r}
+#| eval: false
+#| echo: false
+#| fig-width: 14
+#| fig-asp: 0.68
+library(ggstatsplot)
+ggbetweenstats(
+  data = combine,
+  x = source, 
+  y = TTRIPS,
+  type = "np",
+  mean.ci=TRUE,
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",  # 'ns': shows only non-sig, 's': shows only sig, 'all': both 
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+Final check on the summary statistics of `TTRIPS` before setting custom break points.
 
 ```{r}
 summary(combine$TTRIPS)
 ```
 
-To calculate the outlier values
+Before of the large number of outliers bus stops, let us calculate the upper bound of the outliers.
 
 ```{r}
 Q1 <- summary(combine$TTRIPS)[2]
@@ -446,7 +545,7 @@ lower_bound
 upper_bound
 ```
 
-With reference to summary statistics and upper bound values,
+With reference to the box plor, summary statistics and upper bound values,
 
 -   Min : 1 , Max : 447,968
 
@@ -454,22 +553,25 @@ With reference to summary statistics and upper bound values,
 
 -   break vector is thus c(0, 250 1500, 7600, 18650, 447968)
 
+The last interval would set the outliers (bus stops with very high passengers) apart.
+
 ```{r}
 plotmap <- function(df, title) {
   result <- tm_shape(df)+
   tm_fill("TTRIPS", 
-          breaks = c(0, 250, 1500, 7600, 18650, 60000, 100000, 447968),
+          breaks = c(0, 250, 1500, 7600, 18650, 447968), #60000, 100000, 
           #style = "quantile", 
           palette = "Blues",
+          alpha= 0.7,
           #legend.hist = TRUE, 
           #legend.is.portrait = TRUE,
           #legend.hist.z = 0.3,
           title = "Passengers Trip") +
   tm_layout(main.title = title,
             main.title.position = "center",
-            main.title.size = 1.2,
-            legend.height = 0.45, 
-            legend.width = 0.35,
+            main.title.size = 2,
+            legend.height = 0.65, 
+            legend.width = 0.55,
             #legend.outside = TRUE,
             #legend.text.size= 0.6,
             #inner.margins = c(0.01, 0.01, 0, .15),
@@ -478,6 +580,7 @@ plotmap <- function(df, title) {
             #main.title.color = 'white',
             #legend.title.color = 'white',
             #legend.text.color= 'white',
+            bg.color = "mintcream",
             frame = TRUE) +
   tm_borders(alpha = 0.5) +
   tm_compass(type="8star", size = 2) +
@@ -499,8 +602,12 @@ p4 <- plotmap(end_am, 'Weekend-Afternoon-Peak Passenger Trips by Origin')
 ```{r}
 #| fig-width: 14
 #| fig-asp: 0.68
+tmap_mode('view')
+#ttm()
 p1
 ```
+
+\
 
 ```{r}
 #| fig-width: 14
