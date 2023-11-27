@@ -31,7 +31,11 @@ Exploratory Spatial Data Analysis (ESDA) hold tremendous potential to address co
 
 For this take-home exercise, *Passenger Volume by Origin Destination Bus Stops* downloaded from [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html) will be used. It contains the number of trips by [weekdays]{.underline} and [weekends]{.underline} from origin to destination bus stops.
 
-For this exercise, the data is collected in August 2023. The fields are YEAR_MONTH, DAY_TYPE, TIME_PER_HOUR, PT_TYPE , ORIGIN_PT_CODE, DESTINATION_PT_CODE, TOTAL_TRIPS . A sample row for bus dataset could be '2023-08, WEEKDAY, 16, BUS, 28299, 28009, 63'. TIME_PER_HOUR of 16 represents data is collected between 4 pm to 5pm.
+For this exercise, the data is collected in August 2023.
+
+The fields are YEAR_MONTH, DAY_TYPE, TIME_PER_HOUR, PT_TYPE , ORIGIN_PT_CODE, DESTINATION_PT_CODE, TOTAL_TRIPS .
+
+A sample row for bus dataset could be '2023-08, WEEKDAY, 16, BUS, 28299, 28009, 63'. TIME_PER_HOUR of 16 represents data is collected between 4 pm to 5pm.
 
 ### **Geospatial data**
 
@@ -39,7 +43,7 @@ Two geospatial data will be used in this study, they are:
 
 -   *Bus Stop Location* from LTA DataMall's static dataset. It provides information about all the bus stops currently being serviced by buses, including the bus stop code (identifier) and location coordinates.
 
--   *hexagon*, a [hexagon](https://desktop.arcgis.com/en/arcmap/latest/tools/spatial-statistics-toolbox/h-whyhexagons.htm) layer of 250m (this distance is the perpendicular distance between the centre of the hexagon and its edges.) should be used to replace the relative coarse and irregular Master Plan 2019 Planning Sub-zone GIS data set of URA.
+-   *hexagon*, a [hexagon](https://desktop.arcgis.com/en/arcmap/latest/tools/spatial-statistics-toolbox/h-whyhexagons.htm) layer of 250m (perpendicular distance between the centre of the hexagon and its edges.) will be be used to replace the relative coarse and irregular Master Plan 2019 Planning Sub-zone GIS data set of URA. Each spatial unit is regular in shape and finer.
 
 ## **The Task**
 
@@ -68,27 +72,17 @@ The specific tasks of this take-home exercise are as follows:
 
 -   With reference to the analysis results, draw statistical conclusions (not more than 200 words per visual).
 
-### **Emerging Hot Spot Analysis(EHSA)**
-
-With reference to the passenger trips by origin at the hexagon level for the four time intervals given above:
-
--   Perform Mann-Kendall Test by using the spatio-temporal local Gi\* values,
-
--   Prepared EHSA maps of the Gi\* values of the passenger trips by origin at the hexagon level. The maps should only display the significant (i.e. p-value \< 0.05).
-
--   With reference to the EHSA maps and data visualisation prepared, describe the spatial patterns reveled. (not more than 250 words per cluster).
-
 ## Getting Started
 
 In this exercise, the following libraries will be used:
 
-1.   [`sf`](https://r-spatial.github.io/sf/) packageto perform geoprocessing tasks
+1.  [`sf`](https://r-spatial.github.io/sf/) packageto perform geoprocessing tasks
 
 2.  [sfdep](https://sfdep.josiahparry.com/) package which builds upon `spdep` package (compute spatial weights matrix and spatially lagged variable for instance..)
 
 3.  [tmap](https://cran.r-project.org/web/packages/tmap/) to create geovisualisations
 
-4.   [`tidyverse`](https://www.tidyverse.org/) that supports data science, analysis and communication task including creating static statistical graphs.
+4.  [`tidyverse`](https://www.tidyverse.org/) that supports data science, analysis and communication task including creating static statistical graphs.
 
 5.  `knitr` to create html tables
 
@@ -275,21 +269,21 @@ hex
 
 We need to get the corresponding bus stop number of each hexagon in `bs_count` hexagon layer.
 
-The code chunk below performs points and hexagon polygon overlap and the output will be in **sf point** object.
+The code chunk below performs points and hexagon polygon overlap using [st_intersection()](https://r-spatial.github.io/sf/reference/geos_binary_ops.html) and the output will be in **sf point** object.
 
 [Before overlapping:]{.underline}
 
 `busstop` : 5161 points
 
-`hex` : 1524 hexagons
+`bs_count` hexagon base layer: 1524 hexagons
 
 [After overlapping:]{.underline}
 
-`busstop_hex` : 5161 points and this is good results because it shows that we are able to retain all the the bus stop data with our `bs_count` base map.
+`busstop_hex` : 5161 points and this is good results because all the bus stop location data is mapped to our `bs_count` base map.
 
 ```{r}
 busstop_hex <- st_intersection(busstop, bs_count) %>% 
-  select(BUS_STOP_N, grid_id, bs)
+  select(BUS_STOP_N, BUS_ROOF_N, LOC_DESC,  grid_id, bs)
 
 busstop_hex
 ```
@@ -309,7 +303,7 @@ Let us check for duplicates in `busstop_hex` df as it will be used to perform a 
 
 ```{r}
 busstop_hex %>%
-  group_by_all() %>%
+  group_by(BUS_STOP_N, grid_id, bs) %>%
   filter(n()>1) %>%
   ungroup()
 ```
@@ -317,7 +311,9 @@ busstop_hex %>%
 Removal of duplicates
 
 ```{r}
-busstop_hex <- unique(busstop_hex)
+busstop_hex <- busstop_hex %>%
+  distinct(BUS_STOP_N, grid_id, bs, .keep_all = TRUE)
+#busstop_hex <- unique(busstop_hex)
 ```
 
 Check again to be sure. All's good.
@@ -326,9 +322,15 @@ Check again to be sure. All's good.
 busstop_hex[duplicated(busstop_hex), ]
 ```
 
+Note that there will be repeated bus stop ids with **different** bus stop roof number / hexagon id**.**
+
+```{r}
+busstop_hex['BUS_STOP_N'][duplicated(busstop_hex['BUS_STOP_N']), ]
+```
+
 ##### Combining each of the four aspatial dataframes with `busstop_hex`
 
-The function below performs left outer join for each of the four aspatial origin dataframes with `busstop_hex` geospatial dataframe. The expected argument is
+The function below performs left outer join for each of the four aspatial origin dataframes with `busstop_hex` dataframe. The expected argument is
 
 asp_df: name of aspatial origin dataframe like *origin_day_am* or *origin_day_pm* etc..
 
@@ -342,7 +344,9 @@ leftjoin <- function(asp_df) {
          ORIGIN_HEXFID = grid_id) %>% 
   select(ORIGIN_HEXFID, 
          ORIGIN_BS, 
-         TRIPS)
+         TRIPS,
+         BUS_ROOF_N,
+         LOC_DESC)
   
   return(result)
 }
@@ -350,35 +354,162 @@ leftjoin <- function(asp_df) {
 
 Use the 'leftjoin' function to get our dataframes containing grid_id and origin bus stop ids.
 
-The number of rows increased by 5 after left join , this is due to 5 bus stops, each with two distinct different point geometry coordinates, that originated from the `busstop` and `busstop_hex` dataframes earlier.
+The number of rows increased by 4-5 after left join , this is due to 5 bus stops , each with two distinct bus stop roofs and located in different hexagon ids, that originated from the `busstop` and `busstop_hex` dataframes earlier.
 
 ```{r}
-origin_data_day_am <- leftjoin(origin_day_am)
-origin_data_day_pm <- leftjoin(origin_day_pm)
-origin_data_end_am <- leftjoin(origin_end_am)
-origin_data_end_pm <- leftjoin(origin_end_pm)
+origin_data_day_am <- leftjoin(origin_day_am) # 5005 to 5010 rows
+origin_data_day_pm <- leftjoin(origin_day_pm) # 4965 to 4970 rows
+origin_data_end_am <- leftjoin(origin_end_am) # 4994 to 4999 rows
+origin_data_end_pm <- leftjoin(origin_end_pm) # 4623 to 4627 rows
 ```
 
 Again, double check for duplicates
 
 ```{r}
-origin_data_day_am[duplicated(origin_data_day_am), ]
-origin_data_day_pm[duplicated(origin_data_day_pm), ]
-origin_data_end_am[duplicated(origin_data_end_am), ]
-origin_data_end_pm[duplicated(origin_data_end_pm), ]
+origin_data_day_am['ORIGIN_HEXFID', 'ORIGIN_BS'][duplicated(origin_data_day_am['ORIGIN_HEXFID', 'ORIGIN_BS']), ]
+origin_data_day_pm['ORIGIN_HEXFID', 'ORIGIN_BS'][duplicated(origin_data_day_pm['ORIGIN_HEXFID', 'ORIGIN_BS']), ]
+origin_data_end_am['ORIGIN_HEXFID', 'ORIGIN_BS'][duplicated(origin_data_end_am['ORIGIN_HEXFID', 'ORIGIN_BS']), ]
+origin_data_end_pm['ORIGIN_HEXFID', 'ORIGIN_BS'][duplicated(origin_data_end_pm['ORIGIN_HEXFID', 'ORIGIN_BS']), ]
 ```
 
-FYI: Which are the 5 bus stop numbers with two distinct point geometry coordinates?
+Bus stops with more than 1 bus roof number and exists in more than 1 hexagon in the df below.
 
 ```{r}
-busstop_hex['BUS_STOP_N'][duplicated(busstop_hex['BUS_STOP_N']), ]
+origin_data_day_am['ORIGIN_BS'][duplicated(origin_data_day_am['ORIGIN_BS']), ]
 ```
 
+Using the `skim()` from the `skimr` package reveals that there are about missing 'ORIGIN_HEXFID' values in our dataframes. (see Summary table below).
+
+After inspecting the structure of the skim output, the code chunk below
+
+-   filters character or numeric field
+
+-   filter for fields with missing values
+
+-   select required columns
+
+-   convert output to tibble df
+
+-   rename the column name (static and dynamically)
+
+-   combine all the output in a summary tibble df.
+
+The reason for some bus stop ids without a hexagon id could be that the *Bus Stop Location* file is outdated (last update in July 2023) while the *Passenger Volume by Origin Destination Bus Stops* contains data in August 2023.
+
+```{r}
+#| code-fold: true
+
+#str(skim(origin_data_day_am))
+
+get_na_hex <- function(df, col2header) {
+  result <- skimr::skim(df) %>%
+  filter(skim_type == "character" | skim_type == "numeric") %>%
+  filter(n_missing > 0) %>%
+  select(skim_variable, n_missing)%>% 
+  as_tibble() %>% 
+  rename_with(~col2header, n_missing, .cols = c(n_missing)) %>%
+  rename(Variable = skim_variable)
+  
+  return(result)
+}
+
+
+r1 <- get_na_hex(origin_data_day_am, 'Wkday_morn') 
+r2 <- get_na_hex(origin_data_day_pm, 'Wkday_aft') 
+r3 <- get_na_hex(origin_data_end_am, 'Wkend_morn') 
+r4 <- get_na_hex(origin_data_end_pm, 'Wkend_aft') 
+
+bind_cols(r1,r2,r3,r4) %>% 
+  select(1,2,4,6,8) %>% 
+  slice(3) %>% kable()
+```
+
+**Bus stop ids without hexagon id**
+
+::: panel-tabset
+## Wkday Morning
+
+```{r}
+#| code-fold: true
+datatable(origin_data_day_am %>%
+  filter(is.na(ORIGIN_HEXFID)), 
+  class = 'cell-border stripe', 
+  options = list(pageLength = 5))
+```
+
+## Wkday Afternoon
+
+```{r}
+#| code-fold: true
+datatable(origin_data_day_pm %>%
+  filter(is.na(ORIGIN_HEXFID)), 
+  class = 'cell-border stripe', 
+  options = list(pageLength = 5))
+```
+
+## Wkend Morning
+
+```{r}
+#| code-fold: true
+datatable(origin_data_end_am %>%
+  filter(is.na(ORIGIN_HEXFID)), 
+  class = 'cell-border stripe', 
+  options = list(pageLength = 5))
+```
+
+## Wkend Afternoon
+
+```{r}
+#| code-fold: true
+datatable(origin_data_end_pm %>%
+  filter(is.na(ORIGIN_HEXFID)), 
+  class = 'cell-border stripe', 
+  options = list(pageLength = 5))
+```
+:::
+
 Since we are plotting the number of passenger trips generated by **hexagon level**, we should aggregate the total trips by '*ORIGIN_HEXFID*' and store these values in a new field called '*TTRIPS*'.
+
+In addtion, a new field 'Ave_TTRIPS' is calculated where it represents average weekday (TTRIPS / 5) and average weekend trips (TTRIPS/2).
 
 After the left join, the total distinct of hexagons for each time intervals are 1491, 1489, 1499 and 1444. The total hexagon in `bs_count` was 1524. This suggests that were some bus stops with no passengers at different time intervals.
 
 ```{r}
+get_ttrips_wkday <- function(df) {
+  result <- df %>% 
+    group_by(ORIGIN_HEXFID) %>% 
+    summarise(
+      TTRIPS = sum(TRIPS),
+      AVG_TRIPS = ceiling(sum(TRIPS) / 5),
+      DESC = paste(LOC_DESC, collapse = ', ')
+    ) %>% 
+    ungroup()
+  
+  return(result)
+}
+
+get_ttrips_wkend <- function(df) {
+  result <- df %>% 
+    group_by(ORIGIN_HEXFID) %>% 
+    summarise(
+      TTRIPS = sum(TRIPS),
+      AVG_TRIPS = ceiling(sum(TRIPS) / 2),
+      DESC = paste(LOC_DESC, collapse = ', ')
+    ) %>% 
+    ungroup()
+  
+  return(result)
+}
+
+origin_data_day_am_hex <- get_ttrips_wkday(origin_data_day_am) # 5010 to 1491 rows
+origin_data_day_pm_hex <- get_ttrips_wkday(origin_data_day_pm) # 4970 to 1489 rows
+origin_data_end_am_hex <- get_ttrips_wkend(origin_data_end_am) # 4999 to 1499 rows
+origin_data_end_pm_hex <- get_ttrips_wkend(origin_data_end_pm) # 4627 to 1444 rows
+```
+
+```{r}
+#| echo: false
+#| eval: false
 get_ttrips <- function(df) {
   result<- df %>% 
     group_by(ORIGIN_HEXFID) %>% 
@@ -399,29 +530,41 @@ Print out the above four dataframes
 ##### origin_data_day_am
 
 ```{r}
-datatable(origin_data_day_am_hex, class = 'cell-border stripe', options = list(pageLength = 5))
+#| code-fold: true
+datatable(origin_data_day_am_hex %>% 
+            arrange(desc(TTRIPS)), 
+          class = 'cell-border stripe', options = list(pageLength = 5))
 ```
 
 ##### origin_data_day_pm
 
 ```{r}
-datatable(origin_data_end_am_hex, class = 'cell-border stripe', options = list(pageLength = 5))
+#| code-fold: true
+datatable(origin_data_day_pm_hex %>% 
+            arrange(desc(TTRIPS)),
+          class = 'cell-border stripe', options = list(pageLength = 5))
 ```
 
 ##### origin_data_end_am
 
 ```{r}
-datatable(origin_data_day_am_hex, class = 'cell-border stripe', options = list(pageLength = 5))
+#| code-fold: true
+datatable(origin_data_end_am_hex %>% 
+            arrange(desc(TTRIPS)),
+          class = 'cell-border stripe', options = list(pageLength = 5))
 ```
 
 ##### origin_data_end_pm
 
 ```{r}
-datatable(origin_data_day_pm_hex, class = 'cell-border stripe', options = list(pageLength = 5))
+#| code-fold: true
+datatable(origin_data_end_pm_hex %>% 
+            arrange(desc(TTRIPS)),
+          class = 'cell-border stripe', options = list(pageLength = 5))
 ```
 :::
 
-##### Retrieve hexagon geometry coordinates
+##### **Retrieve hexagon geometry coordinates**
 
 In order to plot choropleth maps, we need the geometry data from `bs_count`sf polygon object.
 
@@ -431,7 +574,8 @@ The function below performs a left join with `bs_count` and the attributes dataf
 get_hexgeo <- function(df) {
   result <- left_join(bs_count, df,
                       by = c('grid_id' = 'ORIGIN_HEXFID')) %>%
-    mutate(TTRIPS = if_else(is.na(TTRIPS),0, TTRIPS))
+    mutate(TTRIPS = if_else(is.na(TTRIPS),0, TTRIPS),
+           AVG_TRIPS = if_else(is.na(AVG_TRIPS), 0, AVG_TRIPS))
     
   return(result)
 }
@@ -442,9 +586,9 @@ end_am <- get_hexgeo(origin_data_end_am_hex)
 end_pm <- get_hexgeo(origin_data_end_pm_hex)
 ```
 
-### Choropleth maps
+## Geovisulisation and Analysis
 
-In this section , the choropleth maps will show the geographical distribution of the passenger trips by origin. However, we need to plan for the classification for the maps. We could check the distribution of the 'TTRIPS' field across ALL four time intervals.
+In this section , the choropleth maps will be used to show the geographical distribution of the passenger trips by origin. However, we need to plan for the classification for the maps. We could check the distribution of the 'TTRIPS' field across ALL four time intervals.
 
 FIrst, combine all the 'TTRIPS' and create a new column 'source' to retain the name of the time interval.
 
@@ -489,15 +633,15 @@ Plot boxplots to get a general sensing of the distribution of 'TTRIPS' across di
 ```{r}
 #| fig-width: 14
 #| fig-asp: 0.68
-ggplot(data=combine, 
-       aes(y=TTRIPS,
+ggplotly(ggplot(data=combine, 
+       aes(y=AVG_TRIPS,
            x=source)) +
   geom_boxplot() +
   geom_point(stat="summary",        
              fun.y="mean",           
              colour ="red",          
              size=2) + 
-  labs(x = "Time Intervals", y = "Total Trips", title='Total origin trips by time intervals') +
+  labs(x = "Time Intervals", y = "Total Trips", title='Daily average origin trips by time intervals') +
   theme_minimal() +
   theme(legend.key.size = unit(0.5,'cm'),
         legend.position="bottom",
@@ -505,7 +649,7 @@ ggplot(data=combine,
                                   face='bold'),
         axis.title = element_text(size = 11 , face = "bold"),
         axis.text = element_text(size = 10),
-        axis.text.x = element_text(angle = 0, hjust = 1))
+        axis.text.x = element_text(angle = 0, hjust = 1)))
 ```
 
 From the chart above, both the weekday ridership and the number of bus stops utilised severely outweighs the weekend period.
@@ -532,112 +676,285 @@ ggbetweenstats(
 Final check on the summary statistics of `TTRIPS` before setting custom break points.
 
 ```{r}
-summary(combine$TTRIPS)
+summary(combine$AVG_TRIPS)
 ```
 
-Before of the large number of outliers bus stops, let us calculate the upper bound of the outliers.
+Because of the large number of outliers bus stops, let us calculate the upper bound of the outliers.
 
 ```{r}
-Q1 <- summary(combine$TTRIPS)[2]
-Q3 <- summary(combine$TTRIPS)[5]
+Q1 <- summary(combine$AVG_TRIPS)[2]
+Q3 <- summary(combine$AVG_TRIPS)[5]
 IQR_value <- Q3 - Q1
 
 lower_bound <- Q1 - 1.5 * IQR_value
 upper_bound <- Q3 + 1.5 * IQR_value
 
-lower_bound
+#lower_bound
 upper_bound
 ```
 
-With reference to the box plor, summary statistics and upper bound values,
+With reference to the box plot, summary statistics and upper bound values,
 
--   Min : 1 , Max : 447,968
+-   Min : 1 , Max : 67,412
 
--   break points can be 230, 1520, 7350, 18600
+-   quantile break points can be 83, 540, 1820, 2110
 
--   break vector is thus c(0, 250 1500, 7600, 18600, 337056)
+-   break vector is therefore be c(0, 83, 540, 1820, 2110, 5160, 67412)
 
-The last interval would set the outliers (bus stops with very high passengers) apart.
+The last interval 5160-67412 would distinguish the outliers (bus stops with very high daily passengers number) on the map later.
 
 ```{r}
 plotmap <- function(df, title) {
+  df2<- df %>% top_n(10, AVG_TRIPS)
+  
   result <- tm_shape(df)+
-  tm_fill("TTRIPS", 
-          breaks = c(0, 250, 1500, 7600, 18650,447968),  
-          #style = "quantile", 
-          palette = "Blues",
-          alpha= 0.7,
-          #legend.hist = TRUE, 
-          #legend.is.portrait = TRUE,
-          #legend.hist.z = 0.3,
-          title = "Passengers Trip") +
-  tm_layout(main.title = title,
-            main.title.position = "center",
-            main.title.size = 2,
-            legend.height = 0.65, 
-            legend.width = 0.55,
-            #legend.outside = TRUE,
-            #legend.text.size= 0.6,
-            #inner.margins = c(0.01, 0.01, 0, .15),
-            #legend.position = c("right", "top"),
-            #bg.color = "black",
-            #main.title.color = 'white',
-            #legend.title.color = 'white',
-            #legend.text.color= 'white',
-            bg.color = "mintcream",
-            frame = TRUE) +
-  tm_borders(alpha = 0.5) +
-  tm_compass(type="8star", size = 2) +
-  tm_scale_bar() +
-  tm_grid(alpha =0.2) +
-  tm_credits("Source: Passenger Bus origin and destination data and Bus Stop Location data from LTA datamall", 
-             position = c("left", "bottom"))
+    tm_fill("AVG_TRIPS", 
+            breaks =  c(0, 83, 540, 1820, 2110, 5160,50000, 67412), #style = "quantile", 
+            palette = "Blues",
+            alpha= 0.5,
+            #legend.hist = TRUE, 
+            #legend.is.portrait = TRUE,
+            #legend.hist.z = 0.3,
+
+            title = "Passengers Trip") +
+    tm_layout(main.title = title,
+              main.title.position = "center",
+              main.title.size = 1.2,
+              legend.height = 0.45, 
+              legend.width = 0.35,
+              #legend.outside = TRUE,
+              #legend.text.size= 0.6,
+              #inner.margins = c(0.01, 0.01, 0, .15),
+              #legend.position = c("right", "top"),
+              #bg.color = "black",
+              #main.title.color = 'white',
+              #legend.title.color = 'white',
+              #legend.text.color= 'white',
+              bg.color = "mintcream",
+              frame = TRUE) +
+    tm_borders(alpha = 0.5) +
+    tm_compass(type="8star", size = 2) +
+    tm_scale_bar() +
+    tm_grid(alpha =0.2) +
+    tm_credits("Source: Passenger Bus origin and destination data and Bus Stop Location data from LTA datamall", 
+             position = c("left", "bottom")) +
+    tm_shape(df2) +
+    tm_bubbles(size='AVG_TRIPS', col='red',alpha=0.5, scale=.6)
+  
   return(result)
 }
 ```
 
 ```{r}
-p1 <- plotmap(day_am, 'Weekday-Morning-Peak Passenger Trips by Origin')
-p2 <- plotmap(day_pm, 'Weekday-Afternoon-Peak Passenger Trips by Origin')
-p3 <- plotmap(end_am, 'Weekend-Morning-Peak Passenger Trips by Origin')
-p4 <- plotmap(end_am, 'Weekend-Afternoon-Peak Passenger Trips by Origin')
+p1 <- plotmap(day_am, 'Weekday-Morning (Daily Average) \nPassenger Trips generated at Hex lvl')
+p2 <- plotmap(day_pm, 'Weekday-Afternoon (Daily Average) \nPassenger Trips generated at Hex lvl')
+p3 <- plotmap(end_am, 'Weekend-Morning (Daily Average) \nPassenger Trips generated at Hex lvl')
+p4 <- plotmap(end_pm, 'Weekend-Afternoon (Daily Average) \nPassenger Trips generated at Hex lvl')
 ```
 
-**Map of Weekday-Morning-Peak Passenger Trips by Origin**
+### **Map of Weekday-Morning (Daily Average) Passenger Trips generated at Hex lvl**
 
 ```{r}
 #| fig-width: 14
 #| fig-asp: 0.68
+#| code-fold: true
 tmap_mode('view')
 #ttm()
 p1
 ```
 
-**Map of Weekday-Afternoon-Peak Passenger Trips by Origin**\
+### **Map of Weekday-Afternoon (Daily Average) Passenger Trips generated at Hex lvl**
 
 ```{r}
 #| fig-width: 14
 #| fig-asp: 0.68
+#| code-fold: true
 p2
 ```
 
-**Map of Weekend-Morning-Peak Passenger Trips by Origin**
+### **Map of Weekend-Morning (Daily Average) Passenger Trips generated at Hex lvl**
 
 ```{r}
 #| fig-width: 14
 #| fig-asp: 0.68
+#| code-fold: true
 p3
 ```
 
-**Map of Weekend-Afternoon-Peak Passenger Trips by Origin**
+### **Map of Weekend-Afternoon (Daily Average) Passenger Trips generated at Hex lvl**
 
 ```{r}
 #| fig-width: 14
 #| fig-asp: 0.68
+#| code-fold: true
 p4
 ```
 
+### **Facet View**
+
+Let us plot all four maps side-by-side for easy comparison.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+ttm()
+tmap_arrange(p1,p2,p3,p4,
+             asp=2, nrow = 2, ncol = 2)
+```
+
+### **Discussion**
+
 Describe the spatial patterns revealed by the geovisualisation
+
+To be completed later.
+
+## **Local Indicators of Spatial Association (LISA) Analysis**
+
+In this section, we will use LISA statistics to identify existence of cluster or outlier for a given variable, in our case, the total number of trips generated at hexagon layer. We will apply the Moran's I statistic to detect cluster and / or outliers for total trips generated at hexagon layer.
+
+### Computing Distance-Based Spatial Weights Matrix
+
+Before we can compute the global/local spatial autocorrelation statistics, we need to construct a spatial weights of ourstudy area. The spatial weights is used to define who are the neighbours of the spatial units (hexagons) in our study are. There are a few general rules:
+
+-   Features should have at least one neighbour, each feature should not be a neighbour with all other features.
+
+-   If data is skewed, each feature should have at least 8 neighbours (lets try with 6 first)
+
+We will rule out the contiguity methods because as seen in the geovisualisations above, we can see that the location of bus stops are rather 'sparse' and there are gaps in between groups of hexagons. Therefore, we are more inclined towards distance methods.
+
+There are two main types of distance-based methods, namely:
+
+1.  Adaptive distance-based (Fixed number of neighbours 6 or 12)
+
+    This is our choice as our data is highly skewed to the right. Each hexagon will be guaranteed at least *n* neighbours, which makes it useful when testing for statistical significance later.
+
+2.  Fixed-distance threshold
+
+    There is no particular reason why this method is not selected because our spatial units are all hexagon in shape.
+
+**Identify adaptive distance weights**
+
+We will set each hexagon to have 6 neighbours each using the code chunk below.
+
+-   [`st_knn(`](https://sfdep.josiahparry.com/reference/st_knn.html)`)` of sfdep will output a list of neighbours 'nb' of a hex
+
+-   based on 'nb' column, [st_weights()](https://sfdep.josiahparry.com/reference/st_weights.html) of sfdep will generate row-standardised spatial weights
+
+-   '.before = 1' will put the two columns at the front of our sf dataframe.
+
+```{r}
+get_weights <- function(df) {
+  result <- df %>% 
+    mutate(nb = st_knn(area_hex_grid,
+                       k=6),
+           wt = st_weights(nb,
+                           style='W'),
+           .before =1)
+  return(result)
+}
+```
+
+```{r}
+wm_day_am <- get_weights(day_am)
+wm_day_pm <- get_weights(day_pm)
+wm_end_am <- get_weights(end_am)
+wm_end_pm <- get_weights(end_pm)
+```
+
+### Global autocorrelation of spatial association (Global Moran's I with simulation)
+
+Global spatial association assesses the overall spatial pattern of a variable 'TTRIPS' across the entire study area. It provides a single value or metric that summarizes the extent to which similar values cluster together or are dispersed across the entire geographic space.
+
+![](images/Global%20Moran%20stats%20test.png){width="344"}
+
+Set seed to ensure that the computation is reproducible.
+
+```{r}
+set.seed(1234)
+```
+
+Global Moran's I for **weekday morning** passenger trips generated by hexagon level.
+
+```{r}
+global_moran_perm(wm_day_am$TTRIPS,
+                       wm_day_am$nb,
+                       wm_day_am$wt,
+                  nsim = 99)
+```
+
+Global Moran's I for **weekday afternoon** passenger trips generated by hexagon level.
+
+```{r}
+global_moran_perm(wm_day_pm$TTRIPS,
+                       wm_day_pm$nb,
+                       wm_day_pm$wt,
+                  nsim = 99)
+```
+
+Global Moran's I for **weekend morning** passenger trips generated by hexagon level.
+
+```{r}
+global_moran_perm(wm_end_am$TTRIPS,
+                       wm_end_am$nb,
+                       wm_end_am$wt,
+                  nsim = 99)
+```
+
+Global Moran's I for **weekend afternoon** passenger trips generated by hexagon level.
+
+```{r}
+global_moran_perm(wm_end_pm$TTRIPS,
+                       wm_end_pm$nb,
+                       wm_end_pm$wt,
+                  nsim = 99)
+```
+
+For all the four time intervals, since p-value for global Moran's I is smaller than 0.05 , we can reject the null hypothesis that the spatial patterns is random. Because the Moran's I statistics is **greater than 0**, we can infer the spatial distribution shows sign of **clustering** for all four time intervals.
+
+### Local autocorrelation of spatial association
+
+Local spatial association examines the spatial patterns at a more **detailed, local level.** Instead of providing a single summary value for the entire study area, local measures identify specific areas where the spatial association is particularly strong or weak. If the Local Moran's I is positive, it suggests clusters of high-high or low-low. If negative, it suggests outliers of low-high or high-low.
+
+![](images/Local%20Moran%20stats%20test.png){width="433"}
+
+Local Moran's I for **weekday morning** passenger trips generated by hexagon level.
+
+```{r}
+lisa_day_am <- wm_day_am %>% 
+  mutate(local_moran = local_moran(
+    TTRIPS, nb,wt, nsim=99),
+    .before=1) %>%
+  unnest(local_moran)
+```
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+tmap_mode("plot")
+
+map1 <- tm_shape(lisa_day_am) +
+  tm_fill("ii") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "local Moran's I of Total Trips generated on Weekday Morning",
+            main.title.size = 0.8)
+
+map1
+```
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+lisa_sig_day_am <- lisa_day_am  %>%
+  filter(p_ii < 0.05)
+tmap_mode("plot")
+tm_shape(lisa_day_am) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(lisa_sig_day_am) +
+  tm_fill("mean") + 
+  tm_borders(alpha = 0.4)
+```
 
 ```{r}
 #| eval: false
@@ -645,6 +962,7 @@ Describe the spatial patterns revealed by the geovisualisation
 #| code-fold: True
 #| fig-width: 14
 #| fig-asp: 0.68
+
 ```
 
 ### 
