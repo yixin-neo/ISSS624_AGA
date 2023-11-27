@@ -869,7 +869,7 @@ We will set each hexagon to have 6 neighbours each using the code chunk below.
 get_weights <- function(df) {
   result <- df %>% 
     mutate(nb = st_knn(area_hex_grid,
-                       k=6),
+                       k=18),
            wt = st_weights(nb,
                            style='W'),
            .before =1)
