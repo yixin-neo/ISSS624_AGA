@@ -496,8 +496,8 @@ Note that this dataset now has neighbors and weights for **each time-slice**.
 
 ```{r}
 GDPPC_nb <- GDPPC_st %>% 
-  activate('geometry') %>% 
-  mutate(nb= include_self(st_contiguity(geometry)),  # need to add gemetry line to ask function to look at each time layer 48min
+  activate('geometry') %>% # space-time cube has 'geometry' and 'attributes' component, we have to activate the geometry component before able to derive neighbours
+  mutate(nb= include_self(st_contiguity(geometry)),  # need to inlude self to get Gi*. otherwise its Gi.
          wt = st_inverse_distance(nb, geometry,
                                   scale =1,
                                   alpha =1),
