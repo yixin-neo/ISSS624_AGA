@@ -229,15 +229,12 @@ area_hex_grid = st_make_grid(busstop,
                              what = "polygons", 
                              square = FALSE)
 
-# To sf and add grid ID
 hex_grid_sf = st_sf(area_hex_grid) %>%
-  # add grid ID
   mutate(grid_id = 1:length(lengths(area_hex_grid)))
 
-# count number of points in each grid
 hex_grid_sf$bs = lengths(st_intersects(hex_grid_sf, busstop))
 
-# remove grid without value of 0 (i.e. no points in side that grid)
+
 bs_count = filter(hex_grid_sf, bs > 0)
 bs_count
 ```
@@ -586,7 +583,7 @@ end_am <- get_hexgeo(origin_data_end_am_hex)
 end_pm <- get_hexgeo(origin_data_end_pm_hex)
 ```
 
-## Geovisulisation and Analysis
+## Task 1: Geovisulisation and Analysis
 
 In this section , the choropleth maps will be used to show the geographical distribution of the passenger trips by origin. However, we need to plan for the classification for the maps. We could check the distribution of the 'TTRIPS' field across ALL four time intervals.
 
@@ -697,11 +694,11 @@ With reference to the box plot, summary statistics and upper bound values,
 
 -   Min : 1 , Max : 67,412
 
--   quantile break points can be 83, 540, 1820, 2110
+-   quantile break points can be 83, 540, 2110
 
--   break vector is therefore be c(0, 83, 540, 1820, 2110, 5160, 67412)
+-   break vector is therefore be c(0, 83, 540, 2110, 5160, 50000, 67412)
 
-The last interval 5160-67412 would distinguish the outliers (bus stops with very high daily passengers number) on the map later.
+The last two intervals would distinguish the outliers and extreme outliers (bus stops with very high daily passengers number) on the map later.
 
 ```{r}
 plotmap <- function(df, title) {
@@ -709,7 +706,7 @@ plotmap <- function(df, title) {
   
   result <- tm_shape(df)+
     tm_fill("AVG_TRIPS", 
-            breaks =  c(0, 83, 540, 1820, 2110, 5160,50000, 67412), #style = "quantile", 
+            breaks =  c(0, 83, 540, 2110, 5160, 67412), #style = "quantile", 
             palette = "Blues",
             alpha= 0.5,
             #legend.hist = TRUE, 
@@ -804,23 +801,49 @@ tmap_arrange(p1,p2,p3,p4,
 
 ### **Discussion**
 
-Describe the spatial patterns revealed by the geovisualisation
+The top row shows the *average daily* Weekday morning and afternoon passenger trips while the bottom row shows the Weekend morning and afternoon ridership generated at hexagon level. The classification method used is manual; the first three intervals represents the 1st, 2nd and 3rd quantile; and the last two intervals represents all the outliers and extreme outliers. In addition, the red bubbles represent the hexagons with the top 10 average daily passengers trip in each time-interval. We can observe the following:
 
-To be completed later.
+-   Average daily ridership generation is the greatest on weekday morning, followed by weekday afternoon and weekend morning (cannot distinguish between these two at one glance). Lastly, weekend afternoon registers the least ridership volume.
 
-## **Local Indicators of Spatial Association (LISA) Analysis**
+-   At first glance, the **top two** hexagons with the highest origin ridership volume are hex id 1251 and hex id 2411. They are both consistently in the top 2 origin bus stop for all four time intervals. The bus stops (refer to the interactive data table above) that fall within these hexagons are
+
+    -   **hex id 1251**: BOON LAY INT, BLK 662D, OPP BLK 662C, Blk 662A, BLK 664C
+
+    -   **hex id 2411**: WOODLANDS REG INT, W'LANDS CIVIC CTR, OPP W'LANDS CIVIC CTR, BEF W'LANDS STN EXIT 7, W'LANDS STN EXIT 5, W'LANDS STN EXIT 4, BLK 894C, BLK 515
+
+-   There are **four** hexagon ids that are consistently in the **top 10** origin bus stops for all four time intervals. They are
+
+    -   **Hex id 3239**: ANG MO KIO INT, BLK 322, AFT ANG MO KIO STN EXIT A, BLK 422, AFT ANG MO KIO INT, ANG MO KIO STN
+
+    -   **Hex id 4539**: TAMPINES INT, OUR TAMPINES HUB, OPP OUR TAMPINES HUB, UOB TAMPINES CTR, OPP CENTURY SQ, Tampines Stn Exit D, Aft Tampines Stn Exit E
+
+    -   **Hex id 4349:** BEDOK BUS INT, BEDOK STN EXIT B, BEDOK STN EXIT A, OPP PANASONIC, PANASONIC
+
+-   The two hexagons that falls within top 10 in the weekdays but fall out of top 10 during weekends are
+
+    -   **hex id 909**: BEF JOO KOON INT, OPP JOO KOON INT, MOLEX, OPP MOLEX, OPP FAIRPRICE HUB, JOO KOON INT
+
+    -   **hex id 2054**: CLEMENTI STN, CLEMENTI STN, BLK 431
+
+-   Interestingly, the hexagon within top 10 on weekday and weekend mornings and fall out of this top 10 position on weekday and weekend afternoons is id 3204. Suggesting that this region is more busy in the morning than afternoon.
+
+    -   **hex id 3204** : TOA PAYOH BUS INT, OPP TOA PAYOH STN, TOA PAYOH STN, BLK 138B, BLK 84B, BLK 79C
+
+-   Across all four time-intervals, there appears to be clusters of High-high and low-low as well as outliers of Low-High and High-Low in our area of study. However , we cannot be sure until we run the local Moran's I statistical test.
+
+## **Task 2: Local Indicators of Spatial Association (LISA) Analysis**
 
 In this section, we will use LISA statistics to identify existence of cluster or outlier for a given variable, in our case, the total number of trips generated at hexagon layer. We will apply the Moran's I statistic to detect cluster and / or outliers for total trips generated at hexagon layer.
 
 ### Computing Distance-Based Spatial Weights Matrix
 
-Before we can compute the global/local spatial autocorrelation statistics, we need to construct a spatial weights of ourstudy area. The spatial weights is used to define who are the neighbours of the spatial units (hexagons) in our study are. There are a few general rules:
+Before we can compute the global/local spatial autocorrelation statistics, we need to construct a spatial weights of our study area. The spatial weights is used to define who are the neighbours of the spatial units (hexagons) in our study are. There are a few general rules:
 
 -   Features should have at least one neighbour, each feature should not be a neighbour with all other features.
 
 -   If data is skewed, each feature should have at least 8 neighbours (lets try with 6 first)
 
-We will rule out the contiguity methods because as seen in the geovisualisations above, we can see that the location of bus stops are rather 'sparse' and there are gaps in between groups of hexagons. Therefore, we are more inclined towards distance methods.
+We will rule out the contiguity methods because as seen in the geovisualisation above, we can see that the location of bus stops are rather 'sparse' in some regions like the central catchment areas, military training areas and airports, resulting in gaps in between groups of hexagons. Therefore, we are more inclined towards distance methods.
 
 There are two main types of distance-based methods, namely:
 
@@ -830,7 +853,7 @@ There are two main types of distance-based methods, namely:
 
 2.  Fixed-distance threshold
 
-    There is no particular reason why this method is not selected because our spatial units are all hexagon in shape.
+    There is no particular reason why this method is not selected because our spatial units are all hexagon in shape and have same size.
 
 **Identify adaptive distance weights**
 
@@ -861,9 +884,15 @@ wm_end_am <- get_weights(end_am)
 wm_end_pm <- get_weights(end_pm)
 ```
 
+Taking a sneak peak at one of the spatial weights matrix above
+
+```{r}
+kable(head(wm_day_am))
+```
+
 ### Global autocorrelation of spatial association (Global Moran's I with simulation)
 
-Global spatial association assesses the overall spatial pattern of a variable 'TTRIPS' across the entire study area. It provides a single value or metric that summarizes the extent to which similar values cluster together or are dispersed across the entire geographic space.
+Global spatial association assesses the overall spatial pattern of a variable 'TTRIPS' across the entire study area. It provides **a single value** or metric that summarizes the extent to which similar values cluster together or are dispersed across the entire geographic space.
 
 ![](images/Global%20Moran%20stats%20test.png){width="344"}
 
@@ -873,7 +902,9 @@ Set seed to ensure that the computation is reproducible.
 set.seed(1234)
 ```
 
-Global Moran's I for **weekday morning** passenger trips generated by hexagon level.
+Global Moran's I for **weekday morning** passenger trips generated by hexagon level. Simulated data is used as we do not assume normality and randomization. The number of simulations is 99+1 = 100.
+
+We can use the `global_moran_perm()` function of the sfdep package to do it. It all starts with the `wm_day_am` spatial weights matrix.
 
 ```{r}
 global_moran_perm(wm_day_am$TTRIPS,
@@ -909,7 +940,7 @@ global_moran_perm(wm_end_pm$TTRIPS,
                   nsim = 99)
 ```
 
-For all the four time intervals, since p-value for global Moran's I is smaller than 0.05 , we can reject the null hypothesis that the spatial patterns is random. Because the Moran's I statistics is **greater than 0**, we can infer the spatial distribution shows sign of **clustering** for all four time intervals.
+For all the four time intervals, since p-value for global Moran's I is smaller than 0.05 , we can reject the null hypothesis that the spatial patterns is random. Because the Moran's I statistics is **greater than 0**, we can infer the spatial distribution shows sign of **clustering** for all four time intervals. This result is rather consistent with the choropleth maps plotted earlier.
 
 ### Local autocorrelation of spatial association
 
@@ -919,42 +950,275 @@ Local spatial association examines the spatial patterns at a more **detailed, lo
 
 Local Moran's I for **weekday morning** passenger trips generated by hexagon level.
 
+We can use the [`local_moran()`](https://sfdep.josiahparry.com/) function of the sfdep package to do so, It all starts with the `wm_day_am` spatial weights matrix, this function automatically compute the neighbour lists and weights using simulated data. As this function outputs results in a group format, we will need to `unnest()` in order to access the output.
+
 ```{r}
-lisa_day_am <- wm_day_am %>% 
+
+get_lisa<- function(wm){
+  result<- wm %>% 
   mutate(local_moran = local_moran(
     TTRIPS, nb,wt, nsim=99),
     .before=1) %>%
   unnest(local_moran)
+  
+  return(result)
+}
+
+lisa_day_am <- get_lisa(wm_day_am)
+lisa_day_pm <- get_lisa(wm_day_pm)
+lisa_end_am <- get_lisa(wm_end_am)
+lisa_end_pm <- get_lisa(wm_end_pm)
+```
+
+**LISA of the passengers trips generate by origin at hexagon level.**
+
+New columns are added to the `lisa_day_am` simple feature dataframe smartly. The new columns are
+
+-   **ii**: local moran statistic
+
+-   **eii**: expectation of local moran statistic; for localmoran_permthe permutation sample means
+
+-   **var_ii**: variance of local moran statistic; for localmoran_permthe permutation sample standard deviations
+
+-   **z_ii**: standard deviate of local moran statistic; for localmoran_perm based on permutation sample means and standard deviations
+
+-   **p_ii**: p-value of local moran statistic using pnorm(); for localmoran_perm using standard deviatse based on permutation sample means and standard deviations
+
+-   **p_ii_sim**: For `localmoran_perm()`, `rank()` and `punif()` of observed statistic rank for \[0, 1\] p-values using `alternative=`
+
+-   **p_folded_sim**: the simulation folded \[0, 0.5\] range ranked p-value
+
+-   **skewness**: For `localmoran_perm`, the output of e1071::skewness() for the permutation samples underlying the standard deviates
+
+-   **kurtosis**: For `localmoran_perm`, the output of e1071::kurtosis() for the permutation samples underlying the standard deviates
+
+-   **mean**: contains the quadrant 'type' of a typical Moran Scatterplot
+
+-   **median**: contains the quadrant 'type' of a typical Moran Scatterplot (use this if dataset is highly skewed).
+
+::: panel-tabset
+## lisa_day_am
+
+```{r}
+datatable(lisa_day_am, class = 'cell-border stripe', options = list(pageLength = 5))
+```
+
+## lisa_day_pm
+
+```{r}
+datatable(lisa_day_pm, class = 'cell-border stripe', options = list(pageLength = 5))
+```
+
+## lisa_end_am
+
+```{r}
+datatable(lisa_end_am, class = 'cell-border stripe', options = list(pageLength = 5))
+```
+
+## lisa_end_pm
+
+```{r}
+datatable(lisa_end_pm, class = 'cell-border stripe', options = list(pageLength = 5))
+```
+:::
+
+### Visualising significant Local Moran's I at 95% confidence level
+
+We will use tmap core functions to build choropleth maps, using the **Local Moran's I** field and **p-value field** for all four time intervals.
+
+Only the significant values of Local Moran's I values at 95% confidence level are plotted.
+
+```{r}
+
+get_sig_lmi_map <- function(lisatable, title) {
+  
+  sig_lisatable <- lisatable  %>%
+  filter(p_ii_sim < 0.05)
+  
+  result <- tm_shape(lisatable) +
+    tm_polygons() +
+    tm_borders(alpha = 0.5) +
+    tm_shape(sig_lisatable) +
+    tm_fill("ii") + 
+    tm_borders(alpha = 0.4) +
+    tm_layout(main.title = title,
+              main.title.size = 1.5)
+  
+  return(result)
+  
+}
+
+sig_lmi_1 <- get_sig_lmi_map(lisa_day_am,"Local Moran's I of Total Trips generated on Weekday Morning at 95% CL" )
+sig_lmi_2 <- get_sig_lmi_map(lisa_day_pm, "Local Moran's I of Total Trips generated on Weekday Afternoon at 95% CL" )
+sig_lmi_3 <- get_sig_lmi_map(lisa_end_am, "Local Moran's I of Total Trips generated on Weekend Morning at 95% CL" )
+sig_lmi_4 <- get_sig_lmi_map(lisa_end_pm, "Local Moran's I of Total Trips generated on Weekend Afternoon at 95% CL" )
 ```
 
 ```{r}
 #| fig-width: 14
 #| fig-asp: 0.68
-tmap_mode("plot")
+#| code-fold: true
+tmap_mode('plot')
 
-map1 <- tm_shape(lisa_day_am) +
+tmap_arrange(sig_lmi_1,
+              sig_lmi_2,
+              sig_lmi_3,
+              sig_lmi_4,
+              asp=2,
+              nrow=2,
+              ncol=2)
+```
+
+From the Local Moran choropleth maps above, orange regions would indicate outliers regions however, we would not know whether they are low-high or high-low regions.
+
+The green regions would indicate clusters however we would not know whether they are high-high or low-low regions.
+
+To find out, we have to plot the LISA maps in the next section.
+
+```{r}
+#| echo: false
+#| eval: false
+get_LMI_map <- function(df, title) {
+  result <- tm_shape(df) +
   tm_fill("ii") + 
   tm_borders(alpha = 0.5) +
   tm_view(set.zoom.limits = c(6,8)) +
-  tm_layout(main.title = "local Moran's I of Total Trips generated on Weekday Morning",
+  tm_layout(main.title = title ,
             main.title.size = 0.8)
+  
+  return(result)
+}
 
-map1
+
+lm1 <- get_LMI_map(lisa_day_am, "Local Moran's I of Total Trips generated on Weekday Morning")
+lm2 <- get_LMI_map(lisa_day_pm, "Local Moran's I of Total Trips generated on Weekday Afternoon")
+lm3 <- get_LMI_map(lisa_end_am, "Local Moran's I of Total Trips generated on Weekend Morning")
+lm4 <- get_LMI_map(lisa_end_pm, "Local Moran's I of Total Trips generated on Weekend Afternoon")
+
 ```
+
+```{r}
+#| echo: false
+#| eval: false
+get_pvalue_map <- function(df, title) {
+  result <- tm_shape(df) +
+  tm_fill("p_ii_sim",
+          breaks=c(-Inf, 0.05, Inf),
+          palette="-Blues",
+          title = "local Moran's I p-values") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = title,
+            main.title.size = 0.8)
+  
+  return(result)
+}
+
+
+pv1 <- get_pvalue_map(lisa_day_am, "p-values of Local Moran's I of Total Trips generated on Weekday Morning")
+pv2 <- get_pvalue_map(lisa_day_pm, "p-values of Local Moran's I of Total Trips generated on Weekday Afternoon")
+pv3 <- get_pvalue_map(lisa_end_am, "p-values of Local Moran's I of Total Trips generated on Weekend Morning")
+pv4 <- get_pvalue_map(lisa_end_pm, "p-values of Local Moran's I of Total Trips generated on Weekend Afternoon")
+```
+
+### Visualizing significant LISA map at 95% confidence level
+
+The LISA maps that we are building now are categorical map showing outliers (Low-high or High-low) and clusters (high-high or low-low).
+
+We will use *median* values to generate the quadrants (HH, LH, HL or LL) because our data is highly skewed to the right, otherwise we can use the mean values.
+
+```{r}
+get_sig_lisa_map <- function(lisatable, title) {
+  
+  sig_lisatable <- lisatable  %>%
+  filter(p_ii_sim < 0.05)
+  
+  result <- tm_shape(lisatable) +
+    tm_polygons(alpha = 0.5) +
+    tm_borders(alpha = 0.5) +
+    
+    tm_shape(sig_lisatable) +
+    tm_fill("median",
+            palette = c("#2c7bb6",  "#fdae61", "#abd9e9", "#d7191c"),
+            alpha= 0.7) + 
+    tm_dots('grid_id', alpha=0.05) +
+    tm_borders(alpha = 0.4) +
+    tm_layout(main.title = title,
+              main.title.size = 1.5,
+              legend.position = c("left", "top"))
+    
+  return(result)
+  
+}
+
+sig_lisa_1 <- get_sig_lisa_map(lisa_day_am,"LISA categories generated on Weekday Morning at 95% CL" )
+sig_lisa_2 <- get_sig_lisa_map(lisa_day_pm, "LISA categories generated on Weekday Afternoon at 95% CL" )
+sig_lisa_3 <- get_sig_lisa_map(lisa_end_am, "LISA categories generated on Weekend Morning at 95% CL" )
+sig_lisa_4 <- get_sig_lisa_map(lisa_end_pm, "LISA categories generated on Weekend Afternoon at 95% CL" )
+```
+
+#### **LISA categories generated on Weekday Morning at 95% CL**
+
+To leverage on the interactivity of the map, clicking on the center of the significant hexgons reveal their grid id for easy identification of the bus stops that fall within the hexagon. (Use the interactive datatable above to search for hexagon grid id).
 
 ```{r}
 #| fig-width: 14
 #| fig-asp: 0.68
-lisa_sig_day_am <- lisa_day_am  %>%
-  filter(p_ii < 0.05)
-tmap_mode("plot")
-tm_shape(lisa_day_am) +
-  tm_polygons() +
-  tm_borders(alpha = 0.5) +
-tm_shape(lisa_sig_day_am) +
-  tm_fill("mean") + 
-  tm_borders(alpha = 0.4)
+#| code-fold: true
+tmap_mode('view')
+sig_lisa_1
 ```
+
+#### **LISA categories generated on Weekday Afternoon at 95% CL**
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+tmap_mode('view')
+sig_lisa_2
+```
+
+#### **LISA categories generated on Weekend Morning at 95% CL**
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+tmap_mode('view')
+sig_lisa_3
+```
+
+#### **LISA categories generated on Weekend Afternoon at 95% CL**
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+tmap_mode('view')
+sig_lisa_4
+```
+
+#### **Plotting all four LISA maps side by side for easy comparison**
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+tmap_mode('plot')
+
+tmap_arrange(sig_lisa_1,
+              sig_lisa_2,
+              sig_lisa_3,
+              sig_lisa_4,
+              asp=2,
+              nrow=2,
+              ncol=2)
+```
+
+### Discussion
+
+To be continued....
 
 ```{r}
 #| eval: false
