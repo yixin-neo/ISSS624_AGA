@@ -1218,7 +1218,45 @@ tmap_arrange(sig_lisa_1,
 
 ### Discussion
 
-To be continued....
+The four maps (different time-intervals) above shows significant clusters and outliers for passengers trips generate by origin bus stops at each hexagon. The confidence level used is 95%.
+
+We observe that passengers trips by origin is [not homogeneous]{.underline} throughout Singapore, our study area. At one glance, the spatial pattern is observed to be **higher** in the **North**, **East** and **West** ***residential*** regions than the South part of Singapore. They are Boon Lay interchange, Woodlands interchange, Yishun Interchange, Ang Mo kio Interchange, Seng Kang/ Hougang, Tampines Interchange Bedok Bus Interchange, Toa Payoh Interchange, Clementi Station, Chua Chu kang Interchange, Bukit Batok Interchange and Joo Koon Interchange .
+
+The western parts of Singapore is a **cluster** of **low** passenger trips. They are the Tuas, Pioneer Sector, Gul Circle, Shipyard, Samulun, Jurong port, Penjuru Crescent and Pandan subzones. These are mainly industrial zones and workers are usually provided with company transport.
+
+The ***edge*** regions tend to be **lower** in passenger trips, with the exception of a few **outliers**, namely:
+
+-   **hex id 194** (*Western edge High-low*): AFT TUAS STH AVE 4, BEF TUAS STH AVE 4
+
+-   **hex id 353** (*Western edge High-Low*): OPPO TUAS LK STN
+
+-   **hex id 2298** (*Southern edge High-Low*): OPP HAW PAR VILLA STN, HAW PAR VILLA STN, OPP HAW PAR VILLA STN, HAW PAR VILLA STN
+
+-   **hex id 5154** (*Eastern edge High-Low only on weekends*): TANAH MERRY FERRY TER .
+
+    The Tanah Merah Ferry terminal is one of the gateways to Batam and Bintan, Indonesia, as well as Desaru and Tanjung Pengelih, Malaysia.
+
+-   **hex id 5133** (*Eastern edge High-Low*): CHANGI VILLAGE TER, AFT CHANGI GOLF COURSE, CHANGI GOLF COURSE, CHANGI VILLAGE HOTEL, BLK 4, BLK 5
+
+    Changi Village is a place of food and leisure attraction.
+
+-   **hex id 5349** (*Eastern edge High-Low*): POLICE PASS OFF
+
+    This is the SAF Ferry terminal.
+
+Another interesting observation is that the a short stretch of bus stops along Bukit Timah / Dunearn Road near to junction of Clementi Road and PIE exit seems to come alive on weekend afternoons, turning into High-Low outliers. Another outlier region close to it is the bus stops near to the Singapore Botanic Gardens also turns into a high-low outlier during weekend afternoons.
+
+The *woodlands checkpoint area* is also observed to be a **high cluster** only on *weekends*, suggesting increased human flow via bus on the weekends.
+
+While this exercise helps us to locate clusters and outliers and we have tried to suggest potential reasons behind the observed spatial pattern, there could be other social and economic factors like income levels, population density and other demographic factors that can play a role in this pattern.
+
+### References
+
+Tin Seong Kam. \"2 Choropleth Mapping with R\" From **R for Geospatial Data Science and Analytics** [https://r4gdsa.netlify.app/chap0](https://r4gdsa.netlify.app/chap09)2
+
+Tin Seong Kam. \"9 Global Measures of Spatial Autocorrelation\" From **R for Geospatial Data Science and Analytics** <https://r4gdsa.netlify.app/chap09>
+
+Tin Seong Kam. \"10 Local Measures of Spatial Autocorrelation\" From **R for Geospatial Data Science and Analytics** <https://r4gdsa.netlify.app/chap10>
 
 ```{r}
 #| eval: false
