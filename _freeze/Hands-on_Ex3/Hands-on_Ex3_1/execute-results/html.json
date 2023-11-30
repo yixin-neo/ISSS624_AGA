@@ -1,0 +1,14 @@
+{
+  "hash": "2e570cf7e60488a6457b0cbebb4659ae",
+  "result": {
+    "markdown": "---\ntitle: \"Hands-on Exercise 3.1: Processing and Visualising Flow Data\"\nauthor: \"NeoYX\"\ndate: '30 Nov 2023'\ndate-modified: \"2023-11-30\"\neditor: visual\nexecute: \n  freeze: auto\n  warning: false\n  #echo: false\n  #message: false\nformat: \n  html:\n    code-fold: false\n    code-overflow: scroll\n    code-summary: \"Show the code\"\n    code-line-numbers: true\n---\n\n\n## **8.1 Overview**\n\nIn this hands-on exercise, we will learn how to compute spatial weights using R. By the end to this hands-on exercise, we will be able to:\n\n-   import geospatial data using appropriate function(s) of **sf** package,\n\n-   import csv file using appropriate function of **readr** package,\n\n-   perform relational join using appropriate join function of **dplyr** package,\n\n-   compute spatial weights using appropriate functions of **spdep** package, and\n\n-   calculate spatially lagged variables using appropriate functions of **spdep** package.\n\n## **8.2 The Study Area and Data**\n\nTwo data sets will be used in this hands-on exercise, they are:\n\n-   Hunan county boundary layer. This is a geospatial data set in ESRI shapefile format.\n\n-   Hunan_2012.csv: This csv file (aspatial) contains selected Hunan's local development indicators in 2012.\n\n### **8.2.1 Getting Started**\n\n\n::: {.cell}\n\n```{.r .cell-code}\n#pacman::p_load(sf, spdep, tmap, tidyverse, knitr)\n```\n:::\n\n\n## **8.3 Getting the Data Into R Environment**\n\n**8.3.1 Import shapefile into r environment**\n\nThe code chunk below uses [*st_read()*](https://r-spatial.github.io/sf/reference/st_read.html) of **sf** package to import Hunan shapefile into R. The imported shapefile will be **simple features** Object of **sf**.\n\n\n::: {.cell}\n\n```{.r .cell-code}\nhunan <- st_read(dsn='data/geospatial',\n                 layer = 'Hunan')\nclass(hunan)\n```\n:::\n\n\n`hunan` is in WSG84 coordinate system.\n\n\n::: {.cell}\n\n```{.r .cell-code}\nhead(hunan,3) %>% kable()\n```\n:::\n\n\n### **8.3.2 Import csv file into r environment**\n\nNext, we will import *Hunan_2012.csv* into R by using *read_csv()* of **readr** package. The output is R dataframe class.\n\n\n::: {.cell}\n\n```{.r .cell-code}\nhunan2012 <- read_csv('data/aspatial/Hunan_2012.csv')\nhead(hunan2012,3) %>% kable()\n```\n:::\n\n\n## \n\n\n::: {.cell}\n\n```{.r .cell-code}\n#| eval: false\n#| echo: false\n#| fig-width: 14\n#| fig-asp: 0.68\n#| code-fold: True\n```\n:::\n\n\n## Summaries\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

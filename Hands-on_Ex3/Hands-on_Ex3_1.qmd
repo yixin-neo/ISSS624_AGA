@@ -1,0 +1,89 @@
+---
+title: "Hands-on Exercise 3.1: Processing and Visualising Flow Data"
+author: "NeoYX"
+date: '30 Nov 2023'
+date-modified: "`r Sys.Date()`"
+editor: visual
+execute: 
+  freeze: auto
+  warning: false
+  #echo: false
+  #message: false
+format: 
+  html:
+    code-fold: false
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
+---
+
+## **8.1 Overview**
+
+In this hands-on exercise, we will learn how to compute spatial weights using R. By the end to this hands-on exercise, we will be able to:
+
+-   import geospatial data using appropriate function(s) of **sf** package,
+
+-   import csv file using appropriate function of **readr** package,
+
+-   perform relational join using appropriate join function of **dplyr** package,
+
+-   compute spatial weights using appropriate functions of **spdep** package, and
+
+-   calculate spatially lagged variables using appropriate functions of **spdep** package.
+
+## **8.2 The Study Area and Data**
+
+Two data sets will be used in this hands-on exercise, they are:
+
+-   Hunan county boundary layer. This is a geospatial data set in ESRI shapefile format.
+
+-   Hunan_2012.csv: This csv file (aspatial) contains selected Hunan's local development indicators in 2012.
+
+### **8.2.1 Getting Started**
+
+```{r}
+#pacman::p_load(sf, spdep, tmap, tidyverse, knitr)
+```
+
+## **8.3 Getting the Data Into R Environment**
+
+**8.3.1 Import shapefile into r environment**
+
+The code chunk below uses [*st_read()*](https://r-spatial.github.io/sf/reference/st_read.html) of **sf** package to import Hunan shapefile into R. The imported shapefile will be **simple features** Object of **sf**.
+
+```{r}
+#| eval: false
+hunan <- st_read(dsn='data/geospatial',
+                 layer = 'Hunan')
+class(hunan)
+```
+
+`hunan` is in WSG84 coordinate system.
+
+```{r}
+#| eval: false
+head(hunan,3) %>% kable()
+```
+
+### **8.3.2 Import csv file into r environment**
+
+Next, we will import *Hunan_2012.csv* into R by using *read_csv()* of **readr** package. The output is R dataframe class.
+
+```{r}
+#| eval: false
+hunan2012 <- read_csv('data/aspatial/Hunan_2012.csv')
+head(hunan2012,3) %>% kable()
+```
+
+## 
+
+```{r}
+
+#| eval: false
+#| echo: false
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: True
+```
+
+## Summaries

@@ -889,7 +889,7 @@ Before we can compute the global/local spatial autocorrelation statistics, we ne
 
 -   Features should have at least one neighbour, each feature should not be a neighbour with all other features.
 
--   If data is skewed, each feature should have at least 8 neighbours (lets try with 6 first)
+-   If data is skewed, each feature should have at least 8 neighbours.
 
 **Contiguity or Distance-based method?**
 
@@ -897,17 +897,51 @@ We will rule out the contiguity methods because as seen in the geovisualisation 
 
 There are two main types of distance-based methods, namely:
 
-1.  Adaptive distance-based (Fixed number of neighbours 6 or 12)
+1.  Adaptive distance-based (Fixed number of neighbours, eg, knn=18)
 
-    This is our choice as our data is highly skewed to the right. Each hexagon will be guaranteed at least *n* neighbours, which makes it useful when testing for statistical significance later.
+    This is our choice as our data is highly skewed to the right and also each hexagon will be guaranteed at least *n* neighbours, which makes it useful when testing for statistical significance later. To illustrate this, we can visualise the neighbours network in a **cropped area** of our study area.
+
+The code chunk below first determine the rectangular extent of our study area using `st_bbox()` of sf package. Next, it adjusts the new bounding parameters. Finally we will use the `st_crop` of sf package to crop the `day_am` sf object. The resulting cropped map is a grassland bounded by Gambas Ave, Woodlands Ave 12, Seletar Expressway and Mandai Ave.
+
+```{r}
+#| code-fold: true
+bbox_new <- st_bbox(day_am)
+#    xmin     ymin     xmax     ymax 
+#18720.12 31193.43 33720.12 43184.55 
+bbox_new[1] <- bbox_new[1] + 20000  # xmin
+bbox_new[2] <- bbox_new[2] + 15000  # ymin
+bbox_new[3] <- bbox_new[3] - 20000  # xmax
+#bbox_new[4] <- bbox_new[4] - 5000  # ymax
+bbox_new
+
+cropped <- st_crop(day_am, bbox_new) %>% 
+  rename(geometry=area_hex_grid)
+```
+
+Next, we will use the `st_centroid(), knearneigh() and knn2nb()` of spdep package to calculate the centroids coordinates of cropped map. If we use knn = 8 , the neighbours network will look like diagram below. (In this exercise, we will use knn=18 but we will not plot it as the network diagram will look to dense.)
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+library(spdep)
+longitude <- map_dbl(cropped$geometry, ~st_centroid(.x)[[1]])
+latitude <- map_dbl(cropped$geometry, ~st_centroid(.x)[[2]])
+coords <- cbind(longitude, latitude)
+knn8 <- spdep::knn2nb(knearneigh(coords, k=8))
+plot(st_geometry(cropped), border = 'lightgray', main='Grassland bounded by Gambas Ave, \nWoodlands Ave 12, Seletar Expressway and Mandai Ave')
+plot(knn8, coords, pch=18, cex=0.6, add= TRUE, col='red')
+```
 
 2.  Fixed-distance threshold
 
-    There is no particular reason why this method is not selected because our spatial units are all hexagon in shape and have same size.
+    The reason why this method is less appropriate is because hexagons near to water-bodies/grassland/airports will have less neighbours. This will result in some hexagons having less than 8 neighbours. From the diagram below, we can see that if fixed-distance (green circle) is used, the highlighted hexagon beside the grassland will have only 2 neighbours as compared to the highlighted hexagon above, which will have 6 neighbours.
+
+![](images/justifyknnoverfix-01.png){fig-align="center" width="277"}
 
 **Identify adaptive distance weights**
 
-We will set each hexagon to have 6 neighbours each using the code chunk below.
+For this exercise, we will use knn =18. We will set each hexagon to have 18 neighbours each using the code chunk below.
 
 -   [`st_knn(`](https://sfdep.josiahparry.com/reference/st_knn.html)`)` of sfdep will output a list of neighbours 'nb' of a hex
 
@@ -944,7 +978,7 @@ kable(head(wm_day_am,3))
 
 Global spatial association assesses the overall spatial pattern of a variable 'TTRIPS' across the entire study area. It provides **a single value** or metric that summarizes the extent to which similar values cluster together or are dispersed across the entire geographic space.
 
-![](images/Global%20Moran%20stats%20test.png){width="344"}
+![](images/Global%20Moran%20stats%20test.png){fig-align="center" width="344"}
 
 Set seed to ensure that the computation is reproducible.
 
@@ -996,7 +1030,7 @@ For all the four time intervals, since p-value for global Moran's I is smaller t
 
 Local spatial association examines the spatial patterns at a more **detailed, local level.** Instead of providing a single summary value for the entire study area, local measures identify specific areas where the spatial association is particularly strong or weak. If the Local Moran's I is [positive]{.underline}, it suggests **clusters** of [high-high or low-low]{.underline}. If [negative]{.underline}, it suggests **outliers** of [low-high or high-low.]{.underline}
 
-![](images/Local%20Moran%20stats%20test.png){width="433"}
+![](images/Local%20Moran%20stats%20test.png){fig-align="center" width="433"}
 
 **Compute LISA of the passengers trips generated by origin at hex level**
 
