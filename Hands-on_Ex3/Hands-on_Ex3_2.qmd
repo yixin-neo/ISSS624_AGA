@@ -1,0 +1,737 @@
+---
+title: "Hands-on Exercise 3.1: Processing and Visualising Flow Data"
+author: "NeoYX"
+date: '30 Nov 2023'
+date-modified: "`r Sys.Date()`"
+editor: visual
+execute: 
+  freeze: auto
+  warning: false
+  #echo: false
+  #message: false
+format: 
+  html:
+    code-fold: false
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
+---
+
+## **16.1 Overview**
+
+Spatial interaction represent the flow of people, material, or information between locations in geographical space. It encompasses everything from freight shipments, energy flows, and the global trade in rare antiquities, to flight schedules, rush hour woes, and pedestrian foot traffic. Understanding what factors and logic went into the decision-making behind those human-induced movements and interdependencies is important because it enables policy makwers to better understand, predict, manage, and help plan for such circulation. For example, policy makers can make informed decisions about how to better allocate resources to improve traffic in a city or to speed up shipments of perishable foodstuffs. It has to do with having a good understanding of the overall situation.
+
+Spatial Interaction Models (SIMs) are mathematical models for estimating movement between spatial entities developed by Alan Wilson in the late 1960s and early 1970, with considerable uptake and refinement for transport modelling since then Boyce and Williams (2015). There are four main types of traditional SIMs (Wilson 1971): - Unconstrained - Production-constrained - Attraction-constrained - Doubly-constrained
+
+Both ordinary least square (OLS) and negative binomial (NB) regression methods have been used extensively to calibrate OD flow models by processing flow data as different types of dependent variables.
+
+By the end to this hands-on exercise, we will be able to:
+
+-   to import and extract OD data for a selected time interval,
+
+-   to import and save geospatial data (i.e. bus stops and mpsz) into sf tibble data frame objects,
+
+-   to populate planning subzone code into bus stops sf tibble data frame,
+
+-   to construct desire lines geospatial data from the OD data, and
+
+-   to visualise passenger volume by origin and destination bus stops by using the desire lines data.
+
+## **16.2 Getting Started**
+
+For the purpose of this exercise, four R packages will be used. They are:
+
+-   sf for importing, integrating, processing and transforming geospatial data.
+
+-   tidyverse for importing, integrating, wrangling and visualising data.
+
+-   tmap for creating thematic maps
+
+-   [stplanr](https://docs.ropensci.org/stplanr/) for solving common problems in transport planning and modelling, such as how to best get from point A to point B
+
+-   [ggpubr](https://rpkgs.datanovia.com/ggpubr/) for some easy-to-use functions for creating and customizing 'ggplot2'- based publication ready plots.
+
+-   [performance](https://easystats.github.io/performance/) for for computing measures to assess model quality, which are not directly provided by R's 'base' or 'stats' packages. The primary goal of the **performance** package is to provide utilities for computing indices of model quality and goodness of fit. These include measures like r-squared (R2), root mean squared error (RMSE)
+
+```{r}
+pacman::p_load(tmap, sf, DT, stplanr,
+               performance,
+               ggpubr, tidyverse)
+```
+
+## 
+
+## **16.3 Preparing the Flow Data**
+
+### **16.3.1 Importing the OD data**
+
+Import the *Passenger Volume by Origin Destination Bus Stops* data set downloaded from LTA DataMall by using `read_csv()` of **readr** package.
+
+```{r}
+odbus <- read_csv("data/aspatial/origin_destination_bus_202308.csv")
+```
+
+Display the odbus tibble data table by using the code chunk below.
+
+```{r}
+glimpse(odbus)
+```
+
+A quick check of odbus tibble data frame shows that the values in ORIGIN_PT_CODE and DESTINATON_PT_CODE are in numeric data type. Hence, the code chunk below is used to convert these data values into character data type.
+
+```{r}
+odbus$ORIGIN_PT_CODE <- as.factor(odbus$ORIGIN_PT_CODE)
+odbus$DESTINATION_PT_CODE <- as.factor(odbus$DESTINATION_PT_CODE) 
+```
+
+### **16.3.2 Extracting the study data**
+
+The data in odbus is generalised into weekend and weekday data. For the purpose of this exercise, we will extract commuting flows on weekday and between 6 and 9 o'clock. After the group-by and sum, the total rows reduced from 5,709,512 ro 241,503.
+
+```{r}
+odbus6_9 <- odbus %>%
+  filter(DAY_TYPE == "WEEKDAY") %>%
+  filter(TIME_PER_HOUR >= 6 &
+           TIME_PER_HOUR <= 9) %>%
+  group_by(ORIGIN_PT_CODE,
+           DESTINATION_PT_CODE) %>%
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+```
+
+Print the content of odbus6_9
+
+```{r}
+datatable(odbus6_9,
+          class = 'cell-border stripe',
+          options = list(pageLength = 5))
+```
+
+If we would like to, we could save the output in rds format for future use. We need to ensure that there exists a folder called 'rds' in 'data' folder before running the code chunk.
+
+```{r}
+#| eval: false
+write_rds(odbus6_9, "data/rds/odbus6_9.rds")
+```
+
+To read rds files:
+
+```{r}
+#| eval: false
+odbus6_9 <- read_rds("data/rds/odbus6_9.rds")
+```
+
+## **16.4 Working with Geospatial Data**
+
+In this exercise, two geospatial data will be used. They are:
+
+-   BusStop: This data provides the location of bus stop as at the third quarter of 2023. This data is refreshed quarterly by LTA. The last update was in July 2023.
+
+-   MPSZ-2019: This data provides the sub-zone boundary of URA Master Plan 2019.
+
+Both data sets are in ESRI shapefile format.
+
+### **16.4.1 Importing geospatial data**
+
+Load the BusStop geospatial data using the `st_read()` function of sf package. Using the st_crs(busstop) will show that the coordinate system used is WSG84 (decimal deg). Using `st_tranform()`, we will convert the geographical coordinates system to SIngapore's projected coordinate system crs=3414.
+
+Note that there are repeated bus stop ids , however they have different bus stop roof ids and geometry values.
+
+```{r}
+busstop <- st_read(dsn = "data/geospatial/BusStopLocation/BusStopLocation_Jul2023",
+                   layer = "BusStop") %>%
+  st_transform(crs = 3414)
+```
+
+Next load the mpsz data. There are 332 planning subzones in Singapore.
+
+```{r}
+mpsz <- st_read(dsn = "data/geospatial/MPSZ-2019",
+                   layer = "MPSZ-2019") %>%
+  st_transform(crs = 3414)
+```
+
+```{r}
+mpsz
+```
+
+::: callout-note
+-   `st_read()` function of sf package is used to import the shapefile into R as sf data frame.
+
+-   `st_transform()` function of sf package is used to transform the projection to crs 3414.
+:::
+
+## **16.5 Geospatial data wrangling**
+
+### **16.5.1 Combining Busstop and mpsz**
+
+Code chunk below populates the planning subzone code (i.e. SUBZONE_C) of `mpsz` sf data frame into `busstop` sf data frame. The output of `st_intersection()` is a point sf object. We do not need and therefore will drop the geometry. The number of observations reduced from 5,161 to 5,156 after operation, suggesting that 5 bus stops have been dropped as their point geometry is not within the polygon boundary of sf df `mpsz`.
+
+```{r}
+busstop_mpsz <- st_intersection(busstop, mpsz) %>%
+  select(BUS_STOP_N, SUBZONE_C, LOC_DESC) %>%
+  st_drop_geometry()
+```
+
+::: callout-note
+-   `st_intersection()` is used to perform point and polygon overly and the output will be in point sf object.
+
+-   `select()` of dplyr package is then use to retain only BUS_STOP_N and SUBZONE_C in the busstop_mpsz sf data frame.
+
+-   five bus stops are excluded in the resultant data frame because they are outside of Singapore boundary.
+:::
+
+```{r}
+datatable(busstop_mpsz,
+          class = 'cell-border stripe',
+          options = list(pageLength = 5))
+```
+
+Save the output into rds format
+
+```{r}
+#| eval: false
+write_rds(busstop_mpsz, "data/rds/busstop_mpsz.rds")  
+```
+
+Next, we are going to append the planning subzone code from `busstop_mpsz` data frame onto `odbus6_9` data frame. By doing so, we get the fields 'ORIGIN_BS', 'DESTIN_BS" and 'ORIGIN_SZ' all in a df .
+
+```{r}
+busstop_mpsz %>%
+  group_by(BUS_STOP_N, SUBZONE_C) %>%
+  filter(n()>1) %>%
+  ungroup()
+```
+
+The join columns will be 'ORIGIN_PT_CODE' from `odbus6_9` df and 'BUS_STOP_N' from `busstop_mpsz` df. The columns will also be renamed.
+
+Before left_join, odbus6_9 has 241,503 rows, after left join od_data has 242,235 rows.
+
+```{r}
+od_data <- left_join(odbus6_9 , busstop_mpsz,
+            by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
+  rename(ORIGIN_BS = ORIGIN_PT_CODE,
+         ORIGIN_SZ = SUBZONE_C,
+         DESTIN_BS = DESTINATION_PT_CODE)
+```
+
+Check for duplicate for proceeding
+
+```{r}
+duplicate <- od_data %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+
+duplicate
+```
+
+Remove the duplicated records. The `od_data` df reduced from 242,235 rows to 241,838 rows after moving duplicates.
+
+```{r}
+od_data <- unique(od_data)
+```
+
+Double check again
+
+```{r}
+od_data %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+```
+
+Print the current `od_data` df to see what we are still lacking. We are will missing the destination subzone codes.
+
+```{r}
+knitr::kable(head(od_data,3))
+```
+
+Again, get the **destination** subzone code for each **destination** bus stops by performing a left_join again with `busstop_mpsz` (contains subzone_c codes for each bus stop id).
+
+After left_join, the number of rows increased from 241,838 rows to 242,831 rows.
+
+```{r}
+od_data <- left_join(od_data , busstop_mpsz,
+            by = c("DESTIN_BS" = "BUS_STOP_N"))
+```
+
+Check for duplicates
+
+```{r}
+duplicate <- od_data %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+
+duplicate
+```
+
+Remove duplicates
+
+```{r}
+od_data <- unique(od_data)
+```
+
+Sneak peak of the current `od_data`
+
+```{r}
+knitr::kable(head(od_data,3))
+```
+
+The code chunk below will do the following:
+
+1.  Renames the destination 'SUBZONE_C' to 'DESTIN_SZ'.
+
+2.  There are missing subzone codes for some of the origin and destination bus stop because the bus stops location in July 2023 could be more outdated than August bus stop 2023. We will drop columns with missing values.
+
+3.  Group-by origin subzone and destination subzone to generate a new field 'MORNING_PEAK' that contains the summation of all trips from subzone A to subzone B.
+
+```{r}
+od_data <- od_data %>%
+  rename(DESTIN_SZ = SUBZONE_C) %>%
+  drop_na() %>%
+  group_by(ORIGIN_SZ, DESTIN_SZ) %>%
+  summarise(MORNING_PEAK = sum(TRIPS))
+```
+
+Take a look at our final `od_data` df
+
+```{r}
+knitr::kable(head(od_data %>% 
+                    arrange(desc(MORNING_PEAK)),
+                  10))
+```
+
+Save the output into an rds file format.
+
+```{r}
+#| eval: false
+write_rds(od_data, "data/rds/od_data.rds")
+```
+
+```{r}
+#| eval: false
+od_data <- read_rds("data/rds/od_data.rds")
+```
+
+## **16.6 Visualising Spatial Interaction**
+
+In this section, wewill learn how to prepare a desire line by using **stplanr** package.
+
+### **16.6.1 Removing intra-zonal flows**
+
+We will not plot the intra-zonal flows. The code chunk below will be used to remove intra-zonal flows. It does so by **removing** the flows that **originate** and **ends** in the **same subzone**.
+
+Rows reduced from 20,987 to 20,697.
+
+```{r}
+od_data1 <- od_data[od_data$ORIGIN_SZ!=od_data$DESTIN_SZ,]
+```
+
+### **16.6.2 Creating desire lines**
+
+In this code chunk below, `od2line()` of **stplanr** package is used to create the desire lines.
+
+`od_data1` is aspatial while `mpsz` is geospatial data.
+
+**Arguments**
+
+**flow**
+
+:   A data frame representing origin-destination data. The first two columns of this data frame should correspond to the first column of the data in the zones. Thus in [`cents_sf()`](https://docs.ropensci.org/stplanr/reference/cents_sf.html), the first column is geo_code. This corresponds to the first two columns of [`flow()`](https://docs.ropensci.org/stplanr/reference/flow.html).
+
+**zones**
+
+:   A spatial object representing origins (and destinations if no separate destinations object is provided) of travel.
+
+**destinations**
+
+:   A spatial object representing destinations of travel flows.
+
+**zone_code**
+
+:   Name of the variable in `zones` containing the ids of the zone. By default this is the first column names in the zones.
+
+The output flowLine is a sf LINESTRING object.
+
+```{r}
+flowLine <- od2line(flow=od_data1,
+                    zones= mpsz,
+                    zone_code= 'SUBZONE_C')
+
+flowLine
+```
+
+### **16.6.3 Visualising the desire lines**
+
+To visualise the resulting desire lines, the code chunk below is used.
+
+**Arguments of** [tm_lines()](https://www.rdocumentation.org/packages/tmap/versions/3.3-4/topics/tm_lines)**:**
+
+lwd: line width. Either a numeric value or a data variable. In the latter case, the class of the highest values (see **`style`**) will get the line width defined by **`scale`**. If multiple values are specified, small multiples are drawn (see details).
+
+style: method to process the color scale when **`col`** is a numeric variable. Discrete gradient options are **`"cat"`**, **`"fixed"`**, **`"sd"`**, **`"equal"`**, **`"pretty"`**, **`"quantile"`**, **`"kmeans"`**, **`"hclust"`**, **`"bclust"`**, **`"fisher"`**, **`"jenks"`**, **`"dpih"`**, **`"headtails"`**, and **`"log10_pretty"`**. A numeric variable is processed as a categorical variable when using **`"cat"`**, i.e. each unique value will correspond to a distinct category
+
+scale: line width multiplier number.
+
+n: preferred number of color scale classes. Only applicable when **`lwd`** is the name of a numeric variable.
+
+```{r}
+#| echo: false
+#| eval: false
+#| fig-width: 14
+#| fig-asp: 0.68
+tm_shape(mpsz) +
+  tm_polygons() +
+  flowLine %>% 
+  tm_shape() +
+  tm_lines(lwd = 'MORNING_PEAK',
+           style = 'quantile',
+           scale= c(0.1, 1, 3, 5, 7, 10),
+           n = 6,
+           alpha= 0.3)
+```
+
+::: callout-warning
+Rendering process takes about 1 min because of the transparency argument alpha.
+:::
+
+When the flow data are very messy and highly skewed like the one shown above, it is wiser to focus on selected flows, for example flow greater than or equal to 5000 as shown below.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+
+tmap_mode('view')
+tmap_options(check.and.fix = TRUE)
+
+tm_shape(mpsz) +
+  tm_polygons() +
+flowLine %>%  
+  filter(MORNING_PEAK >= 5000) %>%
+tm_shape() +
+  tm_lines(lwd = "MORNING_PEAK",
+           style = "quantile",
+           scale = c(0.1, 1, 3, 5, 7, 10),
+           n = 6,
+           alpha = 0.3)
+```
+
+```{r}
+#| echo: false
+#| eval: false
+ttm()
+
+tm_shape(mpsz) +
+  tm_polygons() +
+flowLine %>%  
+  filter(MORNING_PEAK >= 5000) %>%
+tm_shape() +
+  tm_lines(lwd = "MORNING_PEAK",
+           style = "quantile",
+           scale = c(0.1, 1, 3, 5, 7, 10),
+           n = 6,
+           alpha = 0.3)
+```
+
+## **16.8 Viewing the Subzone spatial file**
+
+```{r}
+head(mpsz, 10)
+```
+
+## **16.9 Isolating SUBZONE_C (subzone_code) into a new df**
+
+Sort `mpsz` based on values of **`SUBZONE_C`** column in ascending order.
+
+```{r}
+mpsz <- mpsz[order(mpsz$SUBZONE_C),]
+head(mpsz, 10)
+```
+
+## **16.10 Computing Distance Matrix**
+
+The are at least two ways to compute the required distance matrix. One is based on sf and the other is based on sp. Past experience shows that computing distance matrix by using sf function took relatively longer time that sp method. In view of this, sp method is used in the code chunks below.
+
+### **16.10.1 Converting from sf data.table to SpatialPolygonDataFrame**
+
+Convert mpsz from simple feature collection to SpatialPolygonDataFrame.
+
+```{r}
+mpsz_sp <- as(mpsz, "Spatial")
+mpsz_sp
+```
+
+Exploration: How to access a SpatialPolygonDataFrame object of the sp package.
+
+```{r}
+#| eval: false
+mpsz_sp['SUBZONE_N'][[1]]
+mpsz_sp@data  # class dataframe
+mpsz_sp@polygons # class: list
+mpsz_sp@polygons[[1]]  # access the first polygon / subzone
+mpsz_sp@polygons[[1]]@Polygons # access the slot in the polygon object that contains information about individual Polygons within the overall geometry
+mpsz_sp@polygons[[1]]@Polygons[[1]] # same as above, enter another layer
+mpsz_sp@polygons[[1]]@Polygons[[1]]@coords #get the coordinates of the first polygon / subzone
+mpsz_sp@polygons[[332]]@Polygons[[1]]@coords #total of 333 subzones
+```
+
+### **16.10.2 Computing the distance matrix**
+
+`spDists(x, y = x, longlat = FALSE, segments = FALSE, diagonal = FALSE)`
+
+[**`spDists`**](https://www.rdocumentation.org/packages/sp/versions/2.1-1/topics/spDistsN1) returns a full matrix of distances in the metric of the points if longlat=FALSE, or in kilometers if longlat=TRUE; it uses **`spDistsN1`** in case points are two-dimensional. In case of **`spDists(x,x)`**, it will compute all n x n distances, not the sufficient n x (n-1).
+
+**Arguments**
+
+`x`: A matrix of n-D points with row denoting points, first column x/longitude, second column y/latitude, or a Spatial object that has a coordinates method
+
+`y`: A matrix of n-D points with row denoting points, first column x/longitude, second column y/latitude, or a Spatial object that has a coordinates method
+
+`longlat`: logical; if FALSE (default), Euclidean distance, if TRUE Great Circle (WGS84 ellipsoid) distance; if x is a Spatial object, longlat should not be specified but will be derived from is.projected(x)
+
+`segments`: logical; if TRUE, y must be missing; the vector of distances between consecutive points in x is returned.
+
+`diagonal`: logical; if TRUE, y must be given and have the same number of points as x; the vector with distances between points with identical index is returned.
+
+The diagonals of the ouput (332 by 332) are all 0. Distance with itself. The unit of distance is if 'm' (euclidean?) and km if WSG84?
+
+```{r}
+library(sp)
+dist <- spDists(mpsz_sp)
+class(dist) 
+```
+
+```{r}
+dist[1:5,1:5]
+```
+
+We can use the code to check for the default arguments of a function quickly.
+
+```{r}
+#| eval: false
+formals(spDists)
+```
+
+### **16.10.3 Get the sorted column and row names of out dist matrix**
+
+`mpsz` was previoulsy sorted by 'SUBZONE_C' in ascending order. The code below will extract only the column of 'SUBZONE_C'.
+
+```{r}
+sz_names <- mpsz$SUBZONE_C
+sz_names[1:10] 
+```
+
+### **16.10.4 Attaching SUBZONE_C to row and column for distance matrix matching ahead**
+
+We would like to set the column names and row names for our distance matrix .
+
+-   **`colnames(dist)`**: This is used to access or set the column names of the object. Note that **`colnames()`** is applicable to matrices and arrays.
+
+-   **`rownames(dist)`**: This is used to access or set the row names of the object. Note that **`rownames()`** is applicable to matrices and arrays.
+
+-   **`paste0(sz_names)`**: This part creates a character vector by concatenating elements of the **`sz_names`** vector without any separator. The resulting vector will be used as column names.
+
+```{r}
+colnames(dist) <- paste0(sz_names)
+rownames(dist) <- paste0(sz_names)
+dist[1:5,1:5]
+```
+
+### **16.10.5 Pivoting distance value by SUBZONE_C**
+
+We will use the [`melt()`](https://seananderson.ca/2013/10/19/reshape/) function of the reshape2 package to convert wide-format data to long-format data. This function will convert wide-format data to a data frame with columns for each combination of row and column indices and their corresponding values.
+
+To do the opposite, used `cast()`.
+
+::: panel-tabset
+## Wide
+
+```{r}
+matrix(1:6, nrow = 2, ncol = 3)
+```
+
+## Long
+
+```{r}
+reshape2::melt(matrix(1:6, nrow = 2, ncol = 3)) %>% knitr::kable()
+```
+:::
+
+Three new columns generated, (1) 'var1', (2) 'var2' and (3) 'value' containing the distance for the corresponding var1-var2 pair; thus rename to 'dist'.
+
+There are 110,224 rows in `distPair` due to 332P2 + 332 = 332\*331 + 332. Number of possible permutations with replacement.
+
+```{r}
+distPair <- reshape2::melt(dist) %>%
+  rename(dist = value)
+head(distPair, 10)
+```
+
+### **16.10.6 Updating intra-zonal distances**
+
+The row contain subzone A to subzone A (distance = 0) can be removed by filtering.
+
+```{r}
+distPair %>%
+  filter(dist > 0) %>%
+  summary()
+```
+
+The code chunk below adds a constant distance value of 50m into the intra-zones commute. The diagonals of dist matrix (if still a matrix) would have been 50m.
+
+```{r}
+distPair$dist <- ifelse(distPair$dist==0,
+                        50,
+                        distPair$dist)
+
+head(distPair, 10)
+```
+
+Lastly, code chunk is used to save the data frame for future use.
+
+```{r}
+#| eval: false
+write_rds(distPair, "data/distPair.rds") 
+```
+
+## **16.11 Preparing flow data**
+
+The code chunk below is used to prepare the flow_data. `od_data` contains intra-zonal trips (unlike `od_trip1` ). There are 310 unique origin subzone values and 311 unique destin subzone values.
+
+```{r}
+flow_data <- od_data
+```
+
+### **16.11.1 Separating intra-flow from passenger volume df**
+
+Two new fields called 'FlowNoIntra' and 'offset' are created.
+
+check code
+
+```{r}
+flow_data$FlowNoIntra <- ifelse(
+  flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ, 
+  0, flow_data$MORNING_PEAK)
+flow_data$offset <- ifelse(
+  flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ, 
+  0.000001, 1)
+```
+
+Print flow_data
+
+```{r}
+head(flow_data,3) %>% knitr::kable()
+glimpse(flow_data)
+```
+
+The 'ORIGIN_SZ' and 'DESTIN_SZ' fields are in character format. Let us convert to factor format
+
+```{r}
+flow_data$ORIGIN_SZ <- as.factor(flow_data$ORIGIN_SZ)
+flow_data$DESTIN_SZ <- as.factor(flow_data$DESTIN_SZ)
+
+head(flow_data,5)
+```
+
+### **16.11.2 Combining passenger volume data with distance value**
+
+`distPair` is a df containing distances for all corresponding subzone pairs (including self, default to 50m). 'var1', 'var2', 'dist'
+
+`flow_data` is a df containing 'origin_sz', 'destin_sb' and 'morning_peak'
+
+We will now perform a left join with two sets join keys.
+
+The output contains distance and total morning peak trips for each possible pairs of subzones (self included).
+
+Before left join:
+
+`flow_data` has 20,987 rows.
+
+`distPair` has 110,224 rows (is the all possible pairs out of 332 subzones, order matters and with replacement.)
+
+After join:
+
+`flow_data1` has 20,987 rows.
+
+```{r}
+flow_data1 <- left_join(flow_data, distPair,
+                        by = c('ORIGIN_SZ'= 'Var1',
+                               'DESTIN_SZ'= 'Var2'))
+
+glimpse(flow_data1)
+```
+
+Print out
+
+```{r}
+head(flow_data1) %>% knitr::kable()
+```
+
+## **16.12 Preparing Origin and Destination Attributes**
+
+### **16.12.1 Importing population data**
+
+The dataset used here is the Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2011-2020 in csv format .(i.e. `respopagesextod2011to2020.csv`). This is an aspatial data file. It can be downloaded at [Department of Statistics, Singapore](https://www.singstat.gov.sg/), the specific link can be found [here](https://www.singstat.gov.sg/find-data/search-by-theme/population/geographic-distribution/latest-data). Although it does not contain any coordinates values, but it's 'PA' and 'SZ' fields can be used as unique identifiers to geocode to 'PLAN_AREA_N' and 'SUBZONE_N' of the `MP14_SUBZONE_WEB_PL` shapefile respectively.
+
+```{r}
+pop <- read_csv("data/aspatial/pop.csv")
+head(pop)
+```
+
+### **16.12.2 Geospatial data wrangling**
+
+Let us append the population data for different age group range to the `mpsz` df.
+
+`pop` has 984,656 rows
+
+`mpsz` has 332 rows
+
+After join: 984,656 rows
+
+Column selected are 'PA', 'SZ', 'AGE7-12', 'AGE13-24', 'AGE25_64' from `pop` df and 'SUBZONE_C' from `mpsz` df.
+
+```{r}
+#| eval: false
+pop<- pop %>%
+  left_join(mpsz,
+            by = c("PA" = "PLN_AREA_N",
+                   "SZ" = "SUBZONE_N")) %>%
+  select(1:6) %>%
+  rename(SZ_NAME = SZ,
+         SZ = SUBZONE_C)
+```
+
+### **16.7.3 Preparing origin attribute**
+
+```{r}
+
+```
+
+```{r}
+
+#| eval: false
+#| echo: false
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: True
+```
+
+## Summaries
+
+OD matrix is often incomplete. Imagine trying to complete the OD matrix, it would involve us doing spatial interaction or OD surveys to find the missing values. There are 332 subzones in Singapore, and each survey is expensive,. In addition, OD matrix is constantly changing as flow patterns changes. We are trying to predict flows between origins and destinations. Flow could be thought of a function of (1) attribute of origin (propulsiveness) (2) attribute of destination (attractiveness) and (3) cost friction (like distance or transport cost or public transport stops). Assumption is that the **benefits** must outweigh the **cost** in order for flow to happen.
+
+**Gravity model** takes into consideration the interaction between all origin and destination locations.
+
+**Potential model** takes in consideration the interaction between a location and all other location pairs. (Good for measuring accessibility)
+
+**Retail model** is commonly used by franchise like KFC / Pizza Hut to determine their area/region of service (aka delivery zones) for each outlet.
+
+There are 4 variations in the Gravity model:
+
+1.  Unconstrained: only the overall outflow is fixed and total outflow from origins = total inflow to destinations
+2.  Origin constrained: outflow by origin is fixed.
+3.  Destination constrained: inflow by destination is fixed.
+4.  Doubly constrained: outflow by origin and inflow by destination is fixed.
+
+To calculate flow from each origin to each destination, we need parameters like k, alpha, lambda and beta. The beta for distance is usually negative because we assume that there is an inverse relationship between interaction and distance, like Newtonian physics and laws of gravity.

@@ -441,13 +441,13 @@ tm_shape() +
 
 ## Summaries
 
-We are trying to predict flows between origins and destinations. Flow could be thought of a function of (1) attribute of origin (propulsiveness) (2) attribute of destination (attractiveness) and (3) cost friction (like distance or transport cost or public transport stops). Assumption is that the **benefits** must outweigh the **cost** in order for flow to happen.
+OD matrix is often incomplete. Imagine trying to complete the OD matrix, it would involve us doing spatial interaction or OD surveys to find the missing values. There are 332 subzones in Singapore, and each survey is expensive,. In additon, OD matrix is constantly changing as flow patterns changes. We are trying to predict flows between origins and destinations. Flow could be thought of a function of (1) attribute of origin (propulsiveness) (2) attribute of destination (attractiveness) and (3) cost friction (like distance or transport cost or public transport stops). Assumption is that the **benefits** must outweigh the **cost** in order for flow to happen.
 
 **Gravity model** takes into consideration the interaction between all origin and destination locations.
 
 **Potential model** takes in consideration the interaction between a location and all other location pairs. (Good for measuring accessibility)
 
-**Retail model** is comomonly used by franchise like KFC / pizzahut to determine their area/region of serivce (aka delivery zones) for each outlet.
+**Retail model** is commonly used by franchise like KFC / Pizza Hut to determine their area/region of service (aka delivery zones) for each outlet.
 
 There are 4 variations in the Gravity model:
 
@@ -456,4 +456,4 @@ There are 4 variations in the Gravity model:
 3.  Destination constrained: inflow by destination is fixed.
 4.  Doubly constrained: outflow by origin and inflow by destination is fixed.
 
-To calculate flow from each origin to each destination, we need parameters like k, alpha, lambda and beta. The beta for distance is usually negative and there is an inverse relationship between interaction and distance, like Newtonian physics and laws of gravity.
+To calculate flow from each origin to each destination, we need parameters like k, alpha, lambda and beta. The beta for distance is usually negative because we assume that there is an inverse relationship between interaction and distance, like Newtonian physics and laws of gravity.

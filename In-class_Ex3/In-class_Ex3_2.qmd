@@ -1,0 +1,541 @@
+---
+title: "In-class Exercise 3: Calibrating Spatial Interaction Models with R"
+author: "NeoYX"
+date: '2 Dec 2023'
+date-modified: "`r Sys.Date()`"
+editor: visual
+execute: 
+  freeze: auto
+  warning: false
+  #echo: false
+  #message: false
+format: 
+  html:
+    code-fold: false
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
+---
+
+## 
+
+## **16.1 Overview**
+
+Spatial Interaction Models (SIMs) are mathematical models for estimating flows between spatial entities developed by Alan Wilson in the late 1960s and early 1970, with considerable uptake and refinement for transport modelling since then Boyce and Williams (2015).
+
+There are four main types of traditional SIMs (Wilson 1971):
+
+-   Unconstrained
+
+-   Production-constrained
+
+-   Attraction-constrained
+
+-   Doubly-constrained
+
+Ordinary least square (OLS), log-normal, Poisson and negative binomial (NB) regression methods have been used extensively to calibrate OD flow models by processing flow data as different types of dependent variables. In this chapter, you will gain hands-on experiences on using appropriate R packages to calibrate SIM by using there four regression methods.
+
+## **16.2 The Case Study and Data**
+
+In this exercise, we are going to calibrate SIM to determine factors affecting the public bus passenger flows during the morning peak in Singapore.
+
+## **16.3 Getting Started**
+
+For the purpose of this exercise, four R packages will be used. They are:
+
+-   sf for importing, integrating, processing and transforming geospatial data.
+
+-   sp package , although an older package, is more efficient for computation of large data.
+
+-   tidyverse for importing, integrating, wrangling and visualising data.
+
+-   tmap for creating thematic maps
+
+-   [ggpubr](https://rpkgs.datanovia.com/ggpubr/) for some easy-to-use functions (like `ggarrange()`)for creating and customizing 'ggplot2'- based publication ready plots.
+
+-   [performance](https://easystats.github.io/performance/) is part of the [`easystats`](https://easystats.github.io/easystats/) package for computing measures to assess model quality, which are not directly provided by R's 'base' or 'stats' packages. The primary goal of the **performance** package is to provide utilities for computing indices of model quality and goodness of fit. These include measures like r-squared (R2), root mean squared error (RMSE)
+
+-   `reshape2` is an old tool from base R. It handles matrix well for our distance matrix, like pivoting function like `melt()`. Tidyverse does not handle matrix very well.
+
+```{r}
+pacman::p_load(tmap, sf, sp, DT,
+               performance, reshape2,
+               ggpubr, tidyverse)
+```
+
+## **16.4 The Data**
+
+This exercise is a continuation of **Chapter 15: Processing and Visualising Flow Data** and the following data will be used:
+
+-   *od_data.rds*, weekday morning peak passenger flows at planning subzone level.
+
+-   *mpsz.rds*, URA Master Plan 2019 Planning Subzone boundary in simple feature tibble data frame format.
+
+Beside these two data sets, an additional attribute data file called pop.csv will be provided. It
+
+## **16.5 Computing Distance Matrix**
+
+In spatial interaction, a distance matrix is a table that shows the distance between pairs of locations. For example, in the table below we can see an Euclidean distance of 3926.0025 between MESZ01 and RVSZ05, of 3939.1079 between MESZ01 and SRSZ01, and so on. By definition, an location's distance from itself, which is shown in the main diagonal of the table, is 0.
+
+![](https://r4gdsa.netlify.app/chap16/img/image16-1.jpg)
+
+In this section, you will learn how to compute a distance matrix by using URA Master Plan 2019 Planning Subzone boundary in which you saved as an rds file called *mpsz*.
+
+First, let us import *mpsz.rds* into R environemnt by using the code chunk below.
+
+```{r}
+mpsz <- st_read(dsn = "data/geospatial",
+                   layer = "MPSZ-2019") %>%
+  st_transform(crs = 3414)
+mpsz
+```
+
+Notice that it is a sf tibble dataframe object class.
+
+### **16.5.1 Converting from sf data.table to SpatialPolygonsDataFrame**
+
+There are at least two ways to compute the required distance matrix. One is based on sf and the other is based on sp. Past experience shown that computing distance matrix by using sf function took relatively longer time that sp method especially the data set is large. In view of this, sp method is used in the code chunks below.
+
+First [`as.Spatial()`](https://r-spatial.github.io/sf/reference/coerce-methods.html) will be used to convert *mpsz* from sf tibble data frame to SpatialPolygonsDataFrame of sp object as shown in the code chunk below.
+
+It has become a large spatialpolygendataframe (older). It contains a data table inside, but no geometry column (contain in another table). Wheras in new sf, everything is in a single table.
+
+```{r}
+mpsz_sp <- as(mpsz, "Spatial")
+#mpsz_sp <- mpsz %>% 
+  #as.Spatial()
+mpsz_sp
+```
+
+Exploration: How to access a SpatialPolygonDataFrame object of the older sp package.
+
+```{r}
+#| eval: false
+mpsz_sp['SUBZONE_N'][[1]]
+mpsz_sp@data  # class dataframe
+mpsz_sp@polygons # class: list
+mpsz_sp@polygons[[1]]  # access the first polygon / subzone
+mpsz_sp@polygons[[1]]@Polygons # access the slot in the polygon object that contains information about individual Polygons within the overall geometry
+mpsz_sp@polygons[[1]]@Polygons[[1]] # same as above, enter another layer
+mpsz_sp@polygons[[1]]@Polygons[[1]]@coords #get the coordinates of the first polygon / subzone
+mpsz_sp@polygons[[332]]@Polygons[[1]]@coords #total of 333 subzones
+```
+
+### **16.5.2 Computing the distance matrix**
+
+Next, [`spDists()`](https://www.rdocumentation.org/packages/sp/versions/2.1-1/topics/spDistsN1) of sp package will be used to compute the Euclidean distance between the centroids of the planning subzones.
+
+`spDists(x, y = x, longlat = FALSE, segments = FALSE, diagonal = FALSE)`
+
+spDists returns a full matrix of distances in the metric of the points if longlat=FALSE, or in kilometers if longlat=TRUE; it uses spDistsN1 in case points are two-dimensional. In case of spDists(x,x), it will compute all n x n distances, not the sufficient n x (n-1).
+
+**Arguments**
+
+x: A matrix of n-D points with row denoting points, first column x/longitude, second column y/latitude, or a Spatial object that has a coordinates method
+
+y: A matrix of n-D points with row denoting points, first column x/longitude, second column y/latitude, or a Spatial object that has a coordinates method
+
+longlat: logical; if FALSE (default), Euclidean distance, if TRUE Great Circle (WGS84 ellipsoid) distance; if x is a Spatial object, longlat should not be specified but will be derived from is.projected(x)
+
+segments: logical; if TRUE, y must be missing; the vector of distances between consecutive points in x is returned.
+
+diagonal: logical; if TRUE, y must be given and have the same number of points as x; the vector with distances between points with identical index is returned.
+
+The diagonals of the ouput (332 by 332) are all 0. Distance with itself. The unit of distance is if 'm' (euclidean?) and km if WSG84?
+
+```{r}
+dist <- spDists(mpsz_sp, 
+                longlat = FALSE) # already projected in EPSG:3414
+head(dist, n=c(10, 10))
+```
+
+Notice that the output *dist* is a matrix object class of R. Also notice that the column heanders and row headers are not labeled with the planning subzone codes.
+
+### **16.5.3 Labelling column and row heanders of a distance matrix**
+
+First, we will create a list sorted according to the the distance matrix by planning sub-zone code.
+
+```{r}
+sz_names <- mpsz$SUBZONE_C
+```
+
+Next we will attach `SUBZONE_C` to row and column for distance matrix matching ahead
+
+```{r}
+colnames(dist) <- paste0(sz_names)
+rownames(dist) <- paste0(sz_names)
+dist[1:5,1:5]
+```
+
+### **16.5.4 Pivoting distance value by SUBZONE_C**
+
+Next, we will pivot the distance matrix into a long table by using the row and column subzone codes as show in the code chunk below.
+
+We will use the [melt()](https://seananderson.ca/2013/10/19/reshape/) function of the reshape2 package to convert wide-format data to long-format data. This function will convert wide-format data to a data frame with columns for each combination of row and column indices and their corresponding values.
+
+To do the opposite, used cast().
+
+::: panel-tabset
+## wide
+
+```{r}
+matrix(1:6, nrow = 2, ncol = 3)
+```
+
+## long
+
+```{r}
+reshape2::melt(matrix(1:6, nrow = 2, ncol = 3)) %>% knitr::kable()
+```
+:::
+
+Three new columns generated, (1) 'var1', (2) 'var2' and (3) 'value' containing the distance for the corresponding var1-var2 pair; thus rename to 'dist'.
+
+There are 110,224 rows in distPair due to 332P2 + 332 = 332\*331 + 332. Number of possible permutations with replacement.
+
+```{r}
+distPair <- melt(dist) %>%
+  rename(dist = value)
+head(distPair, 10)
+```
+
+Notice that the within zone distance is 0.
+
+### **16.5.5 Updating intra-zonal distances**
+
+In this section, we are going to append a constant value to replace the intra-zonal distance of 0.
+
+First, we will select and find out the **minimum value** of the distance by using `summary()`.
+
+```{r}
+distPair %>%
+  filter(dist > 0) %>%
+  summary()
+```
+
+After removing distance = 0 (intra), the minimum inter-zonal distance is 173.8m.
+
+Next, a constant distance value of 50m (**estimate based on 173.8m**) is added into intra-zones distance. The diagonals of dist matrix (if still a matrix) would have been 50m.
+
+```{r}
+distPair$dist <- ifelse(distPair$dist == 0,
+                        50, distPair$dist)
+```
+
+The code chunk below will be used to check the result data.frame.
+
+```{r}
+distPair %>%
+  summary()
+```
+
+The code chunk below is used to rename the origin and destination fields.
+
+```{r}
+distPair <- distPair %>%
+  rename(orig = Var1,
+         dest = Var2)
+```
+
+Lastly, the code chunk below is used to save the dataframe for future use.
+
+```{r}
+#| eval: false
+write_rds(distPair, "data/rds/distPair.rds") 
+```
+
+## **16.6 Preparing flow data**
+
+The code chunk below is used import *od_data* save in Chapter 15 into R environment.
+
+There are 310 unique origin subzone values and 311 unique destin subzone values.
+
+```{r}
+od_data <- read_rds("data/rds/od_data.rds")
+```
+
+Next, we will compute the total passenger trip between and within planning subzones by using the code chunk below. The output is all *flow_data*.
+
+```{r}
+flow_data <- od_data %>%
+  group_by(ORIGIN_SZ, DESTIN_SZ) %>% 
+  summarize(TRIPS = sum(MORNING_PEAK)) 
+
+head(flow_data, 10)
+```
+
+### **16.6.1 Separating intra-flow from passenger volume df**
+
+Code chunk below is used to add three new fields in `flow_data` dataframe.
+
+Two new fields called 'FlowNoIntra' and 'offset' are created.
+
+```{r}
+flow_data$FlowNoIntra <- ifelse(
+  flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ, 
+  0, flow_data$TRIPS)
+flow_data$offset <- ifelse(
+  flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ, 
+  0.000001, 1)
+```
+
+Print
+
+```{r}
+head(flow_data,3) %>% knitr::kable()
+glimpse(flow_data)
+```
+
+### **16.6.2 Combining passenger volume data with distance value**
+
+Before we can join *flow_data* and *distPair*, we need to convert data value type of *ORIGIN_SZ* and *DESTIN_SZ* fields of flow_data dataframe into factor data type.
+
+```{r}
+flow_data$ORIGIN_SZ <- as.factor(flow_data$ORIGIN_SZ)
+flow_data$DESTIN_SZ <- as.factor(flow_data$DESTIN_SZ)
+```
+
+Now, `left_join()` of **dplyr** will be used to *flow_data* dataframe and *distPair* dataframe. The output is called *flow_data1*.
+
+Notes:
+
+`distPair` is a df containing distances for all corresponding subzone pairs (including self, default to 50m). 'var1', 'var2', 'dist'
+
+`flow_data` is a df containing 'origin_sz', 'destin_sb' and 'morning_peak'
+
+We will now perform a left join with two sets join keys.
+
+The output contains **distance** and total morning peak trips for each possible pairs of subzones (self included).
+
+Before left join:
+
+`flow_data` has 20,987 rows.
+
+`distPair` has 110,224 rows (is the all possible pairs out of 332 subzones, order matters and with replacement.)
+
+After join:
+
+`flow_data1` has 20,987 rows.
+
+`flow_data` has no distance. `flow_data1` has distance data.
+
+```{r}
+flow_data1 <- flow_data %>%
+  left_join (distPair,
+             by = c("ORIGIN_SZ" = "orig",
+                    "DESTIN_SZ" = "dest"))
+
+glimpse(flow_data1)
+```
+
+Print out
+
+```{r}
+head(flow_data1) %>% knitr::kable()
+```
+
+## **16.7 Preparing Origin and Destination Attributes**
+
+### **16.7.1 Importing population data**
+
+'pop.csv' is a processed version of 'respopagesextod2011to2020.csv' .
+
+The original dataset used here is the *Singapore Residents by Planning Area / Subzone, Single Year of Age and Sex, June 2022* in csv format . This is an aspatial data file. It can be downloaded at [Department of Statistics](https://www.singstat.gov.sg/), Singapore, the specific link can be found [here](https://www.singstat.gov.sg/find-data/search-by-theme/population/geographic-distribution/latest-data). Although it does not contain any coordinates values, but it's 'PA' and 'SZ' fields can be used as unique identifiers to geocode to 'PLAN_AREA_N' and 'SUBZONE_N' of the MP14_SUBZONE_WEB_PL shapefile respectively.
+
+```{r}
+pop <- read_csv("data/aspatial/pop.csv")
+head(pop)
+```
+
+**Why is the data prepared in this way?**
+
+Age group 7-12: Feeder bus to send kids to school
+
+Age group 13-24: Feeder bus for secondary / JC / ITE/ poly students to school.
+
+**Interesting observation**: When we examine the flow map in Hands-on_Ex3, the top few flow movement by bus have their destinations at Republic Poly in woodlands, AMK central ITE along AMK ave 5 for instance.
+
+### **16.7.2 Geospatial data wrangling**
+
+**POP + MPSZ**
+
+Let us append the zone codes in `mpsz` df to the `pop`'s population data by age groups. We do not really need to geometry data.
+
+`pop` has 332 rows
+
+mpsz has 332 rows
+
+After join: 984,656 rows
+
+Column selected are 'PA', 'SZ', 'AGE7-12', 'AGE13-24', 'AGE25_64' from pop df and 'SUBZONE_C' from mpsz df.
+
+```{r}
+pop <- pop %>%
+  left_join(mpsz,
+            by = c("PA" = "PLN_AREA_N",
+                   "SZ" = "SUBZONE_N")) %>%
+  select(1:6) %>%
+  rename(SZ_NAME = SZ,
+         SZ = SUBZONE_C)
+
+head(pop)
+```
+
+### **16.7.3 Preparing origin attribute**
+
+**FLOW_DATA1 + POP**
+
+We would like to append the **origin's population data** from `pop` to `flow_data1` that **contains(1) origin -destination pair, (2) actual flows and (3) distance information.**
+
+```{r}
+flow_data1 <- flow_data1 %>%
+  left_join(pop,
+            by = c(ORIGIN_SZ = "SZ")) %>%
+  rename(ORIGIN_AGE7_12 = AGE7_12,
+         ORIGIN_AGE13_24 = AGE13_24,
+         ORIGIN_AGE25_64 = AGE25_64) %>%
+  select(-c(PA, SZ_NAME))
+```
+
+*Morning pea*k: the **push** factor should be the population from origin population distribution.
+
+*Evening peak* : the **pull** factor would be the population too.
+
+Limits of our model: transfer trips not accounted for.
+
+### **16.7.4 Preparing destination attribute**
+
+Similarly, we want to get the destination's population data by destination from `pop`. Once again, perform a left join.
+
+```{r}
+flow_data1 <- flow_data1 %>%
+  left_join(pop,
+            by = c(DESTIN_SZ = "SZ")) %>%
+  rename(DESTIN_AGE7_12 = AGE7_12,
+         DESTIN_AGE13_24 = AGE13_24,
+         DESTIN_AGE25_64 = AGE25_64) %>%
+  select(-c(PA, SZ_NAME))
+```
+
+We will called the output data file *SIM_data*. it is in rds data file format.
+
+```{r}
+#| eval: false
+write_rds(flow_data1, "data/rds/SIM_data")
+```
+
+## **16.8 Calibrating Spatial Interaction Models**
+
+In this section, you will learn how to calibrate Spatial Interaction Models by using Poisson Regression method.
+
+### **16.8.1 Importing the modelling data**
+
+Firstly, let us import the modelling data by using the code chunk below.
+
+```{r}
+SIM_data <- read_rds("data/rds/SIM_data.rds")
+```
+
+### **16.8.2 Visualising the dependent variable**
+
+Firstly, let us plot the distribution of the dependent variable (i.e. TRIPS) by using histogram method by using the code chunk below.
+
+```{r}
+ggplot(data = SIM_data,
+       aes(x = TRIPS)) +
+  geom_histogram()
+```
+
+Notice that the distribution is highly skewed and not resemble bell shape or also known as normal distribution.
+
+Next, let us visualise the relation between the dependent variable and one of the key independent variable in Spatial Interaction Model, namely distance.
+
+```{r}
+ggplot(data = SIM_data,
+       aes(x = dist,
+           y = TRIPS)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+Notice that their relationship hardly resemble linear relationship.
+
+On the other hand, if we plot the scatter plot by using the log transformed version of both variables, we can see that their relationship is more resemble linear relationship.
+
+```{r}
+ggplot(data = SIM_data,
+       aes(x = log(dist),
+           y = log(TRIPS))) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+We have come to the end of our data preparation stage.
+
+### **16.8.3 Checking for variables with zero values**
+
+Feature engineering state starts here: We need to make our data able to work for our chosen algorithm (Poisson regression).
+
+Since **Poisson** Regression is based of **log** and **log 0 is undefined**, it is important for us to ensure that **no 0** values in the explanatory variables.
+
+In the code chunk below, summary() of Base R is used to compute the summary statistics of all variables in *SIM_data* data frame.
+
+### **16.8.4 Unconstrained Spatial Interaction Model**
+
+In this section, we will learn how to calibrate an unconstrained spatial interaction model by using `glm()` of Base Stats. The **explanatory** variables are **origin population by different age cohort**, **destination population by different age cohort** (i.e. *ORIGIN_AGE25_64*) and **distance** between origin and destination in km (i.e. *dist*).
+
+The general formula of Unconstrained Spatial Interaction Model
+
+![](https://r4gdsa.netlify.app/chap15/img/image1.jpg)
+
+The code chunk used to calibrate to model is shown below:
+
+```{r}
+#| eval: false
+#| echo: false
+
+uncSIM <- glm(formula = TRIPS ~ 
+                log(ORIGIN_AGE25_64) + 
+                log(DESTIN_AGE25_64) +  # write it as positve, we will see a negative value in the results page.
+                log(dist),
+              family = poisson(link = "log"),
+              data = SIM_data,
+              na.action = na.exclude)
+uncSIM
+```
+
+The parameter estimate for distnace is -1.517. If the sign is positive, double-check our workings.
+
+AIC: GLM by default do not provide R-square, only provide AIC.
+
+Compare models:
+
+Doubly constrained: **best** model as not dispersed. 60% accuracy because we only have one/two variables if we add more variables like job opportunities.
+
+```{r}
+
+#| eval: false
+#| echo: false
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: True
+```
+
+## Summaries
+
+OD matrix is often incomplete. Imagine trying to complete the OD matrix, it would involve us doing spatial interaction or OD surveys to find the missing values. There are 332 subzones in Singapore, and each survey is expensive,. In addition, OD matrix is constantly changing as flow patterns changes. We are trying to predict flows between origins and destinations. Flow could be thought of a function of (1) attribute of origin (propulsiveness) (2) attribute of destination (attractiveness) and (3) cost friction (like distance or transport cost or public transport stops). Assumption is that the **benefits** must outweigh the **cost** in order for flow to happen.
+
+**Gravity model** takes into consideration the interaction between all origin and destination locations.
+
+**Potential model** takes in consideration the interaction between a location and all other location pairs. (Good for measuring accessibility)
+
+**Retail model** is commonly used by franchise like KFC / Pizza Hut to determine their area/region of service (aka delivery zones) for each outlet.
+
+There are 4 variations in the Gravity model:
+
+1.  Unconstrained: only the overall outflow is fixed and total outflow from origins = total inflow to destinations
+2.  Origin constrained: outflow by origin is fixed.
+3.  Destination constrained: inflow by destination is fixed.
+4.  Doubly constrained: outflow by origin and inflow by destination is fixed.
+
+To calculate flow from each origin to each destination, we need parameters like k, alpha, lambda and beta. The beta for distance is usually negative because we assume that there is an inverse relationship between interaction and distance, like Newtonian physics and laws of gravity.
