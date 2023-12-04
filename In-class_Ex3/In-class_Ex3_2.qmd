@@ -446,6 +446,8 @@ head(SIM_data)
 Firstly, let us plot the distribution of the **dependent** variable (i.e. **TRIPS)** by using histogram method by using the code chunk below.
 
 ```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
 ggplot(data = SIM_data,
        aes(x = TRIPS)) +
   geom_histogram()
@@ -456,6 +458,8 @@ Notice that the distribution is highly skewed and not resemble bell shape or als
 Next, let us visualise the relation between the dependent variable and one of the key **independent** variable in Spatial Interaction Model, namely **distance**.
 
 ```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
 ggplot(data = SIM_data,
        aes(x = dist, # independent
            y = TRIPS)) +  #dependent
@@ -468,6 +472,8 @@ Notice that their relationship hardly resemble linear relationship.
 On the other hand, if we plot the scatter plot by using the **log transformed version of both variable**s, we can see that their relationship is more resemble linear relationship.
 
 ```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
 ggplot(data = SIM_data,
        aes(x = log(dist),
            y = log(TRIPS))) +
@@ -532,7 +538,7 @@ The general formula of Unconstrained Spatial Interaction Model
 
 The code chunk used to calibrate to model is shown below:
 
-Taking natural log on both sides, ln(lambda) = k + mu\* *ln*V  + alpha\* ln W + beta\*ln d). Indicate `link`='log'
+Taking natural log on both sides, ln(lambda) = k + mu\* *ln*V + alpha\* ln W + beta\*ln d). Indicate `link`='log'
 
 More information on family and link can be found [here](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/family).
 
@@ -642,7 +648,14 @@ decSIM <- glm(formula = TRIPS ~
 summary(decSIM)
 ```
 
-It seems like there are several destination subzone predictors that are not statiscally significant at 95% confidence level.
+```{r}
+methods(class= class(decSIM))
+attributes(decSIM) # so we know how to access
+#decSIM['fitted.values']
+#plot(check_normality(decSIM))
+```
+
+There are several destination subzone predictors that are not statiscally significant at 95% confidence level.
 
 ```{r}
 CalcRSquared(decSIM$data$TRIPS, decSIM$fitted.values)
@@ -672,9 +685,6 @@ CalcRSquared(dbcSIM$data$TRIPS, dbcSIM$fitted.values)
 ```
 
 We notice that there is a relatively greater improvement in the R\^2 value for the doubly constrained model.
-
-
-
 
 ### **16.8.9 Model comparison**
 
@@ -706,9 +716,109 @@ In this section, we will learn how to visualise the **observed values** and the 
 
 Firstly we will extract the fitted values from each model by using the code chunk below.
 
-Compare models:
+```{r}
+df <- as.data.frame(uncSIM$fitted.values) %>% 
+  round(digits=0)
+head(df)
+```
 
-Doubly constrained: **best** model as not dispersed. 60% accuracy because we only have one/two variables if we add more variables like job opportunities.
+Next, we will join the values to *SIM_data* data frame.
+
+```{r}
+SIM_data <- SIM_data %>% 
+  cbind(df) %>% 
+  rename(uncTRIPS = `uncSIM$fitted.values`)
+```
+
+Repeat the same step by for Origin Constrained SIM (i.e. orcSIM)
+
+```{r}
+df <- as.data.frame(orcSIM$fitted.values) %>%
+  round(digits = 0)
+```
+
+```{r}
+SIM_data <- SIM_data %>%
+  cbind(df) %>%
+  rename(orcTRIPS = "orcSIM$fitted.values")
+```
+
+Repeat the same step by for Destination Constrained SIM (i.e. decSIM)
+
+```{r}
+df <- as.data.frame(decSIM$fitted.values) %>%
+  round(digits = 0)
+```
+
+```{r}
+SIM_data <- SIM_data %>%
+  cbind(df) %>%
+  rename(decTRIPS = "decSIM$fitted.values")
+```
+
+Repeat the same step by for Doubly Constrained SIM (i.e. dbcSIM)
+
+```{r}
+df <- as.data.frame(dbcSIM$fitted.values) %>%
+  round(digits = 0)
+```
+
+```{r}
+SIM_data <- SIM_data %>%
+  cbind(df) %>%
+  rename(dbcTRIPS = "dbcSIM$fitted.values")
+```
+
+```{r}
+sums_vector <- c(sum(SIM_data$TRIPS),
+                 sum(SIM_data$uncTRIPS), 
+                 sum(SIM_data$orcTRIPS),
+                 sum(SIM_data$decTRIPS),
+                 sum(SIM_data$dbcTRIPS)
+                 )
+
+data.frame(Sums= sums_vector) %>% knitr::kable() 
+```
+
+In theory, the sum of the all the TRIPS should be equal. The mis-match in values could be due to `round()` function used earlier.
+
+Using the [`ggarrange()`](https://rpkgs.datanovia.com/ggpubr/reference/ggarrange.html) function of the ggpubr package, we will now print the 'actual vs predicted' plots side-by-side
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+unc_p <- ggplot(data = SIM_data,
+                aes(x = uncTRIPS,
+                    y = TRIPS)) +
+  geom_point() +
+  geom_smooth(method = lm)
+
+orc_p <- ggplot(data = SIM_data,
+                aes(x = orcTRIPS,
+                    y = TRIPS)) +
+  geom_point() +
+  geom_smooth(method = lm)
+
+dec_p <- ggplot(data = SIM_data,
+                aes(x = decTRIPS,
+                    y = TRIPS)) +
+  geom_point() +
+  geom_smooth(method = lm)
+
+dbc_p <- ggplot(data = SIM_data,
+                aes(x = dbcTRIPS,
+                    y = TRIPS)) +
+  geom_point() +
+  geom_smooth(method = lm)
+
+ggarrange(unc_p, orc_p, dec_p, dbc_p,
+          ncol = 2,
+          nrow = 2)
+```
+
+**Discussion on results:**
+
+Doubly constrained: **best** model as not dispersed. The R\^2 value of doubly constrained model is 0.688, which means that our indpendent variables can account for more than 60% of the variance in our target variable (Trips) . We have only achieved 60% accuracy because we have only one or two variables. If we add more variables like job opportunities in each destination, we could potentially get better results.
 
 ```{r}
 
