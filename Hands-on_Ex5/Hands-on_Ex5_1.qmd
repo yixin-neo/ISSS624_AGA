@@ -1,0 +1,47 @@
+---
+title: "Hands-on Exercise 5.1: Geographically Weighted Machine Learning"
+author: "NeoYX"
+date: '11 Dec 2023'
+date-modified: "`r Sys.Date()`"
+editor: visual
+execute: 
+  freeze: auto
+  warning: false
+  #echo: false
+  #message: false
+format: 
+  html:
+    code-fold: false
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
+---
+
+## **15.1 Overview**
+
+To be updated.
+
+## **15.2 Getting Started**
+
+To be updated
+
+```{r}
+#| eval: false
+#| echo: false
+pacman::p_load(tmap, sf, DT, stplanr,
+               performance,
+               ggpubr, tidyverse)
+```
+
+## 
+
+```{r}
+
+#| eval: false
+#| echo: false
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: True
+```
+
+## Summaries

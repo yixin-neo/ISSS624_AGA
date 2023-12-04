@@ -1,0 +1,82 @@
+---
+title: "Hands-on Exercise 4.1: Geopraphically Weighted Regression"
+author: "NeoYX"
+date: '4 Dec 2023'
+date-modified: "`r Sys.Date()`"
+editor: visual
+execute: 
+  freeze: auto
+  warning: false
+  #echo: false
+  #message: false
+format: 
+  html:
+    code-fold: false
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
+---
+
+## **13.1 Overview**
+
+**Geographically weighted regression (GWR)** is a spatial statistical technique that takes non-stationary variables into consideration (e.g., climate; demographic factors; physical environment characteristics) and models the local relationships between these independent variables and an outcome of interest (also known as dependent variable). In this hands-on exercise, you will learn how to build [hedonic pricing](https://www.investopedia.com/terms/h/hedonicpricing.asp) models by using GWR methods. The dependent variable is the resale prices of condominium in 2015. The independent variables are divided into either structural and locational.
+
+## **13.2 The Data**
+
+Two data sets will be used in this model building exercise, they are:
+
+-   URA Master Plan subzone boundary in shapefile format (i.e. *MP14_SUBZONE_WEB_PL*)
+
+-   condo_resale_2015 in csv format (i.e. *condo_resale_2015.csv*)
+
+## **13.3 Getting Started**
+
+Before we get started, it is important for us to install the necessary R packages into R and launch these R packages into R environment.
+
+The R packages needed for this exercise are as follows:
+
+-   R package for building OLS and performing diagnostics tests
+
+    -   [**olsrr**](https://olsrr.rsquaredacademy.com/)
+
+-   R package for calibrating geographical weighted family of models
+
+    -   [**GWmodel**](https://cran.r-project.org/web/packages/GWmodel/)
+
+-   R package for multivariate data visualisation and analysis
+
+    -   [**corrplot**](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html)
+
+-   [ggpubr](https://rpkgs.datanovia.com/ggpubr/) for some easy-to-use functions for creating and customizing 'ggplot2'- based publication ready plots.
+
+-   Spatial data handling
+
+    -   **sf** for importing, integrating, processing and transforming geospatial data.
+
+-   Attribute data handling
+
+    -   **tidyverse**, especially **readr**, **ggplot2** and **dplyr**
+
+-   Choropleth mapping
+
+    -   **tmap** for creating thematic maps
+
+The code chunks below installs and launches these R packages into R environment.
+
+```{r}
+#| eval: false
+#| echo: false
+
+pacman::p_load(olsrr, corrplot, ggpubr, sf, spdep, GWmodel, tmap, tidyverse, gtsummary, DT, knitr)
+```
+
+```{r}
+
+#| eval: false
+#| echo: false
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: True
+```
+
+## Summaries

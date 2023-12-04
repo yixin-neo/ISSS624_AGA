@@ -1,0 +1,14 @@
+{
+  "hash": "8a6bf4d1a5fd931bb725a16d31168557",
+  "result": {
+    "markdown": "---\ntitle: \"Hands-on Exercise 5.1: Geographically Weighted Machine Learning\"\nauthor: \"NeoYX\"\ndate: '11 Dec 2023'\ndate-modified: \"2023-12-04\"\neditor: visual\nexecute: \n  freeze: auto\n  warning: false\n  #echo: false\n  #message: false\nformat: \n  html:\n    code-fold: false\n    code-overflow: scroll\n    code-summary: \"Show the code\"\n    code-line-numbers: true\n---\n\n\n## **15.1 Overview**\n\nTo be updated.\n\n## **15.2 Getting Started**\n\nTo be updated\n\n\n::: {.cell}\n\n:::\n\n\n## \n\n\n::: {.cell}\n\n```{.r .cell-code}\n#| eval: false\n#| echo: false\n#| fig-width: 14\n#| fig-asp: 0.68\n#| code-fold: True\n```\n:::\n\n\n## Summaries\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
