@@ -19,7 +19,13 @@ format:
 
 ## **13.1 Overview**
 
-**Geographically weighted regression (GWR)** is a spatial statistical technique that takes non-stationary variables into consideration (e.g., climate; demographic factors; physical environment characteristics) and models the local relationships between these independent variables and an outcome of interest (also known as dependent variable). In this hands-on exercise, you will learn how to build [hedonic pricing](https://www.investopedia.com/terms/h/hedonicpricing.asp) models by using GWR methods. The dependent variable is the resale prices of condominium in 2015. The independent variables are divided into either structural and locational.
+**Geographically weighted regression (GWR)** is a spatial statistical technique that takes **non-stationary variables** into consideration (e.g., climate; demographic factors; physical environment characteristics) and models the local relationships between these independent variables and an outcome of interest (also known as dependent variable).
+
+In this hands-on exercise, we will learn how to build [hedonic pricing](https://www.investopedia.com/terms/h/hedonicpricing.asp) models by using GWR methods.
+
+Hedonic Pricing is a model that identifies price factors according to the premise that price is determined by internal and external factors affecting it. For housing, internal could mean size, height, appearance, solar panels while external could mean crime rate, distance to school or downtown area.
+
+The **dependent** variable is the **resale** prices of condominium in 2015. The **independent** variables are divided into either **structural** and **locational**.
 
 ## **13.2 The Data**
 
@@ -27,7 +33,9 @@ Two data sets will be used in this model building exercise, they are:
 
 -   URA Master Plan subzone boundary in shapefile format (i.e. *MP14_SUBZONE_WEB_PL*)
 
--   condo_resale_2015 in csv format (i.e. *condo_resale_2015.csv*)
+-   Condo_resale_2015 in csv format (i.e. *Condo_resale_2015.csv*)
+
+Using MP14 instead of MP19 because of condo_resale_2015.
 
 ## **13.3 Getting Started**
 
@@ -42,6 +50,15 @@ The R packages needed for this exercise are as follows:
 -   R package for calibrating geographical weighted family of models
 
     -   [**GWmodel**](https://cran.r-project.org/web/packages/GWmodel/)
+
+    -   By calibration, we meant estimating local parameters that vary spatially for each location in the study area, considering nearby observations with higher weights and more distant observations with lower weights.
+        This allows the relationship between variables to vary spatially, capturing local variations in the relationships.
+
+    -   The significance of the variables can be assessed locally, telling us where (at which location) specific predictors have a more significant impact on our dependent variable.
+
+    -   Model Evaluation:: The calibration process in GWR involves fitting the model to the data at each location, and the quality of the fit can be assessed through various diagnostics (e.g., residuals, local R-squared values).
+
+    -   When calibrating a Geographically Weighted Regression model, the emphasis is on capturing spatial heterogeneity in the relationships between variables and understanding how these relationships change across the study area. This is different from traditional models that assume a globally constant relationship. (Hands-on3 and In-class3)
 
 -   R package for multivariate data visualisation and analysis
 
@@ -64,11 +81,264 @@ The R packages needed for this exercise are as follows:
 The code chunks below installs and launches these R packages into R environment.
 
 ```{r}
-#| eval: false
-#| echo: false
-
 pacman::p_load(olsrr, corrplot, ggpubr, sf, spdep, GWmodel, tmap, tidyverse, gtsummary, DT, knitr)
 ```
+
+## **13.4 A short note about GWmodel**
+
+[**GWmodel**](https://www.jstatsoft.org/article/view/v063i17) package provides a collection of **localised** spatial statistical methods, namely: GW summary statistics, GW principal components analysis, GW discriminant analysis and various forms of GW regression; some of which are provided in basic and robust (outlier resistant) forms. Commonly, outputs or parameters of the GWmodel are mapped to provide a useful exploratory tool, which can often precede (and direct) a more traditional or sophisticated statistical analysis.
+
+## **13.5 Geospatial Data Wrangling**
+
+### **13.5.1 Importing geospatial data**
+
+The geospatial data used in this hands-on exercise is called MP14_SUBZONE_WEB_PL. It is in ESRI shapefile format. The shapefile consists of URA Master Plan 2014\'s planning subzone boundaries. Polygon features are used to represent these geographic boundaries. The GIS data is in svy21 projected coordinates systems.
+
+The code chunk below is used to import *MP_SUBZONE_WEB_PL* shapefile by using `st_read()` of **sf** packages.
+
+```{r}
+mpsz = st_read(dsn = "data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
+
+st_crs(mpsz)
+```
+
+The report above shows that the R object used to contain the imported MP14_SUBZONE_WEB_PL shapefile is called *mpsz* and it is a simple feature object. The geometry type is *multipolygon*. it is also important to note that mpsz simple feature object **does not** have EPSG information.
+
+
+### **13.5.2 Updating CRS information**
+
+The code chunk below updates the newly imported *mpsz* with the correct ESPG code (i.e. 3414)
+
+```{r}
+mpsz_svy21 <- mpsz %>%  
+  st_transform(crs=3414)
+```
+
+The EPSG: is indicated as *3414* now.
+
+
+Next, we will reveal the extent (rectangular boundary) of *mpsz_svy21* by using `st_bbox()` of sf package.
+
+```{r}
+st_bbox(mpsz_svy21)
+```
+
+## **13.6 Aspatial Data Wrangling**
+
+### **13.6.1 Importing the aspatial data**
+
+The *condo_resale_2015* is in csv file format. The codes chunk below uses `read_csv()` function of **readr** package to import *condo_resale_2015* into R as a tibble data frame called *condo_resale*.
+
+```{r}
+condo_resale <- read_csv('data/aspatial/Condo_resale_2015.csv')
+```
+
+Let us examine if the data file has been imported correctly.
+
+The codes chunks below uses `glimpse()` to display the data structure.
+
+```{r}
+glimpse(condo_resale)
+```
+
+Check the first five longitude (X) and latitude (Y) columns.
+
+```{r}
+condo_resale %>% select(1,2) %>% head()
+```
+
+Next, `summary()` of base R is used to display the summary statistics of *cond_resale* tibble data frame.
+
+Longitude and latitude are in decimal deg (\< 360deg) , WSG84 (or crs 4326).
+
+Some postal codes are only 5 digits, the number 0 in front could have been truncated.
+
+```{r}
+summary(condo_resale)
+```
+
+### **13.6.2 Converting aspatial data frame into a sf object**
+
+Currently, the *condo_resale* tibble data frame is aspatial. We will convert it to a **sf** object. The code chunk below converts condo_resale data frame into a simple feature **POINT** data frame by using `st_as_sf()` of **sf** packages.
+
+```{r}
+condo_resale.sf <- st_as_sf(condo_resale,
+                            coords = c('LONGITUDE',
+                                       'LATITUDE'),
+                            crs = 4326) %>% 
+  st_transform(crs= 3414)
+```
+
+Notice that `st_transform()` of **sf** package is used to convert the coordinates from wgs84 (i.e. crs:4326) to svy21 (i.e. crs=3414).
+
+Next, `head()` is used to list the content of *condo_resale.sf* object.
+
+```{r}
+head(condo_resale.sf)
+```
+
+Notice that the output is in point feature data frame.
+
+## **13.7 Exploratory Data Analysis (EDA)**
+
+In the section, wewill learn how to use statistical graphics functions of **ggplot2** package to perform EDA.
+
+### **13.7.1 EDA using statistical graphics**
+
+We can plot the distribution of *SELLING_PRICE* by using appropriate Exploratory Data Analysis (EDA) as shown in the code chunk below.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+ggplot(data=condo_resale.sf, aes(x=`SELLING_PRICE`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+```
+
+```{r}
+#| eval: false
+#| echo: false
+set.seed(1234)
+
+median(condo_resale.sf$`SELLING_PRICE`)
+# mean= 1751211 , median=1383222
+
+nortest::ad.test(condo_resale.sf$`SELLING_PRICE`)
+# selling_price  does not follow normal distribution
+# we can reject the null hypo and conclude that the selling priec is not normally distributed.
+ggstatsplot::gghistostats(data=condo_resale.sf,
+             x = `SELLING_PRICE`,
+             type='nonparametric',
+             test.value =1383222,
+             conf.level = 0.95,
+             xlab = 'Selling price')
+# we can reject the null hypothesis and conclude that the median selling price is not $1,383,222
+```
+
+The figure above reveals a **right skewed** distribution. This means that **more** condominium units were transacted at relative **lower** prices.
+
+Statistically, the skewed distribution can be normalised by using **log** transformation. The code chunk below is used to derive a new variable called *LOG_SELLING_PRICE* by using a log transformation on the variable *SELLING_PRICE*. It is performed using `mutate()` of **dplyr** package.
+
+```{r}
+condo_resale.sf <- condo_resale.sf %>% 
+  mutate(`LOG_SELLING_PRICE` = log(SELLING_PRICE))
+```
+
+Now, we can plot the *LOG_SELLING_PRICE* using the code chunk below.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+ggplot(data=condo_resale.sf, aes(x=`LOG_SELLING_PRICE`)) +
+  geom_histogram(bins=20, color="black", fill="light blue") 
+```
+
+Check for normality of the LOG_SELLING_PRICE. Although it is still not normally-distributed, it is less skewed after the transformation.
+
+```{r}
+nortest::ad.test(condo_resale.sf$`LOG_SELLING_PRICE`)
+```
+
+### **13.7.2 Multiple Histogram Plots distribution of variables**
+
+In this section, we will learn how to draw a small multiple histograms (also known as trellis plot) by using `ggarrange()` of [**ggpubr**](https://cran.r-project.org/web/packages/ggpubr/) package.
+
+The code chunk below is used to create 12 histograms. Then, `ggarrange()` is used to organised these histogram into a 3 columns by 4 rows small multiple plot.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+AREA_SQM <- ggplot(data=condo_resale.sf, aes(x= `AREA_SQM`)) + 
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+AGE <- ggplot(data=condo_resale.sf, aes(x= `AGE`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_CBD <- ggplot(data=condo_resale.sf, aes(x= `PROX_CBD`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_CHILDCARE <- ggplot(data=condo_resale.sf, aes(x= `PROX_CHILDCARE`)) + 
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_ELDERLYCARE <- ggplot(data=condo_resale.sf, aes(x= `PROX_ELDERLYCARE`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_URA_GROWTH_AREA <- ggplot(data=condo_resale.sf, 
+                               aes(x= `PROX_URA_GROWTH_AREA`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_HAWKER_MARKET <- ggplot(data=condo_resale.sf, aes(x= `PROX_HAWKER_MARKET`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_KINDERGARTEN <- ggplot(data=condo_resale.sf, aes(x= `PROX_KINDERGARTEN`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_MRT <- ggplot(data=condo_resale.sf, aes(x= `PROX_MRT`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_PARK <- ggplot(data=condo_resale.sf, aes(x= `PROX_PARK`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_PRIMARY_SCH <- ggplot(data=condo_resale.sf, aes(x= `PROX_PRIMARY_SCH`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_TOP_PRIMARY_SCH <- ggplot(data=condo_resale.sf, 
+                               aes(x= `PROX_TOP_PRIMARY_SCH`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+ggarrange(AREA_SQM, AGE, PROX_CBD, PROX_CHILDCARE, PROX_ELDERLYCARE, 
+          PROX_URA_GROWTH_AREA, PROX_HAWKER_MARKET, PROX_KINDERGARTEN, PROX_MRT,
+          PROX_PARK, PROX_PRIMARY_SCH, PROX_TOP_PRIMARY_SCH,  
+          ncol = 3, nrow = 4)
+```
+
+```{r}
+#| eval: false
+#| echo: false
+# perform Shapiro-Wilk test on math scores by gender
+shapiro_test <- by(condo_resale.sf$SELLING_PRICE, condo_resale.sf$FREEHOLD, shapiro.test)
+
+# extract p-values
+p_values <- sapply(shapiro_test, function(x) x$p.value)
+# print results
+print(p_values)
+
+# we have enough statistical evidence to reject the null hypothesis and concluded that the sellingprice by freehold does not follow normal distribution.
+```
+
+```{r}
+#| eval: false
+#| echo: false
+condo_resale.sf$FREEHOLD <- as.factor(condo_resale.sf$FREEHOLD)
+ggstatsplot::ggbetweenstats(data=condo_resale.sf,
+               x=FREEHOLD,
+               y=SELLING_PRICE,
+               type='np',
+               messages=FALSE)
+```
+
+### **13.7.3 Drawing Statistical Point Map**
+
+Lastly, we want to reveal the geospatial distribution condominium resale prices in Singapore. The map will be prepared by using **tmap** package.
+
+```{r}
+tmap_mode('plot')
+#tmap_mode('view')
+#tmap_options(check.and.fix = TRUE)
+ 
+tm_shape(mpsz_svy21)+
+  tm_polygons(alpha=0.5) +
+tm_shape(condo_resale.sf) +  
+  tm_dots(col = "SELLING_PRICE",
+          alpha = 0.6,
+          style="quantile") +
+  tm_view(set.zoom.limits = c(11,14))
+```
+
+Notice that [`tm_dots()`](https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_symbols) is used instead of `tm_bubbles()`.
+
+If in tmap_mode('view') mode,
+
+`set.zoom.limits` argument of `tm_view()` sets the minimum and maximum zoom level to 11 and 14 respectively.
 
 ```{r}
 
