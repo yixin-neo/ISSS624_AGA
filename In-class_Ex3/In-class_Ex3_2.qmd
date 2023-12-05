@@ -60,7 +60,7 @@ For the purpose of this exercise, four R packages will be used. They are:
 ```{r}
 pacman::p_load(tmap, sf, sp, DT,
                performance, reshape2,
-               ggpubr, tidyverse)
+               ggpubr, tidyverse, rcompanion)
 ```
 
 ## **16.4 The Data**
@@ -434,7 +434,7 @@ In this section, we will learn how to calibrate Spatial Interaction Models by us
 
 **Why not use the usual Linear Regression model (Ordinary least square (OLS)) method?**
 
-[![](images/shortcoming%20of%20Linear%20regression.png){width="366"}](https://www.blog.dailydoseofds.com/p/poisson-regression-the-robust-extension)
+[![](images/shortcoming%20of%20Linear%20regression.png){fig-align="center" width="366"}](https://www.blog.dailydoseofds.com/p/poisson-regression-the-robust-extension)
 
 -   OLS is commonly used for modeling continuous outcomes; target variable can be negative or positive. But it does not make sense to have negative 'TRIPS' in our context.
 
@@ -583,7 +583,7 @@ The parameter estimate for distance is -1.517. If the sign is positive (somethin
 
 ### **16.8.5 R-squared function**
 
-In order to measure how much variation of the trips can be accounted by the model we will write a function to calculate R-Squared value as shown below.
+In order to measure how much variation of the trips can be accounted by the model we will write a function to calculate R-Squared value as shown below. For GLM models, the R-square and adjusted R-square values are not defined. We can write custom functions to compute them.
 
 ```{r}
 CalcRSquared <- function(observed,estimated){
@@ -620,12 +620,57 @@ adj_r_squared <- 1 - (full_loglik / null_loglik) * (nobs(uncSIM) - 1) / (nobs(un
 print(adj_r_squared)
 ```
 
-```{r}
-#| eval: false
-#| echo: false
+Alternatively, based on this [link](https://rcompanion.org/handbook/G_10.html), for these models, p-**values** and **pseudo *R-squared*** measures can be calculated.  A few common pseudo *R-squared* measures include: McFadden, Cox and Snell (also referred to as ML), Nagelkerke (also referred to as Cragg and Uhler), Efron, and count. Efron\'s pseudo *R-squared* has the advantage of being based solely on the actual values of the dependent variable and those values predicted by the model.  This makes it relatively easy to understand. 
 
-# Next we will use the r2_mcfadden() of the performance library to calculate McFadden's pseudo R2.
-r2_mcfadden(uncSIM)
+**Calculate p-values for model**
+
+The most common way to calculate the *p*-value for a fitted model is to compare the fitted model to a null model with the *anova* function.
+
+```{r}
+null_model <- glm(TRIPS ~ 1, family = poisson, data = SIM_data)
+anova(uncSIM,
+      null_model,
+      test="Chisq")
+```
+
+**Calculate Pseudo R-squared** using `nagelkerke()` of rcompanion package.
+
+It outputs McFadden, Cox and Snell (ML), Nagelkerke values.
+
+```{r}
+nagelkerke(uncSIM)
+#r2_mcfadden(uncSIM)
+```
+
+We can obtain **Efron\'s pseudo *R-squared*** from the *efronRsquared* function or the *accuracy* function.
+
+The ***accuracy*** function also outputs several other measures of accuracy and error.
+
+```{r}
+efronRSquared(uncSIM)
+```
+
+```{r}
+accuracy(uncSIM)
+```
+
+**To calculate adjusted R-square**, write a custom function:
+
+![](images/Adj%20R%20squared%20formula.png){fig-align="center" width="158"}
+
+Reference: [link1](https://www.shiksha.com/online-courses/articles/adjusted-r-squared/) and [link2](https://communities.sas.com/t5/SAS-Programming/adjusted-R-squared-in-PROC-GLM/td-p/166446#:~:text=ADJRSQ(no%20int)%20%3D%201,the%20number%20of%20parameters%20fit.)
+
+```{r}
+Calc_AdjRSquared <- function(rsquared, n, p) {
+  result <- 1 - (1 - rsquared) * (n - 1) / (n - p - 1)
+  return(result)
+}
+```
+
+```{r}
+Calc_AdjRSquared(CalcRSquared(uncSIM$data$TRIPS, uncSIM$fitted.values),
+                 length(uncSIM$data$TRIPS),
+                 3)
 ```
 
 ### **16.8.6 Origin (Production) constrained SIM**

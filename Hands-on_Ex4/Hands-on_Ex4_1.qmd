@@ -71,6 +71,10 @@ The R packages needed for this exercise are as follows:
 
     -   **tmap** for creating thematic maps
 
+-   Create publication ready summary tables in R
+
+    -   [gtsummary](https://www.danieldsjoberg.com/gtsummary/) package and its [tbl_regression()](https://www.danieldsjoberg.com/gtsummary/reference/tbl_regression.html) function
+
 The code chunks below installs and launches these R packages into R environment.
 
 ```{r}
@@ -361,7 +365,7 @@ attributes(condo.slr)
 methods(class=class(condo.slr))
 ```
 
-`lm()` returns an object of class \"lm\" or for multiple responses of class c(\"mlm\", \"lm\").
+`lm()` returns an object of class "lm" or for multiple responses of class c("mlm", "lm").
 
 The functions `summary()` and `anova()` can be used to obtain and print a summary and analysis of variance table of the results. The generic accessor functions coefficients, effects, fitted.values and residuals extract various useful features of the value returned by `lm`.
 
@@ -379,7 +383,7 @@ Since p-value is much smaller than 0.0001, we will reject the null hypothesis th
 
 The **Coefficients:** section of the report reveals that the p-values of both the estimates of the Intercept and ARA_SQM are smaller than 0.001. In view of this, the null hypothesis of the B0 and B1 are equal to 0 will be rejected. As a results, we will be able to infer that the B0 and B1 are good parameter estimates.
 
-To visualise the best fit curve on a scatterplot, we can incorporate `lm()` as a method function in ggplot\'s geometry as shown in the code chunk below.
+To visualise the best fit curve on a scatterplot, we can incorporate `lm()` as a method function in ggplot's geometry as shown in the code chunk below.
 
 ```{r}
 #| fig-width: 14
@@ -421,7 +425,7 @@ corrplot(cor(condo_resale[,5:23]),
          type = 'upper')
 ```
 
-Matrix reorder is very important for mining the hiden structure and patter in the matrix. There are four methods in corrplot (parameter order), named \"AOE\", \"FPC\", \"hclust\", \"alphabet\". In the code chunk above, AOE order is used. It orders the variables by using the *angular order of the eigenvectors* method suggested by [Michael Friendly](https://www.datavis.ca/papers/corrgram.pdf).
+Matrix reorder is very important for mining the hiden structure and patter in the matrix. There are four methods in corrplot (parameter order), named "AOE", "FPC", "hclust", "alphabet". In the code chunk above, AOE order is used. It orders the variables by using the *angular order of the eigenvectors* method suggested by [Michael Friendly](https://www.datavis.ca/papers/corrgram.pdf).
 
 **`tl.pos`:** This parameter specifies the position of the variable names (text labels) around the correlation plot. It can take one of the following values:
 
@@ -452,34 +456,189 @@ Previously, we have use `lm(formula=SELLING_PRICE ~ AREA_SQM, data = condo_resal
 The code chunk below using `lm()` to **calibrate** the *multiple* linear regression model, ***LEASE_99YEAR*** has been excluded.
 
 ```{r}
-condo.mlr <- lm(formula = SELLING_PRICE ~ AREA_SQM + AGE    + 
+condo.mlr18 <- lm(formula = log(SELLING_PRICE) ~ AREA_SQM + AGE    + 
                   PROX_CBD + PROX_CHILDCARE + PROX_ELDERLYCARE +
                   PROX_URA_GROWTH_AREA + PROX_HAWKER_MARKET + PROX_KINDERGARTEN + 
                   PROX_MRT  + PROX_PARK + PROX_PRIMARY_SCH + 
                   PROX_TOP_PRIMARY_SCH + PROX_SHOPPING_MALL + PROX_SUPERMARKET + 
                   PROX_BUS_STOP + NO_Of_UNITS + FAMILY_FRIENDLY + FREEHOLD, 
                 data=condo_resale.sf)
-summary(condo.mlr)
+summary(condo.mlr18)
 ```
 
-The non-significant variables are 'PROX_HAWKER_MARKET', 'PROX_KINDERGARTEN', 'PROX_TOP_PRIMARY_SCH' and 'PROX_SUPERMARKET '.
+The 4 non-significant variables are 'PROX_HAWKER_MARKET', 'PROX_KINDERGARTEN', 'PROX_TOP_PRIMARY_SCH' and 'PROX_SUPERMARKET'.
 
 ### **13.8.4 Preparing Publication Quality Table: olsrr method**
 
-With reference to the report above, it is clear that not all the independent variables are statistically significant. We will revised the model by removing those variables which are not statistically significant.
+With reference to the report above, it is clear that not all the independent variables are statistically significant. We will revised the model by removing those **4** variables above which are not statistically significant.
 
 Now, we are ready to calibrate the revised model by using the code chunk below.
 
 ```{r}
-condo.mlr1 <- lm(formula = SELLING_PRICE ~ AREA_SQM + AGE + 
+condo.mlr14 <- lm(formula = SELLING_PRICE ~ AREA_SQM + AGE + 
                    PROX_CBD + PROX_CHILDCARE + PROX_ELDERLYCARE +
                    PROX_URA_GROWTH_AREA + PROX_MRT  + PROX_PARK + 
                    PROX_PRIMARY_SCH + PROX_SHOPPING_MALL    + PROX_BUS_STOP + 
                    NO_Of_UNITS + FAMILY_FRIENDLY + FREEHOLD,
                  data=condo_resale.sf)
 
-ols_regress(condo.mlr1)
+ols_regress(condo.mlr14)
 ```
+
+**Confidence** **Interval Interpretation:** The entire confidence interval for age predictor is \[-30091.739, -19283.740\]. It means that out of 100 trials, 95/100 times the true coefficient for AGE lies within this range.
+
+**Other tools in the olsrr package**
+
+-   comprehensive regression output
+
+-   residual diagnostics
+
+-   measures of influence
+
+-   heteroskedasticity tests
+
+-   collinearity diagnostics
+
+-   model fit assessment
+
+-   variable contribution assessment
+
+-   variable selection procedures
+
+::: panel-tabset
+## Variable selection methods
+
+1.Best subset Regression
+
+Select the subset of predictors that do the best at meeting some well-defined objective criterion, such as having the largest R2 value or the smallest MSE, Mallow\'s Cp or AIC. [Plot](https://olsrr.rsquaredacademy.com/articles/variable_selection) is available.
+
+```{r}
+#| eval: false
+ols_step_best_subset(condo.mlr18)
+```
+
+2.Stepwise Forward Regression
+
+Build regression model from a set of candidate predictor variables by entering predictors based on p values, in a stepwise manner until there is no variable left to enter any more. The model should include all the candidate predictor variables. If details is set to `TRUE`, each step is displayed.
+
+```{r}
+ols_step_forward_p(condo.mlr18)
+```
+
+## Residual Diagnostics
+
+1.Residual QQ plot: Detects violation of standard regression assumptions.
+
+Assumptions:
+
+-   The error has a normal distribution (normality assumption).
+
+-   The errors have mean zero.
+
+-   The errors have same but unknown variance (homoscedasticity assumption).
+
+-   The error are independent of each other (independent errors assumption).
+
+```{r}
+ols_plot_resid_qq(condo.mlr14)
+```
+
+2.Residual Normality test
+
+```{r}
+ols_test_normality(condo.mlr14)
+```
+
+The summary table above reveals that the p-values of the four tests are way smaller than the alpha value of 0.05. Hence we will reject the null hypothesis and infer that there is statistical evidence that the residual are **not** normally distributed.
+
+3.Residual vs Fitted Values Plot
+
+It is a scatter plot of residuals on the y axis and fitted values on the x axis to detect non-linearity, unequal error variances, and outliers.
+
+Characteristics of a well behaved residual vs fitted plot:
+
+-   The residuals spread randomly around the 0 line indicating that the relationship is linear.
+
+-   The residuals form an approximate horizontal band around the 0 line indicating homogeneity of error variance.
+
+-   No one residual is visibly away from the random pattern of the residuals indicating that there are no outliers
+
+```{r}
+ols_plot_resid_fit(condo.mlr14)
+```
+
+The spread of residual is wider for higher fitted values .
+
+4.Residual Histogram
+
+Histogram of residuals for detecting violation of normality assumption.
+
+```{r}
+ols_plot_resid_hist(condo.mlr14)
+```
+
+The residual appears to resemble a normal distribution, but chart 2 above shows that the residuals are **not** normal distributed.
+
+[Link](https://olsrr.rsquaredacademy.com/articles/residual_diagnostics)
+
+## Heteroskedasticity
+
+F Test for heteroskedasticity under the assumption that the errors are independent and identically distributed (i.i.d.). We can perform the test using the fitted values of the model, the predictors in the model and a subset of the independent variables.
+
+```{r}
+ols_test_f(condo.mlr14)
+```
+
+## Collinearity Diagnostics
+
+1.Check for signs of multicollinearity
+
+```{r}
+ols_vif_tol(condo.mlr14)
+```
+
+Since the VIF of the independent variables are less than 10. We can safely conclude that there are no sign of multicollinearity among the independent variables.
+
+2.Observed vs Predicted plot
+
+Plot of observed vs fitted values to assess the fit of the model. Ideally, all points should be close to a regressed diagonal line. Draw such a diagonal line within your graph and check out where the points lie. If your model had a high R Square, all the points would be close to this diagonal line. The lower the R Square, the weaker the Goodness of fit of your model, the more foggy or dispersed your points are from this diagonal line.
+
+```{r}
+ols_plot_obs_fit(condo.mlr14)
+```
+
+[Link](https://olsrr.rsquaredacademy.com/articles/regression_diagnostics)
+:::
+
+### **13.8.5 Preparing Publication Quality Table: gtsummary method**
+
+The [**gtsummary**](https://www.danieldsjoberg.com/gtsummary/) package provides an elegant and flexible way to create publication-ready summary tables in R.
+
+In the code chunk below, [`tbl_regression()`](https://www.danieldsjoberg.com/gtsummary/reference/tbl_regression.html) is used to create a well formatted regression report.
+
+```{r}
+tbl_regression(condo.mlr14, intercept = TRUE)
+```
+
+With gtsummary package, model statistics can be included in the report by either appending them to the report table by using [`add_glance_table()`](https://www.danieldsjoberg.com/gtsummary/reference/add_glance.html) or adding as a table source note by using [`add_glance_source_note()`](https://www.danieldsjoberg.com/gtsummary/reference/add_glance.html) as shown in the code chunk below.
+
+```{r}
+tbl_regression(condo.mlr14, 
+               intercept = TRUE) %>% 
+  add_glance_source_note(
+    label = list(sigma ~ "\U03C3"),
+    include = c(r.squared, adj.r.squared, 
+                AIC, statistic,
+                p.value, sigma))
+```
+
+#### 13.8.5.4 Testing for Spatial Autocorrelation
+
+The hedonic model we try to build are using geographically referenced attributes, hence it is also important for us to visual the residual of the hedonic pricing model.
+
+In order to perform spatial autocorrelation test, we need to convert *condo_resale.sf* from sf data frame into a **SpatialPointsDataFrame**.
+
+First, we will export the residual of the hedonic pricing model and save it as a data frame.
 
 ```{r}
 
