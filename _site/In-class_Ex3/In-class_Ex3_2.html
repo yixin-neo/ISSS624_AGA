@@ -386,7 +386,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">December 4, 2023</p>
+      <p class="date-modified">December 5, 2023</p>
     </div>
   </div>
     
@@ -400,15 +400,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview"><strong>16.1 Overview</strong></h2>
-<p>Spatial Interaction Models (SIMs) are mathematical models for estimating flows between spatial entities developed by Alan Wilson in the late 1960s and early 1970, with considerable uptake and refinement for transport modelling since then Boyce and Williams (2015).</p>
-<p>There are four main types of traditional SIMs (Wilson 1971):</p>
+<p><strong>Spatial Interaction Models</strong> (SIMs) are mathematical models for estimating flows between spatial entities developed by Alan Wilson in the late 1960s and early 1970, with considerable uptake and refinement for transport modelling since then Boyce and Williams (2015).</p>
+<p>There are <strong>four</strong> main types of traditional <strong>SIMs</strong> (Wilson 1971):</p>
 <ul>
 <li><p>Unconstrained</p></li>
 <li><p>Production-constrained</p></li>
 <li><p>Attraction-constrained</p></li>
 <li><p>Doubly-constrained</p></li>
 </ul>
-<p>Ordinary least square (OLS), log-normal, Poisson and negative binomial (NB) regression methods have been used extensively to calibrate OD flow models by processing flow data as different types of dependent variables. In this chapter, you will gain hands-on experiences on using appropriate R packages to calibrate SIM by using there four regression methods.</p>
+<p>Ordinary least square (OLS), log-normal, <strong>Poisson</strong> and negative binomial (NB) regression methods have been used extensively to calibrate OD flow models by processing flow data as different types of dependent variables. In this chapter, wewill gain hands-on experiences on using appropriate R packages to calibrate SIM by using there four regression methods.</p>
 </section>
 <section id="the-case-study-and-data" class="level2">
 <h2 class="anchored" data-anchor-id="the-case-study-and-data"><strong>16.2 The Case Study and Data</strong></h2>
@@ -1046,7 +1046,25 @@ $ dist        &lt;dbl&gt; 50.0000, 810.4491, 1360.9294, 840.4432, 1076.7916, 805
 </section>
 <section id="calibrating-spatial-interaction-models" class="level2">
 <h2 class="anchored" data-anchor-id="calibrating-spatial-interaction-models"><strong>16.8 Calibrating Spatial Interaction Models</strong></h2>
-<p>In this section, you will learn how to calibrate Spatial Interaction Models by using Poisson Regression method.</p>
+<p>In this section, we will learn how to calibrate Spatial Interaction Models by using <strong>Poisson</strong> Regression method.</p>
+<p><strong>Why not use the usual Linear Regression model (Ordinary least square (OLS)) method?</strong></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://www.blog.dailydoseofds.com/p/poisson-regression-the-robust-extension"><img src="images/shortcoming of Linear regression.png" class="img-fluid figure-img" width="366"></a></p>
+</figure>
+</div>
+<ul>
+<li><p>OLS is commonly used for modeling continuous outcomes; target variable can be negative or positive. But it does not make sense to have negative ‘TRIPS’ in our context.</p></li>
+<li><p>It assumes that the dependent variable is normally distributed.</p></li>
+<li><p>The residuals (predicted - actual) are expected to be normally distributed around the mean.</p></li>
+<li><p>The goal is to minimize the sum of squared differences between observed and predicted values.</p></li>
+</ul>
+<p><strong>Why Poisson regression?</strong></p>
+<ul>
+<li><p>target variable is count-based</p></li>
+<li><p>a type of generalised linear model (GLM) used to count data.</p></li>
+<li><p>residuals may follow a asymmetric distribution around the mean (meaning outcomes on either sides of the mean are not EQUALLY likely.)</p></li>
+</ul>
 <section id="importing-the-modelling-data" class="level3">
 <h3 class="anchored" data-anchor-id="importing-the-modelling-data"><strong>16.8.1 Importing the modelling data</strong></h3>
 <p>Firstly, let us import the modelling data by using the code chunk below.</p>
@@ -1201,7 +1219,7 @@ Residual Deviance: 19960000     AIC: 20040000</code></pre>
 </div>
 </div>
 <p>The parameter estimate for distance is -1.517. If the sign is positive (something is wrong), double-check our workings.</p>
-<p>AIC: GLM by default do not provide R-square, only provide AIC.</p>
+<p><strong>AIC: GLM by default do not provide R-square, only provide AIC.</strong></p>
 </section>
 <section id="r-squared-function" class="level3">
 <h3 class="anchored" data-anchor-id="r-squared-function"><strong>16.8.5 R-squared function</strong></h3>
@@ -1219,6 +1237,9 @@ Residual Deviance: 19960000     AIC: 20040000</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.1694734</code></pre>
 </div>
+</div>
+<div class="cell">
+
 </div>
 <div class="cell">
 
@@ -2530,6 +2551,9 @@ Number of Fisher Scoring iterations: 7</code></pre>
 </div>
 </div>
 <p>We notice that there is a relatively greater improvement in the R^2 value for the doubly constrained model.</p>
+<div class="cell">
+
+</div>
 </section>
 <section id="model-comparison" class="level3">
 <h3 class="anchored" data-anchor-id="model-comparison"><strong>16.8.9 Model comparison</strong></h3>
@@ -2680,7 +2704,7 @@ doublyConstrained      |   glm | 1487.111</code></pre>
 <span id="cb88-26"><a href="#cb88-26"></a>          <span class="at">ncol =</span> <span class="dv">2</span>,</span>
 <span id="cb88-27"><a href="#cb88-27"></a>          <span class="at">nrow =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="In-class_Ex3_2_files/figure-html/unnamed-chunk-56-1.png" class="img-fluid" width="1344"></p>
+<p><img src="In-class_Ex3_2_files/figure-html/unnamed-chunk-58-1.png" class="img-fluid" width="1344"></p>
 </div>
 </div>
 <p><strong>Discussion on results:</strong></p>

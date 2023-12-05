@@ -21,9 +21,9 @@ format:
 
 ## **16.1 Overview**
 
-Spatial Interaction Models (SIMs) are mathematical models for estimating flows between spatial entities developed by Alan Wilson in the late 1960s and early 1970, with considerable uptake and refinement for transport modelling since then Boyce and Williams (2015).
+**Spatial Interaction Models** (SIMs) are mathematical models for estimating flows between spatial entities developed by Alan Wilson in the late 1960s and early 1970, with considerable uptake and refinement for transport modelling since then Boyce and Williams (2015).
 
-There are four main types of traditional SIMs (Wilson 1971):
+There are **four** main types of traditional **SIMs** (Wilson 1971):
 
 -   Unconstrained
 
@@ -33,7 +33,7 @@ There are four main types of traditional SIMs (Wilson 1971):
 
 -   Doubly-constrained
 
-Ordinary least square (OLS), log-normal, Poisson and negative binomial (NB) regression methods have been used extensively to calibrate OD flow models by processing flow data as different types of dependent variables. In this chapter, you will gain hands-on experiences on using appropriate R packages to calibrate SIM by using there four regression methods.
+Ordinary least square (OLS), log-normal, **Poisson** and negative binomial (NB) regression methods have been used extensively to calibrate OD flow models by processing flow data as different types of dependent variables. In this chapter, wewill gain hands-on experiences on using appropriate R packages to calibrate SIM by using there four regression methods.
 
 ## **16.2 The Case Study and Data**
 
@@ -430,7 +430,27 @@ write_rds(flow_data1, "data/rds/SIM_data")
 
 ## **16.8 Calibrating Spatial Interaction Models**
 
-In this section, you will learn how to calibrate Spatial Interaction Models by using Poisson Regression method.
+In this section, we will learn how to calibrate Spatial Interaction Models by using **Poisson** Regression method.
+
+**Why not use the usual Linear Regression model (Ordinary least square (OLS)) method?**
+
+[![](images/shortcoming%20of%20Linear%20regression.png){width="366"}](https://www.blog.dailydoseofds.com/p/poisson-regression-the-robust-extension)
+
+-   OLS is commonly used for modeling continuous outcomes; target variable can be negative or positive. But it does not make sense to have negative 'TRIPS' in our context.
+
+-   It assumes that the dependent variable is normally distributed.
+
+-   The residuals (predicted - actual) are expected to be normally distributed around the mean.
+
+-   The goal is to minimize the sum of squared differences between observed and predicted values.
+
+**Why Poisson regression?**
+
+-   target variable is count-based
+
+-   a type of generalised linear model (GLM) used to count data.
+
+-   residuals may follow a asymmetric distribution around the mean (meaning outcomes on either sides of the mean are not EQUALLY likely.)
 
 ### **16.8.1 Importing the modelling data**
 
@@ -559,7 +579,7 @@ uncSIM
 
 The parameter estimate for distance is -1.517. If the sign is positive (something is wrong), double-check our workings.
 
-AIC: GLM by default do not provide R-square, only provide AIC.
+**AIC: GLM by default do not provide R-square, only provide AIC.**
 
 ### **16.8.5 R-squared function**
 
@@ -577,6 +597,27 @@ Next, we will compute the R-squared of the unconstrained SIM by using the code c
 
 ```{r}
 CalcRSquared(uncSIM$data$TRIPS, uncSIM$fitted.values)
+```
+
+```{r}
+#| eval: false
+#| echo: false
+
+# Obtain the log-likelihood of the null model
+null_model <- glm(TRIPS ~ 1, family = poisson, data = SIM_data)
+null_loglik <- logLik(null_model)
+
+# Obtain the log-likelihood of the full model
+full_loglik <- logLik(uncSIM)
+
+# Calculate the number of parameters in the model
+num_params <- length(coef(uncSIM))
+
+# Calculate the adjusted R-squared
+adj_r_squared <- 1 - (full_loglik / null_loglik) * (nobs(uncSIM) - 1) / (nobs(uncSIM) - num_params)
+
+# Print the adjusted R-squared
+print(adj_r_squared)
 ```
 
 ```{r}
@@ -685,6 +726,12 @@ CalcRSquared(dbcSIM$data$TRIPS, dbcSIM$fitted.values)
 ```
 
 We notice that there is a relatively greater improvement in the R\^2 value for the doubly constrained model.
+
+```{r}
+#| echo: false
+#| eval: false
+r2_mcfadden(dbcSIM)
+```
 
 ### **16.8.9 Model comparison**
 
