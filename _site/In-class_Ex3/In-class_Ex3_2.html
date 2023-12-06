@@ -386,7 +386,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">December 5, 2023</p>
+      <p class="date-modified">December 6, 2023</p>
     </div>
   </div>
     
@@ -1022,31 +1022,139 @@ $ dist        &lt;dbl&gt; 50.0000, 810.4491, 1360.9294, 840.4432, 1076.7916, 805
 <span id="cb42-6"><a href="#cb42-6"></a>         <span class="at">DESTIN_AGE25_64 =</span> AGE25_64) <span class="sc">%&gt;%</span></span>
 <span id="cb42-7"><a href="#cb42-7"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(PA, SZ_NAME))</span>
 <span id="cb42-8"><a href="#cb42-8"></a></span>
-<span id="cb42-9"><a href="#cb42-9"></a><span class="fu">head</span>(flow_data1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 12
-# Groups:   ORIGIN_SZ [1]
-  ORIGIN_SZ DESTIN_SZ TRIPS FlowNoIntra   offset  dist ORIGIN_AGE7_12
-  &lt;chr&gt;     &lt;chr&gt;     &lt;dbl&gt;       &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;          &lt;dbl&gt;
-1 AMSZ01    AMSZ01     2575           0 0.000001   50             310
-2 AMSZ01    AMSZ02    11742       11742 1         810.            310
-3 AMSZ01    AMSZ03    14886       14886 1        1361.            310
-4 AMSZ01    AMSZ04     3237        3237 1         840.            310
-5 AMSZ01    AMSZ05     9349        9349 1        1077.            310
-6 AMSZ01    AMSZ06     2231        2231 1         805.            310
-# ℹ 5 more variables: ORIGIN_AGE13_24 &lt;dbl&gt;, ORIGIN_AGE25_64 &lt;dbl&gt;,
-#   DESTIN_AGE7_12 &lt;dbl&gt;, DESTIN_AGE13_24 &lt;dbl&gt;, DESTIN_AGE25_64 &lt;dbl&gt;</code></pre>
+<span id="cb42-9"><a href="#cb42-9"></a><span class="fu">head</span>(flow_data1) <span class="sc">%&gt;%</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 4%">
+<col style="width: 8%">
+<col style="width: 4%">
+<col style="width: 6%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">ORIGIN_SZ</th>
+<th style="text-align: left;">DESTIN_SZ</th>
+<th style="text-align: right;">TRIPS</th>
+<th style="text-align: right;">FlowNoIntra</th>
+<th style="text-align: right;">offset</th>
+<th style="text-align: right;">dist</th>
+<th style="text-align: right;">ORIGIN_AGE7_12</th>
+<th style="text-align: right;">ORIGIN_AGE13_24</th>
+<th style="text-align: right;">ORIGIN_AGE25_64</th>
+<th style="text-align: right;">DESTIN_AGE7_12</th>
+<th style="text-align: right;">DESTIN_AGE13_24</th>
+<th style="text-align: right;">DESTIN_AGE25_64</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">AMSZ01</td>
+<td style="text-align: left;">AMSZ01</td>
+<td style="text-align: right;">2575</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1e-06</td>
+<td style="text-align: right;">50.0000</td>
+<td style="text-align: right;">310</td>
+<td style="text-align: right;">710</td>
+<td style="text-align: right;">2780</td>
+<td style="text-align: right;">310</td>
+<td style="text-align: right;">710</td>
+<td style="text-align: right;">2780</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AMSZ01</td>
+<td style="text-align: left;">AMSZ02</td>
+<td style="text-align: right;">11742</td>
+<td style="text-align: right;">11742</td>
+<td style="text-align: right;">1e+00</td>
+<td style="text-align: right;">810.4491</td>
+<td style="text-align: right;">310</td>
+<td style="text-align: right;">710</td>
+<td style="text-align: right;">2780</td>
+<td style="text-align: right;">1140</td>
+<td style="text-align: right;">2770</td>
+<td style="text-align: right;">15700</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">AMSZ01</td>
+<td style="text-align: left;">AMSZ03</td>
+<td style="text-align: right;">14886</td>
+<td style="text-align: right;">14886</td>
+<td style="text-align: right;">1e+00</td>
+<td style="text-align: right;">1360.9294</td>
+<td style="text-align: right;">310</td>
+<td style="text-align: right;">710</td>
+<td style="text-align: right;">2780</td>
+<td style="text-align: right;">1010</td>
+<td style="text-align: right;">2650</td>
+<td style="text-align: right;">14240</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AMSZ01</td>
+<td style="text-align: left;">AMSZ04</td>
+<td style="text-align: right;">3237</td>
+<td style="text-align: right;">3237</td>
+<td style="text-align: right;">1e+00</td>
+<td style="text-align: right;">840.4432</td>
+<td style="text-align: right;">310</td>
+<td style="text-align: right;">710</td>
+<td style="text-align: right;">2780</td>
+<td style="text-align: right;">980</td>
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">11320</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">AMSZ01</td>
+<td style="text-align: left;">AMSZ05</td>
+<td style="text-align: right;">9349</td>
+<td style="text-align: right;">9349</td>
+<td style="text-align: right;">1e+00</td>
+<td style="text-align: right;">1076.7916</td>
+<td style="text-align: right;">310</td>
+<td style="text-align: right;">710</td>
+<td style="text-align: right;">2780</td>
+<td style="text-align: right;">810</td>
+<td style="text-align: right;">1920</td>
+<td style="text-align: right;">9650</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AMSZ01</td>
+<td style="text-align: left;">AMSZ06</td>
+<td style="text-align: right;">2231</td>
+<td style="text-align: right;">2231</td>
+<td style="text-align: right;">1e+00</td>
+<td style="text-align: right;">805.2979</td>
+<td style="text-align: right;">310</td>
+<td style="text-align: right;">710</td>
+<td style="text-align: right;">2780</td>
+<td style="text-align: right;">1050</td>
+<td style="text-align: right;">2390</td>
+<td style="text-align: right;">12460</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <p>We will called the output data file <em>SIM_data</em>. it is in rds data file format.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a><span class="fu">write_rds</span>(flow_data1, <span class="st">"data/rds/SIM_data"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="fu">write_rds</span>(flow_data1, <span class="st">"data/rds/SIM_data"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
 <section id="calibrating-spatial-interaction-models" class="level2">
 <h2 class="anchored" data-anchor-id="calibrating-spatial-interaction-models"><strong>16.8 Calibrating Spatial Interaction Models</strong></h2>
 <p>In this section, we will learn how to calibrate Spatial Interaction Models by using <strong>Poisson</strong> Regression method.</p>
+<p>In hands-on3, we visualised the <strong>actual flow data</strong> without any predictors variables. Now, in <code>flow_data1</code> contains actual flow data (Y var), distance data, origin propulsiveness variables and destination attractiveness variables. Now we will try to calibrate the model using the 4 Spatial interaction models type to get the best estimates of mu, alpha and beta.</p>
+<p>Calibration is the process of adjusting parameters (of origin and destin related variables) in the model to try and get the estimates to agree with the observed data (actual dependent var) as much as possible. The goodness-of-fit statistics (like R-squared) can be used to indicate when the optimum solution is found. ‘What-if’ scenarios can be studied using these calibrated models.</p>
 <p><strong>Why not use the usual Linear Regression model (Ordinary least square (OLS)) method?</strong></p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -1064,13 +1172,14 @@ $ dist        &lt;dbl&gt; 50.0000, 810.4491, 1360.9294, 840.4432, 1076.7916, 805
 <li><p>target variable is count-based</p></li>
 <li><p>a type of generalised linear model (GLM) used to count data.</p></li>
 <li><p>residuals may follow a asymmetric distribution around the mean (meaning outcomes on either sides of the mean are not EQUALLY likely.)</p></li>
+<li><p>It means that the probability of commuting is not described by a continuous (normal) probability distribution, but a discrete probability distribution such as the Poisson distribution</p></li>
 </ul>
 <section id="importing-the-modelling-data" class="level3">
 <h3 class="anchored" data-anchor-id="importing-the-modelling-data"><strong>16.8.1 Importing the modelling data</strong></h3>
 <p>Firstly, let us import the modelling data by using the code chunk below.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a>SIM_data <span class="ot">&lt;-</span> <span class="fu">read_rds</span>(<span class="st">"data/rds/SIM_data.rds"</span>)</span>
-<span id="cb45-2"><a href="#cb45-2"></a><span class="fu">head</span>(SIM_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a>SIM_data <span class="ot">&lt;-</span> <span class="fu">read_rds</span>(<span class="st">"data/rds/SIM_data.rds"</span>)</span>
+<span id="cb44-2"><a href="#cb44-2"></a><span class="fu">head</span>(SIM_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 12
 # Groups:   ORIGIN_SZ [1]
@@ -1091,21 +1200,21 @@ $ dist        &lt;dbl&gt; 50.0000, 810.4491, 1360.9294, 840.4432, 1076.7916, 805
 <h3 class="anchored" data-anchor-id="visualising-the-dependent-variable"><strong>16.8.2 Visualising the dependent variable</strong></h3>
 <p>Firstly, let us plot the distribution of the <strong>dependent</strong> variable (i.e.&nbsp;<strong>TRIPS)</strong> by using histogram method by using the code chunk below.</p>
 <div class="cell" data-fig.asp="0.68">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> SIM_data,</span>
-<span id="cb47-2"><a href="#cb47-2"></a>       <span class="fu">aes</span>(<span class="at">x =</span> TRIPS)) <span class="sc">+</span></span>
-<span id="cb47-3"><a href="#cb47-3"></a>  <span class="fu">geom_histogram</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> SIM_data,</span>
+<span id="cb46-2"><a href="#cb46-2"></a>       <span class="fu">aes</span>(<span class="at">x =</span> TRIPS)) <span class="sc">+</span></span>
+<span id="cb46-3"><a href="#cb46-3"></a>  <span class="fu">geom_histogram</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="In-class_Ex3_2_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="1344"></p>
 </div>
 </div>
-<p>Notice that the distribution is highly skewed and not resemble bell shape or also known as normal distribution.</p>
+<p>Notice that the distribution is highly skewed and not resemble bell shape or also known as normal distribution. It resembles more like a Poisson distribution with a small mean (right-skewed) or a negative binomial distribution.</p>
 <p>Next, let us visualise the relation between the dependent variable and one of the key <strong>independent</strong> variable in Spatial Interaction Model, namely <strong>distance</strong>.</p>
 <div class="cell" data-fig.asp="0.68">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> SIM_data,</span>
-<span id="cb48-2"><a href="#cb48-2"></a>       <span class="fu">aes</span>(<span class="at">x =</span> dist, <span class="co"># independent</span></span>
-<span id="cb48-3"><a href="#cb48-3"></a>           <span class="at">y =</span> TRIPS)) <span class="sc">+</span>  <span class="co">#dependent</span></span>
-<span id="cb48-4"><a href="#cb48-4"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb48-5"><a href="#cb48-5"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> lm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> SIM_data,</span>
+<span id="cb47-2"><a href="#cb47-2"></a>       <span class="fu">aes</span>(<span class="at">x =</span> dist, <span class="co"># independent</span></span>
+<span id="cb47-3"><a href="#cb47-3"></a>           <span class="at">y =</span> TRIPS)) <span class="sc">+</span>  <span class="co">#dependent</span></span>
+<span id="cb47-4"><a href="#cb47-4"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb47-5"><a href="#cb47-5"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> lm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="In-class_Ex3_2_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="1344"></p>
 </div>
@@ -1113,11 +1222,11 @@ $ dist        &lt;dbl&gt; 50.0000, 810.4491, 1360.9294, 840.4432, 1076.7916, 805
 <p>Notice that their relationship hardly resemble linear relationship.</p>
 <p>On the other hand, if we plot the scatter plot by using the <strong>log transformed version of both variable</strong>s, we can see that their relationship is more resemble linear relationship.</p>
 <div class="cell" data-fig.asp="0.68">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> SIM_data,</span>
-<span id="cb49-2"><a href="#cb49-2"></a>       <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">log</span>(dist),</span>
-<span id="cb49-3"><a href="#cb49-3"></a>           <span class="at">y =</span> <span class="fu">log</span>(TRIPS))) <span class="sc">+</span></span>
-<span id="cb49-4"><a href="#cb49-4"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb49-5"><a href="#cb49-5"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> lm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> SIM_data,</span>
+<span id="cb48-2"><a href="#cb48-2"></a>       <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">log</span>(dist),</span>
+<span id="cb48-3"><a href="#cb48-3"></a>           <span class="at">y =</span> <span class="fu">log</span>(TRIPS))) <span class="sc">+</span></span>
+<span id="cb48-4"><a href="#cb48-4"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb48-5"><a href="#cb48-5"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> lm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="In-class_Ex3_2_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="1344"></p>
 </div>
@@ -1130,7 +1239,7 @@ $ dist        &lt;dbl&gt; 50.0000, 810.4491, 1360.9294, 840.4432, 1076.7916, 805
 <p>Since <strong>Poisson</strong> Regression is based of <strong>log</strong> and <strong>log 0 is undefined</strong>, it is important for us to ensure that <strong>no 0</strong> values in the <strong>explanatory</strong> <strong>variables</strong>.</p>
 <p>In the code chunk below, summary() of Base R is used to compute the summary statistics of all variables in <em>SIM_data</em> data frame.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a><span class="fu">summary</span>(SIM_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a><span class="fu">summary</span>(SIM_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  ORIGIN_SZ          DESTIN_SZ             TRIPS           FlowNoIntra      
  Length:14274       Length:14274       Min.   :     1.0   Min.   :     1.0  
@@ -1158,24 +1267,24 @@ $ dist        &lt;dbl&gt; 50.0000, 810.4491, 1360.9294, 840.4432, 1076.7916, 805
 <p>The print report above reveals that variables ORIGIN_AGE7_12, ORIGIN_AGE13_24, ORIGIN_AGE25_64,DESTIN_AGE7_12, DESTIN_AGE13_24, DESTIN_AGE25_64 consist of 0 values.</p>
 <p>In view of this, code chunk below will be used to replace zero values to 0.99 (randomly chosen value that is close to 0).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a>SIM_data<span class="sc">$</span>DESTIN_AGE7_12 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
-<span id="cb52-2"><a href="#cb52-2"></a>  SIM_data<span class="sc">$</span>DESTIN_AGE7_12 <span class="sc">==</span> <span class="dv">0</span>,</span>
-<span id="cb52-3"><a href="#cb52-3"></a>  <span class="fl">0.99</span>, SIM_data<span class="sc">$</span>DESTIN_AGE7_12)</span>
-<span id="cb52-4"><a href="#cb52-4"></a>SIM_data<span class="sc">$</span>DESTIN_AGE13_24 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
-<span id="cb52-5"><a href="#cb52-5"></a>  SIM_data<span class="sc">$</span>DESTIN_AGE13_24 <span class="sc">==</span> <span class="dv">0</span>,</span>
-<span id="cb52-6"><a href="#cb52-6"></a>  <span class="fl">0.99</span>, SIM_data<span class="sc">$</span>DESTIN_AGE13_24)</span>
-<span id="cb52-7"><a href="#cb52-7"></a>SIM_data<span class="sc">$</span>DESTIN_AGE25_64 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
-<span id="cb52-8"><a href="#cb52-8"></a>  SIM_data<span class="sc">$</span>DESTIN_AGE25_64 <span class="sc">==</span> <span class="dv">0</span>,</span>
-<span id="cb52-9"><a href="#cb52-9"></a>  <span class="fl">0.99</span>, SIM_data<span class="sc">$</span>DESTIN_AGE25_64)</span>
-<span id="cb52-10"><a href="#cb52-10"></a>SIM_data<span class="sc">$</span>ORIGIN_AGE7_12 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
-<span id="cb52-11"><a href="#cb52-11"></a>  SIM_data<span class="sc">$</span>ORIGIN_AGE7_12 <span class="sc">==</span> <span class="dv">0</span>,</span>
-<span id="cb52-12"><a href="#cb52-12"></a>  <span class="fl">0.99</span>, SIM_data<span class="sc">$</span>ORIGIN_AGE7_12)</span>
-<span id="cb52-13"><a href="#cb52-13"></a>SIM_data<span class="sc">$</span>ORIGIN_AGE13_24 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
-<span id="cb52-14"><a href="#cb52-14"></a>  SIM_data<span class="sc">$</span>ORIGIN_AGE13_24 <span class="sc">==</span> <span class="dv">0</span>,</span>
-<span id="cb52-15"><a href="#cb52-15"></a>  <span class="fl">0.99</span>, SIM_data<span class="sc">$</span>ORIGIN_AGE13_24)</span>
-<span id="cb52-16"><a href="#cb52-16"></a>SIM_data<span class="sc">$</span>ORIGIN_AGE25_64 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
-<span id="cb52-17"><a href="#cb52-17"></a>  SIM_data<span class="sc">$</span>ORIGIN_AGE25_64 <span class="sc">==</span> <span class="dv">0</span>,</span>
-<span id="cb52-18"><a href="#cb52-18"></a>  <span class="fl">0.99</span>, SIM_data<span class="sc">$</span>ORIGIN_AGE25_64)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a>SIM_data<span class="sc">$</span>DESTIN_AGE7_12 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
+<span id="cb51-2"><a href="#cb51-2"></a>  SIM_data<span class="sc">$</span>DESTIN_AGE7_12 <span class="sc">==</span> <span class="dv">0</span>,</span>
+<span id="cb51-3"><a href="#cb51-3"></a>  <span class="fl">0.99</span>, SIM_data<span class="sc">$</span>DESTIN_AGE7_12)</span>
+<span id="cb51-4"><a href="#cb51-4"></a>SIM_data<span class="sc">$</span>DESTIN_AGE13_24 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
+<span id="cb51-5"><a href="#cb51-5"></a>  SIM_data<span class="sc">$</span>DESTIN_AGE13_24 <span class="sc">==</span> <span class="dv">0</span>,</span>
+<span id="cb51-6"><a href="#cb51-6"></a>  <span class="fl">0.99</span>, SIM_data<span class="sc">$</span>DESTIN_AGE13_24)</span>
+<span id="cb51-7"><a href="#cb51-7"></a>SIM_data<span class="sc">$</span>DESTIN_AGE25_64 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
+<span id="cb51-8"><a href="#cb51-8"></a>  SIM_data<span class="sc">$</span>DESTIN_AGE25_64 <span class="sc">==</span> <span class="dv">0</span>,</span>
+<span id="cb51-9"><a href="#cb51-9"></a>  <span class="fl">0.99</span>, SIM_data<span class="sc">$</span>DESTIN_AGE25_64)</span>
+<span id="cb51-10"><a href="#cb51-10"></a>SIM_data<span class="sc">$</span>ORIGIN_AGE7_12 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
+<span id="cb51-11"><a href="#cb51-11"></a>  SIM_data<span class="sc">$</span>ORIGIN_AGE7_12 <span class="sc">==</span> <span class="dv">0</span>,</span>
+<span id="cb51-12"><a href="#cb51-12"></a>  <span class="fl">0.99</span>, SIM_data<span class="sc">$</span>ORIGIN_AGE7_12)</span>
+<span id="cb51-13"><a href="#cb51-13"></a>SIM_data<span class="sc">$</span>ORIGIN_AGE13_24 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
+<span id="cb51-14"><a href="#cb51-14"></a>  SIM_data<span class="sc">$</span>ORIGIN_AGE13_24 <span class="sc">==</span> <span class="dv">0</span>,</span>
+<span id="cb51-15"><a href="#cb51-15"></a>  <span class="fl">0.99</span>, SIM_data<span class="sc">$</span>ORIGIN_AGE13_24)</span>
+<span id="cb51-16"><a href="#cb51-16"></a>SIM_data<span class="sc">$</span>ORIGIN_AGE25_64 <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
+<span id="cb51-17"><a href="#cb51-17"></a>  SIM_data<span class="sc">$</span>ORIGIN_AGE25_64 <span class="sc">==</span> <span class="dv">0</span>,</span>
+<span id="cb51-18"><a href="#cb51-18"></a>  <span class="fl">0.99</span>, SIM_data<span class="sc">$</span>ORIGIN_AGE25_64)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>All the 0 values have been replaced by 0.99.</p>
 </section>
@@ -1188,19 +1297,20 @@ $ dist        &lt;dbl&gt; 50.0000, 810.4491, 1360.9294, 840.4432, 1076.7916, 805
 <p>The general formula of Unconstrained Spatial Interaction Model</p>
 <p><img src="https://r4gdsa.netlify.app/chap15/img/image1.jpg" class="img-fluid"></p>
 <p>The code chunk used to calibrate to model is shown below:</p>
-<p>Taking natural log on both sides, ln(lambda) = k + mu* <em>ln</em>V + alpha* ln W + beta*ln d). Indicate <code>link</code>=‘log’</p>
+<p>Taking natural log on both sides, <code>ln 𝑇𝑖j = 𝑘 + 𝜇 ln𝑉𝑖 + 𝛼 ln𝑊𝑗 − 𝛽 ln𝑑𝑖j</code> .</p>
+<p>Trips (of flow) is logarithmically linked to a <strong>linear combination</strong> of the <strong>logged</strong> independent variables in the model. A Poisson regression model can be fitted to produce estimates of 𝑘, 𝜇, 𝛼 and 𝛽.</p>
+<p>Indicate <code>link</code>=‘log’ because the left-hand side of model equation is logarithmically linked to the variables on the right hand side.</p>
 <p>More information on family and link can be found <a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/family">here</a>.</p>
-<p>In the <strong><code>poisson</code></strong> family the links <strong><code>log</code></strong>, <strong><code>identity</code></strong>, and <strong><code>sqrt</code></strong>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a>uncSIM <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">formula =</span> TRIPS <span class="sc">~</span> </span>
-<span id="cb53-2"><a href="#cb53-2"></a>                <span class="fu">log</span>(ORIGIN_AGE25_64) <span class="sc">+</span> </span>
-<span id="cb53-3"><a href="#cb53-3"></a>                <span class="fu">log</span>(DESTIN_AGE25_64) <span class="sc">+</span>  <span class="co"># write it as positve, we will see a negative value in the results page.</span></span>
-<span id="cb53-4"><a href="#cb53-4"></a>                <span class="co">#+ another variable if we have</span></span>
-<span id="cb53-5"><a href="#cb53-5"></a>                <span class="fu">log</span>(dist),   <span class="co"># do not enter negative sign here</span></span>
-<span id="cb53-6"><a href="#cb53-6"></a>              <span class="at">family =</span> <span class="fu">poisson</span>(<span class="at">link =</span> <span class="st">"log"</span>),  <span class="co"># need to specify as in glm, many families</span></span>
-<span id="cb53-7"><a href="#cb53-7"></a>              <span class="at">data =</span> SIM_data,</span>
-<span id="cb53-8"><a href="#cb53-8"></a>              <span class="at">na.action =</span> na.exclude)  <span class="co"># we hav already cleaned up the na though</span></span>
-<span id="cb53-9"><a href="#cb53-9"></a>uncSIM</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a>uncSIM <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">formula =</span> TRIPS <span class="sc">~</span> </span>
+<span id="cb52-2"><a href="#cb52-2"></a>                <span class="fu">log</span>(ORIGIN_AGE25_64) <span class="sc">+</span> </span>
+<span id="cb52-3"><a href="#cb52-3"></a>                <span class="fu">log</span>(DESTIN_AGE25_64) <span class="sc">+</span>  <span class="co"># write it as positve, we will see a negative value in the results page.</span></span>
+<span id="cb52-4"><a href="#cb52-4"></a>                <span class="co">#+ another variable if we have</span></span>
+<span id="cb52-5"><a href="#cb52-5"></a>                <span class="fu">log</span>(dist),   <span class="co"># do not enter negative sign here</span></span>
+<span id="cb52-6"><a href="#cb52-6"></a>              <span class="at">family =</span> <span class="fu">poisson</span>(<span class="at">link =</span> <span class="st">"log"</span>),  <span class="co"># need to specify as in glm, many families</span></span>
+<span id="cb52-7"><a href="#cb52-7"></a>              <span class="at">data =</span> SIM_data,</span>
+<span id="cb52-8"><a href="#cb52-8"></a>              <span class="at">na.action =</span> na.exclude)  <span class="co"># we hav already cleaned up the na though</span></span>
+<span id="cb52-9"><a href="#cb52-9"></a>uncSIM</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:  glm(formula = TRIPS ~ log(ORIGIN_AGE25_64) + log(DESTIN_AGE25_64) + 
@@ -1218,37 +1328,135 @@ Null Deviance:      36120000
 Residual Deviance: 19960000     AIC: 20040000</code></pre>
 </div>
 </div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1"></a><span class="fu">summary</span>(uncSIM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = TRIPS ~ log(ORIGIN_AGE25_64) + log(DESTIN_AGE25_64) + 
+    log(dist), family = poisson(link = "log"), data = SIM_data, 
+    na.action = na.exclude)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-207.41   -20.89   -12.76    -3.48   587.61  
+
+Coefficients:
+                       Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)          17.0028658  0.0034871  4875.9   &lt;2e-16 ***
+log(ORIGIN_AGE25_64)  0.2100150  0.0001857  1130.7   &lt;2e-16 ***
+log(DESTIN_AGE25_64)  0.0128911  0.0001071   120.4   &lt;2e-16 ***
+log(dist)            -1.5178548  0.0004042 -3755.3   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 36117615  on 14273  degrees of freedom
+Residual deviance: 19959425  on 14270  degrees of freedom
+AIC: 20043988
+
+Number of Fisher Scoring iterations: 7</code></pre>
+</div>
+</div>
+<p><strong>Interpretation of output:</strong></p>
 <p>The parameter estimate for distance is -1.517. If the sign is positive (something is wrong), double-check our workings.</p>
-<p><strong>AIC: GLM by default do not provide R-square, only provide AIC.</strong></p>
+<p>The values of the parameters are:</p>
+<p>𝑘 = 17.0 , 𝜇 = 0.21, 𝛼 = 0.013 and 𝛽 = −1.51</p>
+<p>All the variables are statistically significant and distance has the most influence on the model followed by the origin age group 25-64.</p>
+<p><strong>AIC: GLM by default do not provide R-square, only provide AIC.</strong> We will be calculating R-squared in the next section.</p>
+<p>We could also extract the coefficients our of model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1"></a><span class="fu">attributes</span>(uncSIM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$names
+ [1] "coefficients"      "residuals"         "fitted.values"    
+ [4] "effects"           "R"                 "rank"             
+ [7] "qr"                "family"            "linear.predictors"
+[10] "deviance"          "aic"               "null.deviance"    
+[13] "iter"              "weights"           "prior.weights"    
+[16] "df.residual"       "df.null"           "y"                
+[19] "converged"         "boundary"          "model"            
+[22] "call"              "formula"           "terms"            
+[25] "data"              "offset"            "control"          
+[28] "method"            "contrasts"         "xlevels"          
+
+$class
+[1] "glm" "lm" </code></pre>
+</div>
+</div>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">k</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">mu</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">alpha</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-4" role="tab" aria-controls="tabset-2-4" aria-selected="false">beta</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a>uncSIM<span class="sc">$</span>coefficients[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept) 
+   17.00287 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a>uncSIM<span class="sc">$</span>coefficients[<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>log(ORIGIN_AGE25_64) 
+            0.210015 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a>uncSIM<span class="sc">$</span>coefficients[<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>log(DESTIN_AGE25_64) 
+          0.01289109 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-4-tab">
+<p>careful of the sign</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1"></a><span class="sc">-</span>uncSIM<span class="sc">$</span>coefficients[<span class="dv">4</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>log(dist) 
+ 1.517855 </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="r-squared-function" class="level3">
 <h3 class="anchored" data-anchor-id="r-squared-function"><strong>16.8.5 R-squared function</strong></h3>
 <p>In order to measure how much variation of the trips can be accounted by the model we will write a function to calculate R-Squared value as shown below. For GLM models, the R-square and adjusted R-square values are not defined. We can write custom functions to compute them.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a>CalcRSquared <span class="ot">&lt;-</span> <span class="cf">function</span>(observed,estimated){</span>
-<span id="cb55-2"><a href="#cb55-2"></a>  r <span class="ot">&lt;-</span> <span class="fu">cor</span>(observed,estimated)</span>
-<span id="cb55-3"><a href="#cb55-3"></a>  R2 <span class="ot">&lt;-</span> r<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb55-4"><a href="#cb55-4"></a>  R2</span>
-<span id="cb55-5"><a href="#cb55-5"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1"></a>CalcRSquared <span class="ot">&lt;-</span> <span class="cf">function</span>(observed,estimated){</span>
+<span id="cb66-2"><a href="#cb66-2"></a>  r <span class="ot">&lt;-</span> <span class="fu">cor</span>(observed,estimated)</span>
+<span id="cb66-3"><a href="#cb66-3"></a>  R2 <span class="ot">&lt;-</span> r<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb66-4"><a href="#cb66-4"></a>  R2</span>
+<span id="cb66-5"><a href="#cb66-5"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Next, we will compute the R-squared of the unconstrained SIM by using the code chunk below.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1"></a><span class="fu">CalcRSquared</span>(uncSIM<span class="sc">$</span>data<span class="sc">$</span>TRIPS, uncSIM<span class="sc">$</span>fitted.values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1"></a><span class="fu">CalcRSquared</span>(uncSIM<span class="sc">$</span>data<span class="sc">$</span>TRIPS, uncSIM<span class="sc">$</span>fitted.values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.1694734</code></pre>
 </div>
 </div>
+<p>The R-squared value of 0.169 tells us that the explanatory variables are able to explain 17% of the variance in the flow data.</p>
 <div class="cell">
 
 </div>
-<p>Alternatively, based on this <a href="https://rcompanion.org/handbook/G_10.html">link</a>, for these models, p-<strong>values</strong> and <strong>pseudo <em>R-squared</em></strong> measures can be calculated.&nbsp; A few common pseudo <em>R-squared</em> measures include: McFadden, Cox and Snell (also referred to as ML), Nagelkerke (also referred to as Cragg and Uhler), Efron, and count. Efron's pseudo <em>R-squared</em> has the advantage of being based solely on the actual values of the dependent variable and those values predicted by the model.&nbsp; This makes it relatively easy to understand.&nbsp;</p>
+<p>Alternatively, based on this <a href="https://rcompanion.org/handbook/G_10.html">link</a>, for these models, p-<strong>values</strong> and <strong>pseudo <em>R-squared</em></strong> measures can be calculated.&nbsp; A few common pseudo <em>R-squared</em> measures include: McFadden, Cox and Snell (also referred to as ML), Nagelkerke (also referred to as Cragg and Uhler), Efron, and count. Efron’s pseudo <em>R-squared</em> has the advantage of being based solely on the actual values of the dependent variable and those values predicted by the model.&nbsp; This makes it relatively easy to understand.&nbsp;</p>
 <p><strong>Calculate p-values for model</strong></p>
 <p>The most common way to calculate the <em>p</em>-value for a fitted model is to compare the fitted model to a null model with the <em>anova</em> function.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a>null_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(TRIPS <span class="sc">~</span> <span class="dv">1</span>, <span class="at">family =</span> poisson, <span class="at">data =</span> SIM_data)</span>
-<span id="cb58-2"><a href="#cb58-2"></a><span class="fu">anova</span>(uncSIM,</span>
-<span id="cb58-3"><a href="#cb58-3"></a>      null_model,</span>
-<span id="cb58-4"><a href="#cb58-4"></a>      <span class="at">test=</span><span class="st">"Chisq"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1"></a>null_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(TRIPS <span class="sc">~</span> <span class="dv">1</span>, <span class="at">family =</span> poisson, <span class="at">data =</span> SIM_data)</span>
+<span id="cb69-2"><a href="#cb69-2"></a><span class="fu">anova</span>(uncSIM,</span>
+<span id="cb69-3"><a href="#cb69-3"></a>      null_model,</span>
+<span id="cb69-4"><a href="#cb69-4"></a>      <span class="at">test=</span><span class="st">"Chisq"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Analysis of Deviance Table
 
@@ -1264,7 +1472,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p><strong>Calculate Pseudo R-squared</strong> using <code>nagelkerke()</code> of rcompanion package.</p>
 <p>It outputs McFadden, Cox and Snell (ML), Nagelkerke values.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a><span class="fu">nagelkerke</span>(uncSIM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a><span class="fu">nagelkerke</span>(uncSIM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$Models
                                                                                                                             
@@ -1292,19 +1500,19 @@ $Messages
 $Warnings
 [1] "None"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a><span class="co">#r2_mcfadden(uncSIM)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1"></a><span class="co">#r2_mcfadden(uncSIM)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We can obtain <strong>Efron's pseudo <em>R-squared</em></strong> from the <em>efronRsquared</em> function or the <em>accuracy</em> function.</p>
+<p>We can obtain <strong>Efron’s pseudo <em>R-squared</em></strong> from the <em>efronRsquared</em> function or the <em>accuracy</em> function.</p>
 <p>The <strong><em>accuracy</em></strong> function also outputs several other measures of accuracy and error.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1"></a><span class="fu">efronRSquared</span>(uncSIM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1"></a><span class="fu">efronRSquared</span>(uncSIM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>EfronRSquared 
         0.167 </code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1"></a><span class="fu">accuracy</span>(uncSIM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1"></a><span class="fu">accuracy</span>(uncSIM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$Models
   Call                                                                  
@@ -1325,15 +1533,15 @@ $Fit.criteria
 </div>
 <p>Reference: <a href="https://www.shiksha.com/online-courses/articles/adjusted-r-squared/">link1</a> and <a href="https://communities.sas.com/t5/SAS-Programming/adjusted-R-squared-in-PROC-GLM/td-p/166446#:~:text=ADJRSQ(no%20int)%20%3D%201,the%20number%20of%20parameters%20fit.">link2</a></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1"></a>Calc_AdjRSquared <span class="ot">&lt;-</span> <span class="cf">function</span>(rsquared, n, p) {</span>
-<span id="cb67-2"><a href="#cb67-2"></a>  result <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> (<span class="dv">1</span> <span class="sc">-</span> rsquared) <span class="sc">*</span> (n <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> (n <span class="sc">-</span> p <span class="sc">-</span> <span class="dv">1</span>)</span>
-<span id="cb67-3"><a href="#cb67-3"></a>  <span class="fu">return</span>(result)</span>
-<span id="cb67-4"><a href="#cb67-4"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1"></a>Calc_AdjRSquared <span class="ot">&lt;-</span> <span class="cf">function</span>(rsquared, n, p) {</span>
+<span id="cb78-2"><a href="#cb78-2"></a>  result <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> (<span class="dv">1</span> <span class="sc">-</span> rsquared) <span class="sc">*</span> (n <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> (n <span class="sc">-</span> p <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb78-3"><a href="#cb78-3"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb78-4"><a href="#cb78-4"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1"></a><span class="fu">Calc_AdjRSquared</span>(<span class="fu">CalcRSquared</span>(uncSIM<span class="sc">$</span>data<span class="sc">$</span>TRIPS, uncSIM<span class="sc">$</span>fitted.values),</span>
-<span id="cb68-2"><a href="#cb68-2"></a>                 <span class="fu">length</span>(uncSIM<span class="sc">$</span>data<span class="sc">$</span>TRIPS),</span>
-<span id="cb68-3"><a href="#cb68-3"></a>                 <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1"></a><span class="fu">Calc_AdjRSquared</span>(<span class="fu">CalcRSquared</span>(uncSIM<span class="sc">$</span>data<span class="sc">$</span>TRIPS, uncSIM<span class="sc">$</span>fitted.values),</span>
+<span id="cb79-2"><a href="#cb79-2"></a>                 <span class="fu">length</span>(uncSIM<span class="sc">$</span>data<span class="sc">$</span>TRIPS),</span>
+<span id="cb79-3"><a href="#cb79-3"></a>                 <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.1692988</code></pre>
 </div>
@@ -1344,17 +1552,19 @@ $Fit.criteria
 <p>In this section, we will fit an <strong>origin constrained SIM</strong> by using the code3 chunk below.</p>
 <p>The general formula of Origin Constrained Spatial Interaction Model</p>
 <p><img src="https://r4gdsa.netlify.app/chap15/img/image2.jpg" class="img-fluid"></p>
+<p>Take ln on both sides: <code>ln 𝑇𝑖j = 𝑘 + 𝜇 + 𝛼 ln𝑊𝑗 − 𝛽 ln𝑑𝑖j</code></p>
+<p>Instead of feeding ‘ORIGIN_AGE25_64’, we feed <strong>’ORIGIN_SZ</strong>’ instead.</p>
 <p><strong>Each origin_sz is a predictor variable.</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1"></a>orcSIM <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">formula=</span> TRIPS <span class="sc">~</span></span>
-<span id="cb70-2"><a href="#cb70-2"></a>                ORIGIN_SZ <span class="sc">+</span></span>
-<span id="cb70-3"><a href="#cb70-3"></a>                <span class="fu">log</span>(DESTIN_AGE25_64) <span class="sc">+</span></span>
-<span id="cb70-4"><a href="#cb70-4"></a>                <span class="fu">log</span>(dist),</span>
-<span id="cb70-5"><a href="#cb70-5"></a>              <span class="at">family =</span> <span class="fu">poisson</span>(<span class="at">link=</span><span class="st">'log'</span>),</span>
-<span id="cb70-6"><a href="#cb70-6"></a>              <span class="at">data =</span> SIM_data,</span>
-<span id="cb70-7"><a href="#cb70-7"></a>              <span class="at">na.action =</span> na.exclude)</span>
-<span id="cb70-8"><a href="#cb70-8"></a></span>
-<span id="cb70-9"><a href="#cb70-9"></a><span class="fu">summary</span>(orcSIM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1"></a>orcSIM <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">formula=</span> TRIPS <span class="sc">~</span></span>
+<span id="cb81-2"><a href="#cb81-2"></a>                ORIGIN_SZ <span class="sc">+</span></span>
+<span id="cb81-3"><a href="#cb81-3"></a>                <span class="fu">log</span>(DESTIN_AGE25_64) <span class="sc">+</span></span>
+<span id="cb81-4"><a href="#cb81-4"></a>                <span class="fu">log</span>(dist),</span>
+<span id="cb81-5"><a href="#cb81-5"></a>              <span class="at">family =</span> <span class="fu">poisson</span>(<span class="at">link=</span><span class="st">'log'</span>),</span>
+<span id="cb81-6"><a href="#cb81-6"></a>              <span class="at">data =</span> SIM_data,</span>
+<span id="cb81-7"><a href="#cb81-7"></a>              <span class="at">na.action =</span> na.exclude)</span>
+<span id="cb81-8"><a href="#cb81-8"></a></span>
+<span id="cb81-9"><a href="#cb81-9"></a><span class="fu">summary</span>(orcSIM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1668,9 +1878,56 @@ Number of Fisher Scoring iterations: 6</code></pre>
 <li><p><strong>z value:</strong> The z-value, which is the ratio of the estimate to its standard error. It is used in hypothesis testing.</p></li>
 <li><p><strong>Pr(&gt;|z|):</strong> The p-value associated with the z-value. It indicates the probability of observing a z-value as extreme or more extreme than the one calculated if the null hypothesis (that the coefficient is zero) is true.</p></li>
 </ul>
+<p><strong>Interpretation of output table:</strong></p>
+<p>The values of the parameters are:</p>
+<p>𝑘 = 19.9 , 𝛼 = 0.030 and 𝛽 = −1.70. The list of coefficients of all the origin_sz codes are 𝜇i. All these coefficients can be extracted using</p>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">k</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">alpha</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false">beta</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-4" role="tab" aria-controls="tabset-3-4" aria-selected="false">mu</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1"></a>orcSIM<span class="sc">$</span>coefficients[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept) 
+     19.931 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1"></a>orcSIM<span class="sc">$</span>coefficients[<span class="dv">2</span><span class="sc">:</span><span class="dv">279</span>] <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ORIGIN_SZAMSZ02 ORIGIN_SZAMSZ03 ORIGIN_SZAMSZ04 ORIGIN_SZAMSZ05 ORIGIN_SZAMSZ06 
+     0.68057098      0.35978498     -0.11065661     -0.31405610      0.06344251 
+ORIGIN_SZAMSZ07 
+    -1.13015804 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1"></a>orcSIM<span class="sc">$</span>coefficients[<span class="dv">280</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>log(DESTIN_AGE25_64) 
+          0.02954284 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-4-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1"></a>orcSIM<span class="sc">$</span>coefficients[<span class="dv">281</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>log(dist) 
+-1.702469 </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>All the variables are statistically significant and ‘dist’ has the most influence on the model followed by the ‘DESTIN_AGE25_64’ variable.</p>
 <p>We can examine how the constraints hold for destinations this time.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1"></a><span class="fu">CalcRSquared</span>(orcSIM<span class="sc">$</span>data<span class="sc">$</span>TRIPS, orcSIM<span class="sc">$</span>fitted.values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1"></a><span class="fu">CalcRSquared</span>(orcSIM<span class="sc">$</span>data<span class="sc">$</span>TRIPS, orcSIM<span class="sc">$</span>fitted.values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.4029115</code></pre>
 </div>
@@ -1681,16 +1938,17 @@ Number of Fisher Scoring iterations: 6</code></pre>
 <p>In this section, we will fit a destination constrained SIM by using the code chunk below.</p>
 <p>The general formula of Destination Constrained Spatial Interaction Model</p>
 <p><img src="https://r4gdsa.netlify.app/chap15/img/image3.jpg" class="img-fluid"></p>
+<p>Instead of feeding ‘DESTNI_AGE25_64’, we feed ‘DESTIN_SZ’ instead.</p>
 <p><strong>Each destin_sz is a predictor variable.</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1"></a>decSIM <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">formula =</span> TRIPS <span class="sc">~</span> </span>
-<span id="cb74-2"><a href="#cb74-2"></a>                DESTIN_SZ <span class="sc">+</span> </span>
-<span id="cb74-3"><a href="#cb74-3"></a>                <span class="fu">log</span>(ORIGIN_AGE25_64) <span class="sc">+</span> </span>
-<span id="cb74-4"><a href="#cb74-4"></a>                <span class="fu">log</span>(dist),</span>
-<span id="cb74-5"><a href="#cb74-5"></a>              <span class="at">family =</span> <span class="fu">poisson</span>(<span class="at">link =</span> <span class="st">"log"</span>),</span>
-<span id="cb74-6"><a href="#cb74-6"></a>              <span class="at">data =</span> SIM_data,</span>
-<span id="cb74-7"><a href="#cb74-7"></a>              <span class="at">na.action =</span> na.exclude)</span>
-<span id="cb74-8"><a href="#cb74-8"></a><span class="fu">summary</span>(decSIM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1"></a>decSIM <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">formula =</span> TRIPS <span class="sc">~</span> </span>
+<span id="cb93-2"><a href="#cb93-2"></a>                DESTIN_SZ <span class="sc">+</span> </span>
+<span id="cb93-3"><a href="#cb93-3"></a>                <span class="fu">log</span>(ORIGIN_AGE25_64) <span class="sc">+</span> </span>
+<span id="cb93-4"><a href="#cb93-4"></a>                <span class="fu">log</span>(dist),</span>
+<span id="cb93-5"><a href="#cb93-5"></a>              <span class="at">family =</span> <span class="fu">poisson</span>(<span class="at">link =</span> <span class="st">"log"</span>),</span>
+<span id="cb93-6"><a href="#cb93-6"></a>              <span class="at">data =</span> SIM_data,</span>
+<span id="cb93-7"><a href="#cb93-7"></a>              <span class="at">na.action =</span> na.exclude)</span>
+<span id="cb93-8"><a href="#cb93-8"></a><span class="fu">summary</span>(decSIM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1998,7 +2256,7 @@ Number of Fisher Scoring iterations: 7</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1"></a><span class="fu">methods</span>(<span class="at">class=</span> <span class="fu">class</span>(decSIM))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1"></a><span class="fu">methods</span>(<span class="at">class=</span> <span class="fu">class</span>(decSIM))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] add1                 anova                check_normality     
  [4] check_overdispersion coerce               confint             
@@ -2014,7 +2272,7 @@ Number of Fisher Scoring iterations: 7</code></pre>
 [34] weights             
 see '?methods' for accessing help and source code</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1"></a><span class="fu">attributes</span>(decSIM) <span class="co"># so we know how to access</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1"></a><span class="fu">attributes</span>(decSIM) <span class="co"># so we know how to access</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$names
  [1] "coefficients"      "residuals"         "fitted.values"    
@@ -2031,12 +2289,12 @@ see '?methods' for accessing help and source code</code></pre>
 $class
 [1] "glm" "lm" </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1"></a><span class="co">#decSIM['fitted.values']</span></span>
-<span id="cb80-2"><a href="#cb80-2"></a><span class="co">#plot(check_normality(decSIM))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1"></a><span class="co">#decSIM['fitted.values']</span></span>
+<span id="cb99-2"><a href="#cb99-2"></a><span class="co">#plot(check_normality(decSIM))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>There are several destination subzone predictors that are not statiscally significant at 95% confidence level.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1"></a><span class="fu">CalcRSquared</span>(decSIM<span class="sc">$</span>data<span class="sc">$</span>TRIPS, decSIM<span class="sc">$</span>fitted.values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1"></a><span class="fu">CalcRSquared</span>(decSIM<span class="sc">$</span>data<span class="sc">$</span>TRIPS, decSIM<span class="sc">$</span>fitted.values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.496166</code></pre>
 </div>
@@ -2048,14 +2306,14 @@ $class
 <p>The general formula of Doubly Constrained Spatial Interaction Model</p>
 <p><img src="https://r4gdsa.netlify.app/chap15/img/image4.jpg" class="img-fluid"></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1"></a>dbcSIM <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">formula =</span> TRIPS <span class="sc">~</span> </span>
-<span id="cb83-2"><a href="#cb83-2"></a>                ORIGIN_SZ <span class="sc">+</span> </span>
-<span id="cb83-3"><a href="#cb83-3"></a>                DESTIN_SZ <span class="sc">+</span> </span>
-<span id="cb83-4"><a href="#cb83-4"></a>                <span class="fu">log</span>(dist),</span>
-<span id="cb83-5"><a href="#cb83-5"></a>              <span class="at">family =</span> <span class="fu">poisson</span>(<span class="at">link =</span> <span class="st">"log"</span>),</span>
-<span id="cb83-6"><a href="#cb83-6"></a>              <span class="at">data =</span> SIM_data,</span>
-<span id="cb83-7"><a href="#cb83-7"></a>              <span class="at">na.action =</span> na.exclude)</span>
-<span id="cb83-8"><a href="#cb83-8"></a><span class="fu">summary</span>(dbcSIM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1"></a>dbcSIM <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">formula =</span> TRIPS <span class="sc">~</span> </span>
+<span id="cb102-2"><a href="#cb102-2"></a>                ORIGIN_SZ <span class="sc">+</span> </span>
+<span id="cb102-3"><a href="#cb102-3"></a>                DESTIN_SZ <span class="sc">+</span> </span>
+<span id="cb102-4"><a href="#cb102-4"></a>                <span class="fu">log</span>(dist),</span>
+<span id="cb102-5"><a href="#cb102-5"></a>              <span class="at">family =</span> <span class="fu">poisson</span>(<span class="at">link =</span> <span class="st">"log"</span>),</span>
+<span id="cb102-6"><a href="#cb102-6"></a>              <span class="at">data =</span> SIM_data,</span>
+<span id="cb102-7"><a href="#cb102-7"></a>              <span class="at">na.action =</span> na.exclude)</span>
+<span id="cb102-8"><a href="#cb102-8"></a><span class="fu">summary</span>(dbcSIM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -2640,7 +2898,7 @@ Number of Fisher Scoring iterations: 7</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1"></a><span class="fu">CalcRSquared</span>(dbcSIM<span class="sc">$</span>data<span class="sc">$</span>TRIPS, dbcSIM<span class="sc">$</span>fitted.values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1"></a><span class="fu">CalcRSquared</span>(dbcSIM<span class="sc">$</span>data<span class="sc">$</span>TRIPS, dbcSIM<span class="sc">$</span>fitted.values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.6883675</code></pre>
 </div>
@@ -2655,17 +2913,17 @@ Number of Fisher Scoring iterations: 7</code></pre>
 <p>Another useful model performance measure for continuous dependent variable is <a href="https://towardsdatascience.com/what-does-rmse-really-mean-806b65f2e48e">Root Mean Squared Error</a>. In this sub-section, you will learn how to use <a href="https://easystats.github.io/performance/reference/compare_performance.html"><code>compare_performance()</code></a> of <a href="https://easystats.github.io/performance/"><strong>performance</strong></a> package</p>
 <p>First of all, let us create a list called <em>model_list</em> by using the code chunk below. It contains all our fitted models for all four variations of gravity model.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1"></a>model_list <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">unconstrained=</span>uncSIM,</span>
-<span id="cb87-2"><a href="#cb87-2"></a>                   <span class="at">originConstrained=</span>orcSIM,</span>
-<span id="cb87-3"><a href="#cb87-3"></a>                   <span class="at">destinationConstrained=</span>decSIM,</span>
-<span id="cb87-4"><a href="#cb87-4"></a>                   <span class="at">doublyConstrained=</span>dbcSIM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1"></a>model_list <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">unconstrained=</span>uncSIM,</span>
+<span id="cb106-2"><a href="#cb106-2"></a>                   <span class="at">originConstrained=</span>orcSIM,</span>
+<span id="cb106-3"><a href="#cb106-3"></a>                   <span class="at">destinationConstrained=</span>decSIM,</span>
+<span id="cb106-4"><a href="#cb106-4"></a>                   <span class="at">doublyConstrained=</span>dbcSIM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Next, we will compute the RMSE of all the models in <em>model_list</em> file by using the code chunk below.</p>
 <p>Generally, the smaller RMSE the better the model.</p>
 <p>The print below reveals that doubly constrained SIM is the best model among all the four SIMs because it has the smallest RMSE value of 1487.111.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1"></a><span class="fu">compare_performance</span>(model_list,</span>
-<span id="cb88-2"><a href="#cb88-2"></a>                    <span class="at">metrics =</span> <span class="st">"RMSE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1"></a><span class="fu">compare_performance</span>(model_list,</span>
+<span id="cb107-2"><a href="#cb107-2"></a>                    <span class="at">metrics =</span> <span class="st">"RMSE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Comparison of Model Performance Indices
 
@@ -2683,9 +2941,9 @@ doublyConstrained      |   glm | 1487.111</code></pre>
 <p>In this section, we will learn how to visualise the <strong>observed values</strong> and the <strong>fitted values</strong>.</p>
 <p>Firstly we will extract the fitted values from each model by using the code chunk below.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1"></a>df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(uncSIM<span class="sc">$</span>fitted.values) <span class="sc">%&gt;%</span> </span>
-<span id="cb90-2"><a href="#cb90-2"></a>  <span class="fu">round</span>(<span class="at">digits=</span><span class="dv">0</span>)</span>
-<span id="cb90-3"><a href="#cb90-3"></a><span class="fu">head</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1"></a>df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(uncSIM<span class="sc">$</span>fitted.values) <span class="sc">%&gt;%</span> </span>
+<span id="cb109-2"><a href="#cb109-2"></a>  <span class="fu">round</span>(<span class="at">digits=</span><span class="dv">0</span>)</span>
+<span id="cb109-3"><a href="#cb109-3"></a><span class="fu">head</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  uncSIM$fitted.values
 1                 5580
@@ -2698,49 +2956,49 @@ doublyConstrained      |   glm | 1487.111</code></pre>
 </div>
 <p>Next, we will join the values to <em>SIM_data</em> data frame.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1"></a>SIM_data <span class="ot">&lt;-</span> SIM_data <span class="sc">%&gt;%</span> </span>
-<span id="cb92-2"><a href="#cb92-2"></a>  <span class="fu">cbind</span>(df) <span class="sc">%&gt;%</span> </span>
-<span id="cb92-3"><a href="#cb92-3"></a>  <span class="fu">rename</span>(<span class="at">uncTRIPS =</span> <span class="st">`</span><span class="at">uncSIM$fitted.values</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1"></a>SIM_data <span class="ot">&lt;-</span> SIM_data <span class="sc">%&gt;%</span> </span>
+<span id="cb111-2"><a href="#cb111-2"></a>  <span class="fu">cbind</span>(df) <span class="sc">%&gt;%</span> </span>
+<span id="cb111-3"><a href="#cb111-3"></a>  <span class="fu">rename</span>(<span class="at">uncTRIPS =</span> <span class="st">`</span><span class="at">uncSIM$fitted.values</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Repeat the same step by for Origin Constrained SIM (i.e.&nbsp;orcSIM)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1"></a>df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(orcSIM<span class="sc">$</span>fitted.values) <span class="sc">%&gt;%</span></span>
-<span id="cb93-2"><a href="#cb93-2"></a>  <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1"></a>df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(orcSIM<span class="sc">$</span>fitted.values) <span class="sc">%&gt;%</span></span>
+<span id="cb112-2"><a href="#cb112-2"></a>  <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1"></a>SIM_data <span class="ot">&lt;-</span> SIM_data <span class="sc">%&gt;%</span></span>
-<span id="cb94-2"><a href="#cb94-2"></a>  <span class="fu">cbind</span>(df) <span class="sc">%&gt;%</span></span>
-<span id="cb94-3"><a href="#cb94-3"></a>  <span class="fu">rename</span>(<span class="at">orcTRIPS =</span> <span class="st">"orcSIM$fitted.values"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1"></a>SIM_data <span class="ot">&lt;-</span> SIM_data <span class="sc">%&gt;%</span></span>
+<span id="cb113-2"><a href="#cb113-2"></a>  <span class="fu">cbind</span>(df) <span class="sc">%&gt;%</span></span>
+<span id="cb113-3"><a href="#cb113-3"></a>  <span class="fu">rename</span>(<span class="at">orcTRIPS =</span> <span class="st">"orcSIM$fitted.values"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Repeat the same step by for Destination Constrained SIM (i.e.&nbsp;decSIM)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1"></a>df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(decSIM<span class="sc">$</span>fitted.values) <span class="sc">%&gt;%</span></span>
-<span id="cb95-2"><a href="#cb95-2"></a>  <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1"></a>df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(decSIM<span class="sc">$</span>fitted.values) <span class="sc">%&gt;%</span></span>
+<span id="cb114-2"><a href="#cb114-2"></a>  <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1"></a>SIM_data <span class="ot">&lt;-</span> SIM_data <span class="sc">%&gt;%</span></span>
-<span id="cb96-2"><a href="#cb96-2"></a>  <span class="fu">cbind</span>(df) <span class="sc">%&gt;%</span></span>
-<span id="cb96-3"><a href="#cb96-3"></a>  <span class="fu">rename</span>(<span class="at">decTRIPS =</span> <span class="st">"decSIM$fitted.values"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1"></a>SIM_data <span class="ot">&lt;-</span> SIM_data <span class="sc">%&gt;%</span></span>
+<span id="cb115-2"><a href="#cb115-2"></a>  <span class="fu">cbind</span>(df) <span class="sc">%&gt;%</span></span>
+<span id="cb115-3"><a href="#cb115-3"></a>  <span class="fu">rename</span>(<span class="at">decTRIPS =</span> <span class="st">"decSIM$fitted.values"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Repeat the same step by for Doubly Constrained SIM (i.e.&nbsp;dbcSIM)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1"></a>df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(dbcSIM<span class="sc">$</span>fitted.values) <span class="sc">%&gt;%</span></span>
-<span id="cb97-2"><a href="#cb97-2"></a>  <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb116"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1"></a>df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(dbcSIM<span class="sc">$</span>fitted.values) <span class="sc">%&gt;%</span></span>
+<span id="cb116-2"><a href="#cb116-2"></a>  <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1"></a>SIM_data <span class="ot">&lt;-</span> SIM_data <span class="sc">%&gt;%</span></span>
-<span id="cb98-2"><a href="#cb98-2"></a>  <span class="fu">cbind</span>(df) <span class="sc">%&gt;%</span></span>
-<span id="cb98-3"><a href="#cb98-3"></a>  <span class="fu">rename</span>(<span class="at">dbcTRIPS =</span> <span class="st">"dbcSIM$fitted.values"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1"></a>SIM_data <span class="ot">&lt;-</span> SIM_data <span class="sc">%&gt;%</span></span>
+<span id="cb117-2"><a href="#cb117-2"></a>  <span class="fu">cbind</span>(df) <span class="sc">%&gt;%</span></span>
+<span id="cb117-3"><a href="#cb117-3"></a>  <span class="fu">rename</span>(<span class="at">dbcTRIPS =</span> <span class="st">"dbcSIM$fitted.values"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1"></a>sums_vector <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">sum</span>(SIM_data<span class="sc">$</span>TRIPS),</span>
-<span id="cb99-2"><a href="#cb99-2"></a>                 <span class="fu">sum</span>(SIM_data<span class="sc">$</span>uncTRIPS), </span>
-<span id="cb99-3"><a href="#cb99-3"></a>                 <span class="fu">sum</span>(SIM_data<span class="sc">$</span>orcTRIPS),</span>
-<span id="cb99-4"><a href="#cb99-4"></a>                 <span class="fu">sum</span>(SIM_data<span class="sc">$</span>decTRIPS),</span>
-<span id="cb99-5"><a href="#cb99-5"></a>                 <span class="fu">sum</span>(SIM_data<span class="sc">$</span>dbcTRIPS)</span>
-<span id="cb99-6"><a href="#cb99-6"></a>                 )</span>
-<span id="cb99-7"><a href="#cb99-7"></a></span>
-<span id="cb99-8"><a href="#cb99-8"></a><span class="fu">data.frame</span>(<span class="at">Sums=</span> sums_vector) <span class="sc">%&gt;%</span> knitr<span class="sc">::</span><span class="fu">kable</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1"></a>sums_vector <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">sum</span>(SIM_data<span class="sc">$</span>TRIPS),</span>
+<span id="cb118-2"><a href="#cb118-2"></a>                 <span class="fu">sum</span>(SIM_data<span class="sc">$</span>uncTRIPS), </span>
+<span id="cb118-3"><a href="#cb118-3"></a>                 <span class="fu">sum</span>(SIM_data<span class="sc">$</span>orcTRIPS),</span>
+<span id="cb118-4"><a href="#cb118-4"></a>                 <span class="fu">sum</span>(SIM_data<span class="sc">$</span>decTRIPS),</span>
+<span id="cb118-5"><a href="#cb118-5"></a>                 <span class="fu">sum</span>(SIM_data<span class="sc">$</span>dbcTRIPS)</span>
+<span id="cb118-6"><a href="#cb118-6"></a>                 )</span>
+<span id="cb118-7"><a href="#cb118-7"></a></span>
+<span id="cb118-8"><a href="#cb118-8"></a><span class="fu">data.frame</span>(<span class="at">Sums=</span> sums_vector) <span class="sc">%&gt;%</span> knitr<span class="sc">::</span><span class="fu">kable</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped">
 <thead>
@@ -2771,45 +3029,45 @@ doublyConstrained      |   glm | 1487.111</code></pre>
 <p>In theory, the sum of the all the TRIPS should be equal. The mis-match in values could be due to <code>round()</code> function used earlier.</p>
 <p>Using the <a href="https://rpkgs.datanovia.com/ggpubr/reference/ggarrange.html"><code>ggarrange()</code></a> function of the ggpubr package, we will now print the ‘actual vs predicted’ plots side-by-side</p>
 <div class="cell" data-fig.asp="0.68">
-<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1"></a>unc_p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> SIM_data,</span>
-<span id="cb100-2"><a href="#cb100-2"></a>                <span class="fu">aes</span>(<span class="at">x =</span> uncTRIPS,</span>
-<span id="cb100-3"><a href="#cb100-3"></a>                    <span class="at">y =</span> TRIPS)) <span class="sc">+</span></span>
-<span id="cb100-4"><a href="#cb100-4"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb100-5"><a href="#cb100-5"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> lm)</span>
-<span id="cb100-6"><a href="#cb100-6"></a></span>
-<span id="cb100-7"><a href="#cb100-7"></a>orc_p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> SIM_data,</span>
-<span id="cb100-8"><a href="#cb100-8"></a>                <span class="fu">aes</span>(<span class="at">x =</span> orcTRIPS,</span>
-<span id="cb100-9"><a href="#cb100-9"></a>                    <span class="at">y =</span> TRIPS)) <span class="sc">+</span></span>
-<span id="cb100-10"><a href="#cb100-10"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb100-11"><a href="#cb100-11"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> lm)</span>
-<span id="cb100-12"><a href="#cb100-12"></a></span>
-<span id="cb100-13"><a href="#cb100-13"></a>dec_p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> SIM_data,</span>
-<span id="cb100-14"><a href="#cb100-14"></a>                <span class="fu">aes</span>(<span class="at">x =</span> decTRIPS,</span>
-<span id="cb100-15"><a href="#cb100-15"></a>                    <span class="at">y =</span> TRIPS)) <span class="sc">+</span></span>
-<span id="cb100-16"><a href="#cb100-16"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb100-17"><a href="#cb100-17"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> lm)</span>
-<span id="cb100-18"><a href="#cb100-18"></a></span>
-<span id="cb100-19"><a href="#cb100-19"></a>dbc_p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> SIM_data,</span>
-<span id="cb100-20"><a href="#cb100-20"></a>                <span class="fu">aes</span>(<span class="at">x =</span> dbcTRIPS,</span>
-<span id="cb100-21"><a href="#cb100-21"></a>                    <span class="at">y =</span> TRIPS)) <span class="sc">+</span></span>
-<span id="cb100-22"><a href="#cb100-22"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb100-23"><a href="#cb100-23"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> lm)</span>
-<span id="cb100-24"><a href="#cb100-24"></a></span>
-<span id="cb100-25"><a href="#cb100-25"></a><span class="fu">ggarrange</span>(unc_p, orc_p, dec_p, dbc_p,</span>
-<span id="cb100-26"><a href="#cb100-26"></a>          <span class="at">ncol =</span> <span class="dv">2</span>,</span>
-<span id="cb100-27"><a href="#cb100-27"></a>          <span class="at">nrow =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1"></a>unc_p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> SIM_data,</span>
+<span id="cb119-2"><a href="#cb119-2"></a>                <span class="fu">aes</span>(<span class="at">x =</span> uncTRIPS,</span>
+<span id="cb119-3"><a href="#cb119-3"></a>                    <span class="at">y =</span> TRIPS)) <span class="sc">+</span></span>
+<span id="cb119-4"><a href="#cb119-4"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb119-5"><a href="#cb119-5"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> lm)</span>
+<span id="cb119-6"><a href="#cb119-6"></a></span>
+<span id="cb119-7"><a href="#cb119-7"></a>orc_p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> SIM_data,</span>
+<span id="cb119-8"><a href="#cb119-8"></a>                <span class="fu">aes</span>(<span class="at">x =</span> orcTRIPS,</span>
+<span id="cb119-9"><a href="#cb119-9"></a>                    <span class="at">y =</span> TRIPS)) <span class="sc">+</span></span>
+<span id="cb119-10"><a href="#cb119-10"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb119-11"><a href="#cb119-11"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> lm)</span>
+<span id="cb119-12"><a href="#cb119-12"></a></span>
+<span id="cb119-13"><a href="#cb119-13"></a>dec_p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> SIM_data,</span>
+<span id="cb119-14"><a href="#cb119-14"></a>                <span class="fu">aes</span>(<span class="at">x =</span> decTRIPS,</span>
+<span id="cb119-15"><a href="#cb119-15"></a>                    <span class="at">y =</span> TRIPS)) <span class="sc">+</span></span>
+<span id="cb119-16"><a href="#cb119-16"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb119-17"><a href="#cb119-17"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> lm)</span>
+<span id="cb119-18"><a href="#cb119-18"></a></span>
+<span id="cb119-19"><a href="#cb119-19"></a>dbc_p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> SIM_data,</span>
+<span id="cb119-20"><a href="#cb119-20"></a>                <span class="fu">aes</span>(<span class="at">x =</span> dbcTRIPS,</span>
+<span id="cb119-21"><a href="#cb119-21"></a>                    <span class="at">y =</span> TRIPS)) <span class="sc">+</span></span>
+<span id="cb119-22"><a href="#cb119-22"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb119-23"><a href="#cb119-23"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> lm)</span>
+<span id="cb119-24"><a href="#cb119-24"></a></span>
+<span id="cb119-25"><a href="#cb119-25"></a><span class="fu">ggarrange</span>(unc_p, orc_p, dec_p, dbc_p,</span>
+<span id="cb119-26"><a href="#cb119-26"></a>          <span class="at">ncol =</span> <span class="dv">2</span>,</span>
+<span id="cb119-27"><a href="#cb119-27"></a>          <span class="at">nrow =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="In-class_Ex3_2_files/figure-html/unnamed-chunk-63-1.png" class="img-fluid" width="1344"></p>
+<p><img src="In-class_Ex3_2_files/figure-html/unnamed-chunk-73-1.png" class="img-fluid" width="1344"></p>
 </div>
 </div>
 <p><strong>Discussion on results:</strong></p>
 <p>Doubly constrained: <strong>best</strong> model as not dispersed. The R^2 value of doubly constrained model is 0.688, which means that our indpendent variables can account for more than 60% of the variance in our target variable (Trips) . We have only achieved 60% accuracy because we have only one or two variables. If we add more variables like job opportunities in each destination, we could potentially get better results.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb101-2"><a href="#cb101-2"></a><span class="co">#| echo: false</span></span>
-<span id="cb101-3"><a href="#cb101-3"></a><span class="co">#| fig-width: 14</span></span>
-<span id="cb101-4"><a href="#cb101-4"></a><span class="co">#| fig-asp: 0.68</span></span>
-<span id="cb101-5"><a href="#cb101-5"></a><span class="co">#| code-fold: True</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb120"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb120-2"><a href="#cb120-2"></a><span class="co">#| echo: false</span></span>
+<span id="cb120-3"><a href="#cb120-3"></a><span class="co">#| fig-width: 14</span></span>
+<span id="cb120-4"><a href="#cb120-4"></a><span class="co">#| fig-asp: 0.68</span></span>
+<span id="cb120-5"><a href="#cb120-5"></a><span class="co">#| code-fold: True</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>

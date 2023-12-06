@@ -418,7 +418,7 @@ flow_data1 <- flow_data1 %>%
          DESTIN_AGE25_64 = AGE25_64) %>%
   select(-c(PA, SZ_NAME))
 
-head(flow_data1)
+head(flow_data1) %>% knitr::kable()
 ```
 
 We will called the output data file *SIM_data*. it is in rds data file format.
@@ -431,6 +431,10 @@ write_rds(flow_data1, "data/rds/SIM_data")
 ## **16.8 Calibrating Spatial Interaction Models**
 
 In this section, we will learn how to calibrate Spatial Interaction Models by using **Poisson** Regression method.
+
+In hands-on3, we visualised the **actual flow data** without any predictors variables. Now, in `flow_data1` contains actual flow data (Y var), distance data, origin propulsiveness variables and destination attractiveness variables. Now we will try to calibrate the model using the 4 Spatial interaction models type to get the best estimates of mu, alpha and beta.
+
+Calibration is the process of adjusting parameters (of origin and destin related variables) in the model to try and get the estimates to agree with the observed data (actual dependent var) as much as possible. The goodness-of-fit statistics (like R-squared) can be used to indicate when the optimum solution is found. 'What-if' scenarios can be studied using these calibrated models.
 
 **Why not use the usual Linear Regression model (Ordinary least square (OLS)) method?**
 
@@ -451,6 +455,8 @@ In this section, we will learn how to calibrate Spatial Interaction Models by us
 -   a type of generalised linear model (GLM) used to count data.
 
 -   residuals may follow a asymmetric distribution around the mean (meaning outcomes on either sides of the mean are not EQUALLY likely.)
+
+-   It means that the probability of commuting is not described by a continuous (normal) probability distribution, but a discrete probability distribution such as the Poisson distribution
 
 ### **16.8.1 Importing the modelling data**
 
@@ -473,7 +479,7 @@ ggplot(data = SIM_data,
   geom_histogram()
 ```
 
-Notice that the distribution is highly skewed and not resemble bell shape or also known as normal distribution.
+Notice that the distribution is highly skewed and not resemble bell shape or also known as normal distribution. It resembles more like a Poisson distribution with a small mean (right-skewed) or a negative binomial distribution.
 
 Next, let us visualise the relation between the dependent variable and one of the key **independent** variable in Spatial Interaction Model, namely **distance**.
 
@@ -558,11 +564,13 @@ The general formula of Unconstrained Spatial Interaction Model
 
 The code chunk used to calibrate to model is shown below:
 
-Taking natural log on both sides, ln(lambda) = k + mu\* *ln*V + alpha\* ln W + beta\*ln d). Indicate `link`='log'
+Taking natural log on both sides, `ln 𝑇𝑖j = 𝑘 + 𝜇 ln𝑉𝑖 + 𝛼 ln𝑊𝑗 − 𝛽 ln𝑑𝑖j` .
+
+Trips (of flow) is logarithmically linked to a **linear combination** of the **logged** independent variables in the model. A Poisson regression model can be fitted to produce estimates of 𝑘, 𝜇, 𝛼 and 𝛽.
+
+Indicate `link`='log' because the left-hand side of model equation is logarithmically linked to the variables on the right hand side.
 
 More information on family and link can be found [here](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/family).
-
-In the **`poisson`** family the links **`log`**, **`identity`**, and **`sqrt`**.
 
 ```{r}
 
@@ -577,9 +585,55 @@ uncSIM <- glm(formula = TRIPS ~
 uncSIM
 ```
 
+```{r}
+summary(uncSIM)
+```
+
+**Interpretation of output:**
+
 The parameter estimate for distance is -1.517. If the sign is positive (something is wrong), double-check our workings.
 
-**AIC: GLM by default do not provide R-square, only provide AIC.**
+The values of the parameters are:
+
+𝑘 = 17.0 , 𝜇 = 0.21, 𝛼 = 0.013 and 𝛽 = −1.51
+
+All the variables are statistically significant and distance has the most influence on the model followed by the origin age group 25-64.
+
+**AIC: GLM by default do not provide R-square, only provide AIC.** We will be calculating R-squared in the next section.
+
+We could also extract the coefficients our of model:
+
+```{r}
+attributes(uncSIM)
+```
+
+::: panel-tabset
+## k
+
+```{r}
+uncSIM$coefficients[1]
+```
+
+## mu
+
+```{r}
+uncSIM$coefficients[2]
+```
+
+## alpha
+
+```{r}
+uncSIM$coefficients[3]
+```
+
+## beta
+
+careful of the sign
+
+```{r}
+-uncSIM$coefficients[4]
+```
+:::
 
 ### **16.8.5 R-squared function**
 
@@ -598,6 +652,8 @@ Next, we will compute the R-squared of the unconstrained SIM by using the code c
 ```{r}
 CalcRSquared(uncSIM$data$TRIPS, uncSIM$fitted.values)
 ```
+
+The R-squared value of 0.169 tells us that the explanatory variables are able to explain 17% of the variance in the flow data.
 
 ```{r}
 #| eval: false
@@ -620,7 +676,7 @@ adj_r_squared <- 1 - (full_loglik / null_loglik) * (nobs(uncSIM) - 1) / (nobs(un
 print(adj_r_squared)
 ```
 
-Alternatively, based on this [link](https://rcompanion.org/handbook/G_10.html), for these models, p-**values** and **pseudo *R-squared*** measures can be calculated.  A few common pseudo *R-squared* measures include: McFadden, Cox and Snell (also referred to as ML), Nagelkerke (also referred to as Cragg and Uhler), Efron, and count. Efron\'s pseudo *R-squared* has the advantage of being based solely on the actual values of the dependent variable and those values predicted by the model.  This makes it relatively easy to understand. 
+Alternatively, based on this [link](https://rcompanion.org/handbook/G_10.html), for these models, p-**values** and **pseudo *R-squared*** measures can be calculated.  A few common pseudo *R-squared* measures include: McFadden, Cox and Snell (also referred to as ML), Nagelkerke (also referred to as Cragg and Uhler), Efron, and count. Efron's pseudo *R-squared* has the advantage of being based solely on the actual values of the dependent variable and those values predicted by the model.  This makes it relatively easy to understand. 
 
 **Calculate p-values for model**
 
@@ -642,7 +698,7 @@ nagelkerke(uncSIM)
 #r2_mcfadden(uncSIM)
 ```
 
-We can obtain **Efron\'s pseudo *R-squared*** from the *efronRsquared* function or the *accuracy* function.
+We can obtain **Efron's pseudo *R-squared*** from the *efronRsquared* function or the *accuracy* function.
 
 The ***accuracy*** function also outputs several other measures of accuracy and error.
 
@@ -681,6 +737,10 @@ The general formula of Origin Constrained Spatial Interaction Model
 
 ![](https://r4gdsa.netlify.app/chap15/img/image2.jpg)
 
+Take ln on both sides: `ln 𝑇𝑖j = 𝑘 + 𝜇 + 𝛼 ln𝑊𝑗 − 𝛽 ln𝑑𝑖j`
+
+Instead of feeding 'ORIGIN_AGE25_64', we feed **'ORIGIN_SZ**' instead.
+
 **Each origin_sz is a predictor variable.**
 
 ```{r}
@@ -707,6 +767,40 @@ Output table:
 
 -   **Pr(\>\|z\|):** The p-value associated with the z-value. It indicates the probability of observing a z-value as extreme or more extreme than the one calculated if the null hypothesis (that the coefficient is zero) is true.
 
+**Interpretation of output table:**
+
+The values of the parameters are:
+
+𝑘 = 19.9 , 𝛼 = 0.030 and 𝛽 = −1.70. The list of coefficients of all the origin_sz codes are 𝜇i. All these coefficients can be extracted using
+
+::: panel-tabset
+## k
+
+```{r}
+orcSIM$coefficients[1]
+```
+
+## alpha
+
+```{r}
+orcSIM$coefficients[2:279] %>% head()
+```
+
+## beta
+
+```{r}
+orcSIM$coefficients[280]
+```
+
+## mu
+
+```{r}
+orcSIM$coefficients[281]
+```
+:::
+
+All the variables are statistically significant and 'dist' has the most influence on the model followed by the 'DESTIN_AGE25_64' variable.
+
 We can examine how the constraints hold for destinations this time.
 
 ```{r}
@@ -720,6 +814,8 @@ In this section, we will fit a destination constrained SIM by using the code chu
 The general formula of Destination Constrained Spatial Interaction Model
 
 ![](https://r4gdsa.netlify.app/chap15/img/image3.jpg)
+
+Instead of feeding 'DESTNI_AGE25_64', we feed 'DESTIN_SZ' instead.
 
 **Each destin_sz is a predictor variable.**
 

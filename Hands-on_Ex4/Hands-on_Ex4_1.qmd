@@ -455,19 +455,6 @@ Previously, we have use `lm(formula=SELLING_PRICE ~ AREA_SQM, data = condo_resal
 
 The code chunk below using `lm()` to **calibrate** the *multiple* linear regression model, ***LEASE_99YEAR*** has been excluded.
 
-```{r}
-condo.mlr18 <- lm(formula = log(SELLING_PRICE) ~ AREA_SQM + AGE    + 
-                  PROX_CBD + PROX_CHILDCARE + PROX_ELDERLYCARE +
-                  PROX_URA_GROWTH_AREA + PROX_HAWKER_MARKET + PROX_KINDERGARTEN + 
-                  PROX_MRT  + PROX_PARK + PROX_PRIMARY_SCH + 
-                  PROX_TOP_PRIMARY_SCH + PROX_SHOPPING_MALL + PROX_SUPERMARKET + 
-                  PROX_BUS_STOP + NO_Of_UNITS + FAMILY_FRIENDLY + FREEHOLD, 
-                data=condo_resale.sf)
-summary(condo.mlr18)
-```
-
-The 4 non-significant variables are 'PROX_HAWKER_MARKET', 'PROX_KINDERGARTEN', 'PROX_TOP_PRIMARY_SCH' and 'PROX_SUPERMARKET'.
-
 ### **13.8.4 Preparing Publication Quality Table: olsrr method**
 
 With reference to the report above, it is clear that not all the independent variables are statistically significant. We will revised the model by removing those **4** variables above which are not statistically significant.
@@ -510,11 +497,11 @@ ols_regress(condo.mlr14)
 
 1.Best subset Regression
 
-Select the subset of predictors that do the best at meeting some well-defined objective criterion, such as having the largest R2 value or the smallest MSE, Mallow\'s Cp or AIC. [Plot](https://olsrr.rsquaredacademy.com/articles/variable_selection) is available.
+Select the subset of predictors that do the best at meeting some well-defined objective criterion, such as having the largest R2 value or the smallest MSE, Mallow's Cp or AIC. [Plot](https://olsrr.rsquaredacademy.com/articles/variable_selection) is available.
 
 ```{r}
 #| eval: false
-ols_step_best_subset(condo.mlr18)
+ols_step_best_subset(condo.mlr14)
 ```
 
 2.Stepwise Forward Regression
@@ -522,7 +509,7 @@ ols_step_best_subset(condo.mlr18)
 Build regression model from a set of candidate predictor variables by entering predictors based on p values, in a stepwise manner until there is no variable left to enter any more. The model should include all the candidate predictor variables. If details is set to `TRUE`, each step is displayed.
 
 ```{r}
-ols_step_forward_p(condo.mlr18)
+ols_step_forward_p(condo.mlr14)
 ```
 
 ## Residual Diagnostics
@@ -634,11 +621,136 @@ tbl_regression(condo.mlr14,
 
 #### 13.8.5.4 Testing for Spatial Autocorrelation
 
-The hedonic model we try to build are using geographically referenced attributes, hence it is also important for us to visual the residual of the hedonic pricing model.
+The hedonic model we try to build are using geographically referenced attributes, hence it is also important for us to visualise the residual of the hedonic pricing model spatially.
 
-In order to perform spatial autocorrelation test, we need to convert *condo_resale.sf* from sf data frame into a **SpatialPointsDataFrame**.
+In order to perform spatial autocorrelation test, we need to convert *condo_resale.sf* from **sf** data frame into a **SpatialPointsDataFrame** (sp object)
 
 First, we will export the residual of the hedonic pricing model and save it as a data frame.
+
+```{r}
+attributes(condo.mlr14)
+```
+
+```{r}
+mlr.output <- as.data.frame(condo.mlr14$residuals)
+```
+
+Next, join the newly created data frame with *condo_resale.sf* object.
+
+```{r}
+condo_resale.res.sf <- cbind(condo_resale.sf, 
+                        condo.mlr14$residuals) %>%
+rename(`MLR_RES` = `condo.mlr14.residuals`)
+```
+
+*condo_resale.sf* is still a sf object. Next, convert from simple feature obj into a SpatialPointDataFrame object because spdep package can only process sp conform spatial data objects.
+
+*\*Recall in In-class_Ex3, we used SpatialPolygonDataFrame for spdep functions.*
+
+The code chunk below will be used to perform the data conversion process.
+
+```{r}
+condo_resale.sp <- as_Spatial(condo_resale.res.sf)
+condo_resale.sp
+```
+
+How to access SpatialPointDataFrame object (similar to SpatialPolygonDataFrame object).
+
+```{r}
+#attributes(condo_resale.sp)
+#str(condo_resale.sp)
+condo_resale.sp@coords[1:10, 1:2]
+condo_resale.sp@data
+```
+
+Next, we will use **tmap** package to display the distribution of the residuals on an interactive map.
+
+The code churn below will turn on the interactive mode of tmap andp lot na interactive point symbol map.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+
+tmap_mode("view")
+
+tm_shape(mpsz_svy21)+
+  tmap_options(check.and.fix = TRUE) +
+  tm_polygons(alpha = 0.4) +
+tm_shape(condo_resale.res.sf) +  
+  tm_dots(col = "MLR_RES",
+          alpha = 0.6,
+          style="quantile") +
+  tm_view(set.zoom.limits = c(10,14))
+```
+
+Switch back to 'plot' mode before continuing
+
+```{r}
+tmap_mode("plot")
+```
+
+The figure above reveal that there is sign of spatial autocorrelation, meaning the pattern do not resemble complete spatial randomness , instead suggests clustering or dispersion (outliers).
+
+To proof that our observation is indeed true, the Global Moran's I test will be performed.
+
+*Recall in Hands-on_Ex2_1, we use `st_centroid()` of **sf** package to find longitude and latittude of our polygon centroids: `longitude <- map_dbl(hunan$geometry, ~st_centroid(.x)[[1]])`. `hunan` is an sf object.*
+
+First, we will compute the distance-based weight matrix by using [`dnearneigh()`](https://r-spatial.github.io/spdep/reference/dnearneigh.html) function of **spdep** and the [coordinates()](https://www.rdocumentation.org/packages/sp/versions/2.1-1/topics/coordinates) function of the **sp** package. `condo_resale.sp` is a SpatialPointDataFrame object.
+
+```{r}
+coordinates(condo_resale.sp)[1:3,1:2]
+```
+
+dnearneigh() computes the list the neighbours based on a minimum and maximum distance threshold.
+
+class of `nb`: nb
+
+```{r}
+nb <- dnearneigh(coordinates(condo_resale.sp), 0, 1500, longlat = FALSE)
+summary(nb)
+```
+
+```{r}
+nb <- dnearneigh(coordinates(condo_resale.sp), 0, 1500, longlat = FALSE)
+summary(nb)
+```
+
+I[nterpreting Link number distribution]{.underline}
+
+-   There are 3 regions that have 1 link each.
+
+-   There are 3 regions that have 3 links each.
+
+-   There are 9 regions that have 5 links each
+
+Next, [`nb2listw()`](https://r-spatial.github.io/spdep/reference/nb2listw.html) of **spdep** packge will be used to convert the output neighbours lists (i.e. nb) into a spatial weights matrix object with class 'listw', 'nb'.
+
+```{r}
+nb_lw <- nb2listw(nb, style = 'W')
+summary(nb_lw)
+```
+
+Peak at the row-standardised weights of the first point.
+
+```{r}
+nb_lw$weights[1]
+```
+
+Peak at point 1's neighbours
+
+```{r}
+nb_lw$neighbours[1]
+```
+
+Next, [`lm.morantest()`](https://r-spatial.github.io/spdep/reference/lm.morantest.html) of **spdep** package will be used to perform Moran's I test for residual spatial autocorrelation
+
+```{r}
+lm.morantest(condo.mlr14, nb_lw)
+```
+
+The Global Moran's I test for residual spatial autocorrelation shows that it's p-value is less than 0.00000000000000022 which is less than the alpha value of 0.05. Hence, we will reject the null hypothesis that the residuals are randomly distributed.
+
+Since the Observed Global Moran I = 0.1424418 which is greater than 0, we can infer than the residuals resemble cluster distribution.
 
 ```{r}
 
