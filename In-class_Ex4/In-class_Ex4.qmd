@@ -17,8 +17,200 @@ format:
     code-line-numbers: true
 ---
 
+# Overview
+
+In this in-class exercise, we will gain hands-on experience on the following tasks:
+
+-   performing geocoding using data downloaded from data.gov.sg
+
+-   calibrating Geographically Weighted Poisson Regression
+
+# Getting started
+
+[httr](https://httr2.r-lib.org/) package is
+
 ```{r}
-#pacman::p_load(sf, tmap, tidyverse)
+pacman::p_load(sf, tmap, tidyverse, httr, performance)
+```
+
+## Geocoding
+
+OneMap API is owned by SLA. The complete documentation is found [here](https://www.onemap.gov.sg/apidocs/apidocs/#search).
+
+```{r}
+url <- 'https://www.onemap.gov.sg/api/common/elastic/search'
+
+csv <- read_csv('data/aspatial/Generalinformationofschools.csv')
+postcodes <- csv$`postal_code`
+```
+
+```{r}
+#| eval: false
+found <- data.frame()
+not_found <- data.frame()
+
+for(postcode in postcodes) {
+  query <- list('searchVal' = postcode, 'returnGeom' = 'Y', 'getAddrDetails' = 'Y', 'pageNum' = '1')
+  res <- GET(url, query=query)
+
+  
+  if((content(res)$found)!=0){
+    found<-rbind(found, data.frame(content(res))[4:13])
+  } else{
+    not_found = data.frame(postcode)
+  }
+}
+```
+
+```{r}
+#| echo: false
+#| eval: false
+
+#my old codes that will give me duplicates
+allsch<- data.frame()
+
+onemap_getcoords <- function(pcode) {
+  geturl<- paste0("https://www.onemap.gov.sg/api/common/elastic/search?searchVal=",
+                  pcode,
+                  "&returnGeom=Y&getAddrDetails=Y&pageNum=1")
+  response = GET(geturl)
+  status = response$status_code
+  rescontent <- content(response, as='text') %>% 
+    jsonlite::fromJSON(., flatten=TRUE) %>% 
+    as.data.frame()
+  allsch<<- rbind(allsch, rescontent)
+  return(rescontent)
+}
+
+#test
+#onemap_getcoords(677741)
+
+# Use a loop to Get the svy21 coordinates of MOE school using postal codes
+for (i in seq_along(sch$postal_code)) {
+  onemap_getcoords(sch$postal_code[i])
+}
+```
+
+```{r}
+#| echo: false
+#| eval: false
+merged = merge(csv, found, by.x = 'postal_code' , by.y='results.POSTAL', all=TRUE)
+write.csv(merged, file = 'data/aspatial/schools.csv')
+write.csv(not_found, file = 'data/aspatial/not_found.csv')
+```
+
+Reload the schools.csv into R
+
+```{r}
+sch <- read_csv('data/aspatial/schools.csv') %>% 
+  select(postal_code, school_name, results.LONGITUDE, results.LATITUDE )
+```
+
+Convert to sf object using 'lng' and 'lat' and convert to SVY21
+
+```{r}
+sch_sf <- st_as_sf(sch,
+                   coords = c('results.LONGITUDE','results.LATITUDE'),
+                        crs=4326) %>% 
+  st_transform(crs=3414)
+```
+
+Visualise
+
+```{r}
+mpsz <- st_read(dsn='data/geospatial/MPSZ-2019',
+                layer='MPSZ-2019') %>% 
+  st_transform(crs=3414)
+```
+
+```{r}
+tmap_mode('view')
+
+tmap_options(check.and.fix = TRUE)
+tm_shape(mpsz) +
+  tm_polygons(alpha=0.3) +
+tm_shape(sch_sf) +
+  tm_dots() +
+  tm_view(set.zoom.limits = c(11,16))
+
+tmap_mode('plot')
+```
+
+## SIM Calibration
+
+load the data into R
+
+```{r}
+flow_data <- read_rds('data/rds/flow_data_tidy.rds')
+glimpse(flow_data)
+```
+
+```{r}
+flow_data$FlowNoIntra <- ifelse(
+  flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ, 
+  0, flow_data$MORNING_PEAK)
+flow_data$offset <- ifelse(
+  flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ, 
+  0.000001, 1)
+
+
+inter_zonal_flow <- flow_data %>% 
+  filter(FlowNoIntra >0)
+
+inter_zonal_flow <- inter_zonal_flow %>% 
+  rename(TRIPS = MORNING_PEAK,
+         DIST = dist)
+```
+
+### Origin constrained
+
+log(DIST) -1 is to remove the Y-intercept because origin is controlled, we do not need the intercept.
+
+```{r}
+orcSIM_Poisson <- glm(formula= TRIPS ~
+                ORIGIN_SZ +
+                log(SCHOOL_COUNT) +
+                log(RETAIL_COUNT) +
+                log(DIST) -1,
+              family = poisson(link='log'),
+              data = inter_zonal_flow,
+              na.action = na.exclude)
+
+summary(orcSIM_Poisson)
+```
+
+Extracting residuals can help us see which flows tend to be underestimated and overestimate in our analysis later.
+
+```{r}
+orcSIM_Poisson$residuals[1:10]
+```
+
+```{r}
+
+length(orcSIM_Poisson$coefficients)
+orcSIM_Poisson$coefficients[1]
+orcSIM_Poisson$coefficients[280:282]
+```
+
+If an explanatory variable is not statistically significant, we might want to re-calibrate the model and exclude this variable in our model.
+
+Define function to calculate R-square
+
+```{r}
+CalcRSquared <- function(observed,estimated){
+  r <- cor(observed,estimated)
+  R2 <- r^2
+  R2
+}
+```
+
+```{r}
+CalcRSquared(orcSIM_Poisson$data$TRIPS, orcSIM_Poisson$fitted.values)
+```
+
+```{r}
+performance_rmse(orcSIM_Poisson,
+                 normalized = FALSE)
 ```
 
 ```{r}
