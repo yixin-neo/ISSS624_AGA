@@ -932,7 +932,7 @@ Lets take a look at the train station exits points (denoted by the black dots). 
 #| fig-asp: 0.68
 #| code-fold: true
 
-tmap_mode('view')
+tmap_mode('plot')
 tmap_options(check.and.fix = TRUE)
 
 tm_shape(mpsz)+
@@ -950,8 +950,6 @@ tm_shape(bs_count[bs_count$train_exit_ct >=10,]) +
           legend.width = 0.35,
           frame = TRUE) + 
   tm_view(set.zoom.limits = c(11,16))
-
-tmap_mode('plot')
 
 ```
 
@@ -979,7 +977,7 @@ Let us take a look at the preschool locations (denoted by the black dots). The r
 #| fig-asp: 0.68
 #| code-fold: true
 
-tmap_mode('view')
+tmap_mode('plot')
 tmap_options(check.and.fix = TRUE)
 
 tm_shape(mpsz)+
@@ -997,8 +995,6 @@ tm_shape(bs_count[bs_count$preschool_ct >= 10,]) +
           legend.width = 0.35,
           frame = TRUE) + 
   tm_view(set.zoom.limits = c(11,16))
-
-tmap_mode('plot')
 ```
 
 #### **Geospatial dataset 3**
@@ -1026,7 +1022,7 @@ Let us take a look at the business locations (denoted by the black dots). The re
 #| fig-asp: 0.68
 #| code-fold: true
 
-tmap_mode('view')
+tmap_mode('plot')
 tmap_options(check.and.fix = TRUE)
 
 tm_shape(mpsz)+
@@ -1045,7 +1041,6 @@ tm_shape(bs_count[bs_count$business_ct >= 50,]) +
           frame = TRUE) + 
   tm_view(set.zoom.limits = c(11,16))
 
-tmap_mode('plot')
 ```
 
 #### **Geospatial dataset 4**
@@ -1073,7 +1068,7 @@ Let us take a look at the financial services locations (denoted by the black dot
 #| fig-asp: 0.68
 #| code-fold: true
 
-tmap_mode('view')
+tmap_mode('plot')
 tmap_options(check.and.fix = TRUE)
 
 tm_shape(mpsz)+
@@ -1092,7 +1087,6 @@ tm_shape(bs_count[bs_count$finserv_ct >= 50,]) +
           frame = TRUE) + 
   tm_view(set.zoom.limits = c(11,16))
 
-tmap_mode('plot')
 ```
 
 ### **Importing the attractiveness and propulsive aspatial data**
@@ -1215,7 +1209,7 @@ Let us take a look at the map. The highest count of schools in a hexagon is 4.
 #| fig-width: 14
 #| fig-asp: 0.68
 #| code-fold: true
-tmap_mode('view')
+tmap_mode('plot')
 tmap_options(check.and.fix = TRUE)
 
 tm_shape(mpsz)+
@@ -1234,7 +1228,6 @@ tm_shape(bs_count[bs_count$sch_ct>=4,]) +
           frame = TRUE) + 
   tm_view(set.zoom.limits = c(11,16))
 
-tmap_mode('plot')
 ```
 
 #### **Aspatial dataset 2**
@@ -1904,7 +1897,7 @@ ggarrange(unc_p, orc_p, dec_p, dbc_p,
 
 **Discussion**:
 
-We can see that hte points 'hugged' more closely towards the diagonal blue line, which indicates that doubly constrained model is indeed the best model.
+We can see that the points 'hugged' more closely towards the diagonal blue line, which indicates that doubly constrained model is indeed the best model.
 
 ### Visualising the residual errors
 
@@ -1964,9 +1957,9 @@ Reload `flowLine2` into R
 flowLine2 <- read_rds('data/rds/flowLine2.rds')
 ```
 
-**Residuals against Fitted Values plots**
+**Coordinated Plot: Residuals against Fitted Values**
 
-Using the `highlight()` and `subplot()` functions of the `plotly` package, we will now print the 'residual vs predicted' plots side-by-side. The chart below offers a coordinated view of a selected point in any of the charts. We will use these coordinated charts to identify flows that are radically over and under predicted.
+Using the `highlight()` and `subplot()` functions of the `plotly` package, we will now print the 'residual vs predicted' plots side-by-side. The chart below offers a *coordinated view* of a selected point in any of the charts. We will use these coordinated charts to identify flows that are radically over and under predicted.
 
 ```{r}
 #| fig-width: 14
@@ -2028,6 +2021,8 @@ It seems like trips related to bus stops near the Woodlands Checkpoint tend to b
 
 ### Visualising the predicted errors flows
 
+Only flows with under-predicted values of more than 30,000 and over-predicted values of above 10,000 are visualised on the maps. Red-yellowish lines represents under-predicted flows while blue lines represents over-predicted flows.
+
 ```{r}
 #| fig-width: 14
 #| fig-asp: 0.68
@@ -2037,7 +2032,8 @@ tmap_mode('view')
 tmap_options(check.and.fix = TRUE)
 
 unc <- tm_shape(mpsz) +
-  tm_polygons(alpha=0.3) +
+  tm_polygons(alpha=0.3,
+              col='black') +
 tm_shape(bs_count) +
   tm_polygons(alpha=0.3) +
   flowLine2 %>%
@@ -2076,7 +2072,8 @@ tmap_mode('view')
 tmap_options(check.and.fix = TRUE)
 
 orc<- tm_shape(mpsz) +
-  tm_polygons(alpha=0.3) +
+  tm_polygons(alpha=0.3,
+              col='black') +
 tm_shape(bs_count) +
   tm_polygons(alpha=0.3) +
   flowLine2 %>%
@@ -2116,9 +2113,10 @@ tmap_mode('view')
 tmap_options(check.and.fix = TRUE)
 
 dec <- tm_shape(mpsz) +
-  tm_polygons(alpha=0.3) +
+  tm_polygons(alpha=0.3,
+              col='black') +
 tm_shape(bs_count) +
-  tm_polygons(alpha=0.3) +
+  tm_polygons(alpha=0.3,) +
   flowLine2 %>%
   filter(decRES >=10000 | decRES <= -30000) %>% 
   tm_shape() +
@@ -2155,7 +2153,8 @@ tmap_mode('view')
 tmap_options(check.and.fix = TRUE)
 
 dbc<- tm_shape(mpsz) +
-  tm_polygons(alpha=0.3) +
+  tm_polygons(alpha=0.3,
+              col='black') +
 tm_shape(bs_count) +
   tm_polygons(alpha=0.3) +
   flowLine2 %>%
@@ -2203,7 +2202,7 @@ tmap_arrange(unc,
              ncol=2)
 ```
 
-Discussion:
+**Discussion**:
 
 At one glance, the unconstrained model tend to under-predict the number of trips than over-predict. The doubly constrained model tend to over-predict the number of trips than to under-predict.
 
