@@ -1,0 +1,2312 @@
+---
+title: "Take-home_Ex2: Applied Spatial Interaction Models: A case study of Singapore public bus commuter flows"
+author: "NeoYX"
+date: '7 Dec 2023'
+date-modified: "`r Sys.Date()`"
+editor: visual
+execute: 
+  freeze: auto
+  warning: false
+  #echo: false
+  #message: false
+format: 
+  html:
+    code-fold: False
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
+---
+
+![](images/takehome%202%20cover%20photo.png){fig-align="center" width="358"}
+
+## **Setting the Scene**
+
+The challenges in urban mobility confront transport operators and city managers. Traditional methods like commuter surveys, despite being costly and time-consuming, have been used to address these questions. However, the delays in cleaning and analyzing survey data often render it outdated by the time reports are ready. The digitization of city-wide infrastructures offers a solution by using data from digital platforms such as GPS and SMART cards.
+
+Currently, although there are a large amount of open data available for public consumption, there are not much research to make use of these data and lack of practical research (using Geospatial Data Science and Analysis) to support policy making decisions.
+
+## **Objective**
+
+Our task for this take-home exercise is to conduct a case study to demonstrate the potential value of GDSA to integrate publicly available data from multiple sources for building a spatial interaction models to determine factors affecting urban mobility patterns of public bus transit.
+
+## **The Data**
+
+### **Open Government Data**
+
+For the purpose of this assignment, data from several open government sources will be used:
+
+-   *Passenger Volume by Origin Destination Bus Stops*, *Bus Stop Location*, *Train Station (Feb 2023)* and *Train Station Exit Point (Aug 2023)*, just to name a few of them, from [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en.html).
+
+-   *Master Plan 2019 Subzone Boundary*, *HDB Property Information*, *School Directory and Information* and other relevant data from [Data.gov.sg](https://beta.data.gov.sg/).
+
+### **Specially collected data**
+
+-   Businesses, retail and services, leisure and recreation, etc geospatial data sets assemble by course instructor. (Refer to eLearn)
+
+## **The Task**
+
+The specific tasks of this take-home exercise are as follows:
+
+### **Geospatial Data Science**
+
+-   Derive an analytical hexagon data of 375m (this distance is the perpendicular distance between the centre of the hexagon and its edges) to represent the [traffic analysis zone (TAZ)](https://tmg.utoronto.ca/files/Reports/Traffic-Zone-Guidance_March-2021_Final.pdf).
+
+-   With reference to the time intervals provided in the table below, construct an O-D matrix of commuter flows for ONE time interval of ou rchoice by integrating *Passenger Volume by Origin Destination Bus Stops* and *Bus Stop Location* from [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en.html). The O-D matrix must be aggregated at the analytics hexagon level
+
+    | Peak hour period             | Bus tap on time |
+    |------------------------------|-----------------|
+    | Weekday morning peak         | 6am to 9am      |
+    | Weekday afternoon peak       | 5pm to 8pm      |
+    | Weekend/holiday morning peak | 11am to 2pm     |
+    | Weekend/holiday evening peak | 4pm to 7pm      |
+
+-   Display the O-D flows of the passenger trips by using appropriate geovisualisation methods (not more than 5 maps).
+
+-   Describe the spatial patterns revealed by the geovisualisation (not more than 100 words per visual).
+
+-   Assemble at least three propulsive and three attractiveness variables by using aspatial and geospatial from publicly available sources.
+
+-   Compute a distance matrix by using the analytical hexagon data derived earlier.
+
+### **Spatial Interaction Modelling**
+
+-   Calibrate spatial interactive models to determine factors affecting urban commuting flows at the selected time interval.
+
+-   Present the modelling results by using appropriate geovisualisation and graphical visualisation methods. (Not more than 5 visuals)
+
+-   With reference to the Spatial Interaction Model output tables, maps and data visualisation prepared, describe the modelling results. (not more than 100 words per visual).
+
+## Getting Started
+
+In this exercise, the following libraries will be used:
+
+1.  [`sf`](https://r-spatial.github.io/sf/) package to perform geoprocessing tasks
+
+2.  [sp](https://cran.r-project.org/web/packages/sp/vignettes/intro_sp.pdf) package , although an older package, is more efficient for computation of large data.
+
+3.  [sfdep](https://sfdep.josiahparry.com/) package which builds upon `spdep` package (compute spatial weights matrix and spatially lagged variable for instance..)
+
+4.  [tmap](https://cran.r-project.org/web/packages/tmap/) to create geovisualisations
+
+5.  [stplanr](https://docs.ropensci.org/stplanr/) for solving common problems in transport planning and modelling, such as how to best get from point A to point B
+
+6.  [`tidyverse`](https://www.tidyverse.org/) that supports data science, analysis and communication task including creating static statistical graphs.
+
+7.  `knitr` to create html tables
+
+8.  [DT](https://rstudio.github.io/DT/) library to create interactive html tables
+
+9.  [ggpubr](https://rpkgs.datanovia.com/ggpubr/) for some easy-to-use functions for creating and customizing 'ggplot2'- based publication ready plots.
+
+10. [performance](https://easystats.github.io/performance/) for for computing measures to assess model quality, which are not directly provided by R's 'base' or 'stats' packages. The primary goal of the **performance** package is to provide utilities for computing indices of model quality and goodness of fit. These include measures like r-squared (R2), root mean squared error (RMSE)
+
+11. [reshape2](https://seananderson.ca/2013/10/19/reshape/)is an old tool from base R. It handles matrix well for our distance matrix, like pivoting function like `melt()`. Tidyverse does not handle matrix very well.
+
+12. [ggplot2](https://ggplot2.tidyverse.org/) to plot graphs
+
+13. [plotly](https://plotly.com/r/) to plot interactive graphs
+
+```{r}
+pacman::p_load(sf, sp, sfdep, tmap, stplanr, tidyverse, skimr, knitr, DT, performance, reshape2, ggpubr, ggplot2, plotly, h3jsr)
+```
+
+## Importing Data
+
+### Aspatial data
+
+Import the *Passenger volume by Origin Destination Bus Stops* dataset downloaded from the LTA Datamall by using the read_csv() of the **readr** package.
+
+```{r}
+odbus_aug <- read_csv("data/aspatial/origin_destination_bus_202308.csv")
+```
+
+Check the data fields
+
+```{r}
+glimpse(odbus_aug)
+```
+
+#### Processing the aspatial OD data
+
+The '*ORIGIN_PT_CODE*' and '*DESTINATION_PT_CODE*' field is in character field. We will convert it to factor data type.
+
+```{r}
+odbus_aug$ORIGIN_PT_CODE <- as.factor(odbus_aug$ORIGIN_PT_CODE)
+odbus_aug$DESTINATION_PT_CODE <- as.factor(odbus_aug$DESTINATION_PT_CODE)
+```
+
+The function below will extract origin data based on the four time intervals required by the task. The expected arguments are
+
+1.  daytype: 'WEEKDAY' or 'WEEKENDS/HOLIDAY'
+2.  timeinterval: c(8,10) if we want data from 8am to 11am.
+
+The function will also compute the sum of all trips by 'ORIGIN_PT_CODE' for each time interval and stored under a new field called 'TRIPS'.
+
+```{r}
+get_origin_dest <- function(daytype, timeinterval) {
+  result <- odbus_aug %>%
+    filter(DAY_TYPE == daytype) %>%
+    filter(TIME_PER_HOUR >= timeinterval[1] & TIME_PER_HOUR <= timeinterval[2]) %>%
+    group_by(ORIGIN_PT_CODE,
+             DESTINATION_PT_CODE) %>%
+    summarise(TRIPS = sum(TOTAL_TRIPS))
+  
+  return(result)
+}
+```
+
+Let's get the data using *get_origin* function
+
+```{r}
+day_am <- get_origin_dest('WEEKDAY', c(6, 8))
+#origin_day_pm <- get_origin('WEEKDAY', c(5, 7))
+#origin_end_am <- get_origin('WEEKENDS/HOLIDAY', c(11, 13))
+#origin_end_pm <- get_origin('WEEKENDS/HOLIDAY', c(4, 6))
+
+```
+
+Take a look at the weekday morning peak dataframe.
+
+```{r}
+datatable(day_am,
+          class = 'cell-border stripe',
+          options = list(pageLength = 5))
+```
+
+### Geospatial data
+
+First, we will import the Bus Stop Location shapefiles into R. The output will be a **sf point** object with 5161 points and 3 fields. As the raw data is in WSG84 geographical coordinate system, we will convert it to EPSG 3414, the projected coordinate system for Singapore.
+
+```{r}
+busstop <- st_read(dsn="data/geospatial/BusStopLocation/BusStopLocation_Jul2023", layer = "BusStop") %>% 
+  st_transform(crs = 3414)
+
+busstop
+```
+
+**Are there any duplicates in 'BUS_STOP_N' in busstop?**
+
+Checking for duplicates in the 'BUS_STOP_N' field reveals that there are about 16 repeated bus stop numbers. Note that they have different geometry points in the simple feature busstop object above. These could be due to temprorary bus stops . We should remove these duplicated bus stops number or else it will give us problems when we try to map these bus stops to a grid_id in the Traffic Analysis Zone (TAZ).
+
+```{r}
+busstop %>% 
+  st_drop_geometry() %>% 
+  group_by(BUS_STOP_N) %>%
+  filter(n()>1) %>%
+  ungroup() %>% 
+  arrange(BUS_STOP_N)
+```
+
+Take for instance bus stop number 51071 with two different point geometry values.
+
+```{r}
+busstop[3470,]
+```
+
+```{r}
+busstop[3472,]
+```
+
+Removing duplicated bus stops
+
+```{r}
+busstop <- busstop %>%
+  distinct(BUS_STOP_N,
+           .keep_all = TRUE)
+```
+
+Double check again that duplicated bus stops have been removed.
+
+```{r}
+busstop %>% 
+  st_drop_geometry() %>% 
+  group_by(BUS_STOP_N) %>%
+  filter(n()>1) %>%
+  ungroup() %>% 
+  arrange(BUS_STOP_N)
+```
+
+**Load *MPSZ-2019* data**. It is a multipolygon sf object with 332 features / subzones/ units.
+
+```{r}
+mpsz <- st_read(dsn='data/geospatial/MPSZ-2019',
+                layer='MPSZ-2019') %>% 
+  st_transform(crs=3414)
+mpsz
+```
+
+#### Creating hexagon layer
+
+Before we can plot the base layer, we have to create hexagonal grids of 325 m (middle to edge) using the `mpsz` multipolygon sf object using `sf`.
+
+First , create a grid which the extent equals to the bounding box of the busstop points using [st_make_grid()](https://r-spatial.github.io/sf/reference/st_make_grid.html).
+
+1.  To create hexagons of 375m (centre to edge), we should input 750 for 'cellsize' parameter. 'Cellsize' is defined as the distance from edge to edge.
+2.  Convert to `sf` object and add a unique identifier to each hexagon grid. The output has 834 hexagon units.
+3.  Use st_intersects() to count the number of in each hsubzones in each hexagon.
+4.  Filter to retain only hexagons with at least one subzone. The output `sz_count` has 1945 hexagon units.
+
+```{r}
+#| eval: false
+area_hex_grid = st_make_grid(busstop,
+                             cellsize= 750, 
+                             what = "polygons", 
+                             square = FALSE)
+
+hex_grid_sf = st_sf(area_hex_grid) %>%
+  mutate(grid_id = 1:length(lengths(area_hex_grid)))
+
+hex_grid_sf$num_bs = lengths(st_intersects(hex_grid_sf, busstop))
+
+
+bs_count = filter(hex_grid_sf, num_bs > 0)
+```
+
+If we like to, we could save the above hexagon layer to disk.
+
+```{r}
+#| eval: false
+st_write(bs_count, 'data/bs_count_750.shp')
+```
+
+Read `bs_count` in R
+
+```{r}
+bs_count <- st_read(dsn = 'data/geospatial',
+                    layer='bs_count_750')
+```
+
+**How does our hexagon layer look like?**
+
+```{r}
+plot(bs_count['num_bs'],
+     main = 'Number of bus stops per hexagon')
+```
+
+We can see that each hexagon contains a minimum of 1 bus stop and up to a maximum of 19 bus stops.
+
+```{r}
+#| eval: false
+#| echo: false
+#Lets take a look at the top 3 hexagons with the most number of bus stops
+tm_shape(bs_count[bs_count$num_bs>=18,]) +
+  tm_polygons(alpha=0.3) +
+  tm_shape(busstop) +
+  tm_dots(size=0.005) +
+    tm_view(set.zoom.limits = c(11,16))
+
+```
+
+#### Geospatial data wrangling
+
+##### **Combining `busstop` (point sf) and sz_count (polygon sf)**
+
+We have to assign a 'grid_id' to each bus stops.
+
+The code chunk below performs points and hexagon polygon overlap using [st_intersection()](https://r-spatial.github.io/sf/reference/geos_binary_ops.html) and the output will be in **sf point** object.
+
+[Before overlapping:]{.underline}
+
+`busstop` : 5145 points
+
+`bs_count` hexagon base layer: 834 hexagons
+
+[After overlapping:]{.underline}
+
+`busstop_hex` : 5145 points suggesting all bus stops falls within at least one hexagon grid.
+
+```{r}
+busstop_hex <- st_intersection(busstop, bs_count) %>% 
+  select(BUS_STOP_N, LOC_DESC,  grid_id, num_bs)
+
+busstop_hex
+```
+
+Drop the geometry column of `busstop_hex`
+
+```{r}
+busstop_hex_geo <- busstop_hex
+busstop_hex <- busstop_hex  %>% 
+  st_drop_geometry()
+
+datatable(busstop_hex, class = 'cell-border stripe', options = list(pageLength = 5))
+```
+
+**Checking for duplicates in `busstop_hex`**
+
+Let us check for duplicates in `busstop_hex` df as it will be used to perform a left join later.
+
+The output shows that there are **no duplicate rows.**
+
+```{r}
+busstop_hex %>%
+  group_by(BUS_STOP_N, grid_id, num_bs) %>%
+  filter(n()>1) %>%
+  ungroup()
+```
+
+```{r}
+#| echo: false
+#| eval: false
+# Remove duplicates
+busstop_hex <- busstop_hex %>%
+  distinct(BUS_STOP_N, grid_id, num_bs, .keep_all = TRUE)
+#busstop_hex <- unique(busstop_hex)
+```
+
+```{r}
+#| echo: false
+#| eval: false
+# check again for cuplicated rows
+busstop_hex[duplicated(busstop_hex), ]
+```
+
+### 
+
+## Construct an O-D matrix of commuter flows for the morning weekday peak hour
+
+Next, we are going to append the grid_id from `busstop_hex` data frame onto `day_am` data frame. By doing so, we get the fields 'ORIGIN_GRID_ID' and 'ORIGIN_LOC_DESC' from `busstop_hex` into `day_am`.
+
+We can achieve by performing left join between `day_am` and `busstop_hex` df twice.
+
+Before join:
+
+`day_am` : 224,363 rows
+
+After join:
+
+`od_data`: 224,363 rows
+
+```{r}
+od_data <- left_join(day_am , busstop_hex,
+            by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
+  rename(ORIGIN_BS = ORIGIN_PT_CODE,
+         ORIGIN_GRID_ID = grid_id,
+         DESTIN_BS = DESTINATION_PT_CODE,
+         ORIGIN_LOC_DESC= LOC_DESC)
+```
+
+Check for duplicate before proceeding. There are no duplicates.
+
+```{r}
+duplicate <- od_data %>%
+  group_by_all() %>% 
+  #group_by(ORIGIN_BS, DESTIN_BS) %>%
+  filter(n()>1) %>%
+  ungroup()
+
+duplicate
+```
+
+We will perform another left join between `day_am` and `busstop_hex` df to get the 'DESTIN_GRID_ID' and the 'DESTIN_LOC_DESC' into `day_am` df. The number of rows before and after the left joins are the same.
+
+```{r}
+od_data <- left_join(od_data, busstop_hex,
+            by = c("DESTIN_BS" = "BUS_STOP_N")) %>%
+  rename(DESTIN_GRID_ID = grid_id,
+         DESTIN_LOC_DESC= LOC_DESC,
+         num_bs_origin = num_bs.x,
+         num_bs_destin = num_bs.y) 
+```
+
+Cheek for duplicates. The output shows that there are no duplicates.
+
+```{r}
+duplicate <- od_data %>%
+  group_by_all() %>% 
+  #group_by(ORIGIN_BS, DESTIN_BS) %>%
+  filter(n()>1) %>%
+  ungroup()
+
+duplicate
+```
+
+The code chunk below will do the following:
+
+1.  There are missing grid_ids for some of the origin and destination bus stop because the *Bus Stops Location* data uploaded by LTA in July 2023 could be more outdated than *Passenger Volume by Origin Destination Bus Stops data* collected in August 2023. We will drop rows with missing values.
+
+2.  Group-by 'ORIGIN_GRID_ID' and 'DESTIN_GRID_ID' to generate a new field 'MORNING_PEAK' that contains the summation of all trips between each pair of i,j hexagons. (i denotes origin and j denotes destination)
+
+```{r}
+od_data <- od_data %>%
+  drop_na() %>%
+  group_by(ORIGIN_GRID_ID, DESTIN_GRID_ID) %>%
+  summarise(MORNING_PEAK = sum(TRIPS),
+            ORIGIN_DESC = paste(unique(ORIGIN_LOC_DESC), collapse = ', '),
+            DESTIN_DESC = paste(unique(DESTIN_LOC_DESC), collapse = ', ')) %>% 
+  ungroup()
+```
+
+## Compute Distance Matrix by analytic hexagon level
+
+[`spDists()`](https://www.rdocumentation.org/packages/sp/versions/2.1-1/topics/spDistsN1) of sp package will be used to compute the Euclidean distance between the centroids of the hexagonal grid_ids.
+
+`spDists(x, y = x, longlat = FALSE, segments = FALSE, diagonal = FALSE)`
+
+spDists returns a full matrix of distances in the metric of the points if longlat=FALSE, or in kilometers if longlat=TRUE; it uses spDistsN1 in case points are two-dimensional. In case of spDists(x,x), it will compute all n x n distances, not the sufficient n x (n-1).
+
+Recall `bs_count` contains 834 hexagons and a 834 x 834 distance matrix `dist` will be created.
+
+```{r}
+bs_count_sp <- as(bs_count, "Spatial")
+```
+
+```{r}
+dist <- sp::spDists(bs_count_sp, 
+                longlat = FALSE) # already projected in EPSG:3414
+head(dist, n=c(10, 10))
+```
+
+**Labelling column and row headers of a distance matrix**
+
+First, we will create a list sorted according to the the distance matrix by grid_id.
+
+Next we will attach `grid_id` to row and column for distance matrix matching ahead
+
+```{r}
+grid_id_names <- bs_count$grid_id
+
+colnames(dist) <- paste0(grid_id_names)
+rownames(dist) <- paste0(grid_id_names)
+dist[1:5,1:5]
+```
+
+**Pivoting distancing value by grid_id**
+
+Next, we will pivot the distance matrix into a long table by using the row and column grid_id as show in the code chunk below.
+
+We will use the [melt()](https://seananderson.ca/2013/10/19/reshape/) function of the reshape2 package to convert wide-format data to long-format data. This function will convert wide-format data to a data frame with columns for each combination of row and column indices and their corresponding values.
+
+To do the opposite, used cast().
+
+::: panel-tabset
+#### wide
+
+```{r}
+matrix(1:6, nrow = 2, ncol = 3)
+```
+
+#### long
+
+```{r}
+reshape2::melt(matrix(1:6, nrow = 2, ncol = 3)) %>% knitr::kable()
+```
+:::
+
+```{r}
+distPair <- reshape2::melt(dist) %>%
+  rename(dist = value)
+head(distPair, 10)
+```
+
+There are 695,556 rows in `distPair` due to 834P2 + 834 = 834 \* 833+ 834 possible pairs of hexagon pairs. (Aka the number of possible permutations with replacement)
+
+Three new columns generated, (1) 'var1', (2) 'var2' and (3) 'value' containing the distance for the corresponding hex i -hex j pair; thus rename to 'dist'
+
+**Updating the intra-zonal distances**
+
+We will append a constant value to replace the intra-zonal distance of 0.
+
+First, we will remove distance = 0 and find out the **minimum value** of the inter-zonal distance by using `summary()`.
+
+```{r}
+distPair %>%
+  filter(dist > 0) %>%
+  summary()
+
+```
+
+The minimum inter-hexagon travel was actually 750 m (indicating travelling to adjacent hexagon). If a hexagon's apothem is [325m](https://www.omnicalculator.com/math/hexagon) (middle to edge), then the length of its long diagonal will be 750m (vertex to opposite vertex).
+
+So we could set the intra-zonal distance to be approximately 300 m.
+
+```{r}
+distPair$dist <- ifelse(distPair$dist == 0,
+                        300, distPair$dist)
+```
+
+The code chunk below is used to rename the origin and destination fields.
+
+```{r}
+distPair <- distPair %>%
+  rename(ORIGIN_GRID_ID = Var1,
+         DESTIN_GRID_ID = Var2)
+
+distPair %>% head()
+
+```
+
+```{r}
+glimpse(distPair)
+```
+
+## Preparing flow data
+
+Let us rename the `od_data` to call it `flow_data` df
+
+```{r}
+flow_data <- od_data %>%
+  group_by(ORIGIN_GRID_ID, DESTIN_GRID_ID) %>% 
+  summarize(TRIPS = sum(MORNING_PEAK)) 
+
+head(flow_data, 10)
+```
+
+### **Separating intra-flow from passenger volumn df**
+
+The code chunk below created two new fields
+
+'FlowNoIntra' is a column containing distance = 0 for intra-zonal pairs (diagonals).
+
+'offset' is also created.
+
+```{r}
+flow_data$FlowNoIntra <- ifelse(
+  flow_data$ORIGIN_GRID_ID == flow_data$DESTIN_GRID_ID, 
+  0, flow_data$TRIPS)
+flow_data$offset <- ifelse(
+  flow_data$ORIGIN_GRID_ID == flow_data$DESTIN_GRID_ID, 
+  0.000001, 1)
+```
+
+Filter to keep only inter-zonal trips, removing the intra-zonal trips. After filtering, the number of rows reduced from 62, 741 to 62,120 rows.
+
+```{r}
+inter_zonal_flow <- flow_data %>% 
+  filter(FlowNoIntra >0)
+```
+
+Print out the first three rows
+
+```{r}
+head(inter_zonal_flow,3) %>% knitr::kable()
+```
+
+```{r}
+glimpse(inter_zonal_flow)
+```
+
+### **Combining passenger volume data with distance value**
+
+Before we can join `inter_zonal_flow` and *`distPair`*, we need to convert data value type of '*ORIGIN_SZ'* and'*DESTIN_SZ'* fields of *`inter_zonal_flow`* and *`distPair`* dataframes into factor data type.
+
+```{r}
+inter_zonal_flow$ORIGIN_GRID_ID  <- as.factor(inter_zonal_flow$ORIGIN_GRID_ID)
+inter_zonal_flow$DESTIN_GRID_ID  <- as.factor(inter_zonal_flow$DESTIN_GRID_ID )
+distPair$ORIGIN_GRID_ID  <- as.factor(distPair$ORIGIN_GRID_ID)
+distPair$DESTIN_GRID_ID  <- as.factor(distPair$DESTIN_GRID_ID )
+```
+
+Now, `left_join()` of **dplyr** will be used to *`inter_zonal_flow`* dataframe and *`distPair`* dataframe. The output is called *`flow_data1`*.
+
+**Notes:**
+
+`distPair` is a df containing distances for all corresponding subzone pairs (including self, default to 50m). '*ORIGIN_GRID_ID*', '*DESTIN_GRID_ID*', '*dist*'
+
+`inter_zonal_flow` is a df containing '*ORIGIN_GRID_ID*', '*DESTIN_GRID_ID*' and '*TRIPS*'
+
+We will now perform a left join with two sets of join keys.
+
+The output `flow_data_1` contains **distance** and **total morning peak trips** for each possible pairs of grid-ids (self included).
+
+Before left join:
+
+`inter_zonal_flow` has 62,741 rows.
+
+`distPair` has 695,556 rows (is the all possible pairs out of 834 hex grid_ids, order matters and with replacement.)
+
+After join:
+
+`flow_data1` has 62,741 rows.
+
+`inter_zonal_flow` has no distance. `flow_data1` has distance data.
+
+```{r}
+flow_data1 <- inter_zonal_flow %>%
+  left_join (distPair,
+             by = c("ORIGIN_GRID_ID" = "ORIGIN_GRID_ID",
+                    "DESTIN_GRID_ID" = "DESTIN_GRID_ID"))
+
+glimpse(flow_data1)
+```
+
+Print out the first 6 rows
+
+```{r}
+head(flow_data1) %>% knitr::kable()
+```
+
+## Visualising the O-D flows of the weekday morning peak period
+
+**Removing intra-zonal flows**
+
+We will not plot the intra-zonal flows. The code chunk below will be used to remove intra-zonal flows. It does so by removing the flows that originate and ends in the same subzone.
+
+Rows reduced from 62,685 to 62,079.
+
+```{r}
+od_data1 <- od_data[od_data$ORIGIN_GRID_ID!=od_data$DESTIN_GRID_ID,]
+```
+
+**Create a `flowLine` simple feature line object.**
+
+In this code chunk below, od2line() of stplanr package is used to create the desire lines.
+
+od_data1 is aspatial while bs_count is geospatial data.
+
+```{r}
+#| eval: false
+flowLine <- od2line(flow=flow_data1,
+                    zones= bs_count,
+                    zone_code= 'grid_id')
+```
+
+Perform a left join with od_data1 to get 'dist' information appended into `flowLine` df.
+
+```{r}
+#| eval: false
+od_data1$ORIGIN_GRID_ID <- as.factor(od_data1$ORIGIN_GRID_ID)
+od_data1$DESTIN_GRID_ID <- as.factor(od_data1$DESTIN_GRID_ID)
+
+flowLine <- left_join(flowLine, od_data1,
+                      by = c('ORIGIN_GRID_ID' = 'ORIGIN_GRID_ID',
+                             'DESTIN_GRID_ID' = 'DESTIN_GRID_ID')) %>% 
+  select(-c(MORNING_PEAK))
+```
+
+We will save `flowLine` to local disk
+
+```{r}
+#| eval: false
+write_rds(flowLine,
+          "data/rds/flowLine.rds")
+```
+
+Reload `flowLine` into R.
+
+```{r}
+flowLine <- read_rds("data/rds/flowLine.rds")
+```
+
+`flowLine` contains 62,120 rows but we will over print out trips \>= 5,000 in the datatable below.
+
+```{r}
+datatable(flowLine %>% 
+            filter(TRIPS>=5000), 
+          class = 'cell-border stripe', 
+          options = list(pageLength = 5))
+```
+
+**Visualisation and Discussion (in Tabset)**
+
+::: panel-tabset
+### Static Flow Map
+
+In this map, we have filtered trips less than 5000 to make more manageable to analyse. Thicker line width represents more trips and the length of the lines represents the distance of each inter-hexagonal trip. In the next few tabs, we will perform further filtering on 'TRIPS' and 'dist' and plot interactive maps for us to get the trips details.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+tmap_mode('plot')
+
+tm_shape(mpsz) +
+  tm_polygons(alpha=0.3) +
+tm_shape(bs_count) +
+  tm_polygons(alpha=0.3) +
+tm_shape(busstop_hex_geo) +
+  tm_dots(size= 0.005)+
+  flowLine %>%
+  filter(TRIPS >= 5000) %>% 
+  tm_shape() +
+  tm_lines(lwd = 'TRIPS',
+           style = 'quantile',
+           scale= c(0.3, 3, 9, 15, 21, 30),
+           #scale= c(0.1, 1, 3, 5, 7, 10),
+           n = 6,
+           alpha= 0.3,
+           col='blue') +
+  tm_view(set.zoom.limits = c(11,17)) +
+  tm_layout(main.title = 'O-D Flow On Weekday Morning Peak hour' ,
+            main.title.size = 1.0,
+            main.title.fontface = 'bold')
+```
+
+### Interactive Flow Map 1
+
+In this interactive map, we have filtered and retained the trips \>= 15,000, irregardless of the distance of the trip.
+
+How to use the map: Click on the flowline of your interest, it will reveal the number of trips, origin bus stop descriptions and destination bus stop descriptions.
+
+Findings:
+
+1\) The flows with the greatest volumes were located near the Woodlands Check Point area that transported commuters across the causeway.
+
+2\) Great volumes of flows were associated with *destinations* at bus or train stations, suggesting that passengers take bus for further transit. This gives us a hint that pressence of bus interchange / train stations could be an important dependent factor for 'TRIPS' in our Spatial Interaction Model later.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+tmap_mode('view')
+tmap_options(check.and.fix = TRUE)
+
+tm_shape(mpsz) +
+  tm_polygons(alpha=0.3) +
+tm_shape(bs_count) +
+  tm_polygons(alpha=0.3) +
+#tm_shape(busstop_hex_geo) +
+  #tm_dots(size= 0.005)+
+  flowLine %>%
+  filter(TRIPS >= 15000) %>% 
+  tm_shape() +
+  tm_lines(lwd = 'TRIPS',
+           style = 'quantile',
+           scale= c(0.3, 3, 9, 15, 21, 30),
+           #scale= c(0.1, 1, 3, 5, 7, 10),
+           n = 6,
+           alpha= 0.3,
+           popup.vars=c("# Trips:"="TRIPS",
+                        "Orig Desc:"="ORIGIN_DESC",
+                        "Destin Desc:" = "DESTIN_DESC",
+                        "Distance:" = 'dist'),
+           col='blue') +
+  tm_view(set.zoom.limits = c(11,17)) +
+  tm_layout(main.title = 'O-D Flow On Weekday Morning Peak hour' ,
+            main.title.size = 1.0,
+            main.title.fontface = 'bold')
+
+tmap_mode('plot')
+```
+
+### Interactive Flow Map 2
+
+In this interactive map, in order to investigate the long distance bus trips with consderable amount of trips volume, we have filtered and retain TRIPS \>= 5000 and distance \>= 13km. We notice that these trips tend to connect passengers between the Northern parts of Singapore (Woodlands, Khatib and Yishun for instance) and the Eastern parts of Singapore (Tampanies, Seng Kang and Ponggol for instance). Taking a look at the Singapore MRT map, it would require passengers to use at least three different 'lines' in order for them to commute between Eastern and Northern Singapore.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+
+tmap_mode('view')
+tmap_options(check.and.fix = TRUE)
+
+tm_shape(mpsz) +
+  tm_polygons(alpha=0.3) +
+tm_shape(bs_count) +
+  tm_polygons(alpha=0.3) +
+#tm_shape(busstop_hex_geo) +
+  #tm_dots(size= 0.005)+
+  flowLine %>%
+  filter(dist >= 13000,
+         TRIPS >= 5000) %>% 
+  tm_shape() +
+  tm_lines(lwd = 'TRIPS',
+           style = 'quantile',
+           scale= c(0.3, 3, 9, 15, 21, 30),
+           #scale= c(0.1, 1, 3, 5, 7, 10),
+           n = 6,
+           alpha= 0.3,
+           popup.vars=c("# Trips:"="TRIPS",
+                        "Orig Desc:"="ORIGIN_DESC",
+                        "Destin Desc:" = "DESTIN_DESC",
+                        "Distance:" = 'dist'),
+           col='blue') +
+  tm_view(set.zoom.limits = c(11,17)) +
+  tm_layout(main.title = 'O-D Flow On Weekday Morning Peak hour' ,
+            main.title.size = 1.0,
+            main.title.fontface = 'bold')
+
+tmap_mode('plot')
+```
+
+### Interactive Flow Map 3
+
+In this map, we filter all trips with distances \>= 23 km irregardless of trips volume.
+
+Some passengers were willing to take bus between Changi Airport and Woodlands Checkpoint and also between Bedok and Boon Lay.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+
+tmap_mode('view')
+tmap_options(check.and.fix = TRUE)
+
+tm_shape(mpsz) +
+  tm_polygons(alpha=0.3) +
+tm_shape(bs_count) +
+  tm_polygons(alpha=0.3) +
+#tm_shape(busstop_hex_geo) +
+  #tm_dots(size= 0.005)+
+  flowLine %>%
+  filter(dist >= 23000) %>% 
+  tm_shape() +
+  tm_lines(lwd = 'TRIPS',
+           style = 'quantile',
+           scale= c(0.3, 3, 9, 15, 21, 30),
+           #scale= c(0.1, 1, 3, 5, 7, 10),
+           n = 6,
+           alpha= 0.3,
+           popup.vars=c("# Trips:"="TRIPS",
+                        "Orig Desc:"="ORIGIN_DESC",
+                        "Destin Desc:" = "DESTIN_DESC",
+                        "Distance:" = 'dist'),
+           col='blue') +
+  tm_view(set.zoom.limits = c(11,17)) +
+  tm_layout(main.title = 'O-D Flow On Weekday Morning Peak hour' ,
+            main.title.size = 1.0,
+            main.title.fontface = 'bold')
+
+tmap_mode('plot')
+
+```
+:::
+
+## **Preparing Origin and Destination Attributes**
+
+### **Importing the attractiveness and propulsive geospatial data**
+
+#### **Geospatial dataset 1**
+
+*Train_Station_Exit_Layer* shapefile downloaded from LTA data mall. It contains point coordinates of station box exits. The train station exits are potentially one of the attractiveness of destinations as bus passengers could take bus to MRT stations for transfer.
+
+```{r}
+train_exit <- st_read(dsn='data/geospatial',
+                  layer='Train_Station_Exit_Layer') %>% 
+  st_transform(crs=3414)
+```
+
+```{r}
+#| eval: false
+#| echo: false
+#Load Train Station geospatial data.
+train <- st_read(dsn="data/geospatial", layer = "RapidTransitSystemStation") %>% 
+  st_transform(crs = 3414)
+#Row index 163 is problematic, we will remove it from the sf object.
+
+#train1 <- st_is_valid(train) #159, 163, 218
+train <- train %>% slice(-c(163))
+plot(train['TYP_CD'])
+
+#Plot train_exit
+plot(train_exit['exit_code'])
+
+```
+
+The file contains duplicated '*stn_name*' and '*exit_code*' fields.
+
+```{r}
+train_exit %>%
+  group_by(stn_name, exit_code) %>%
+  filter(n()>1) %>%
+  ungroup()
+```
+
+Remove the duplicates and check that all duplicates are removed. 556 rows remaining.
+
+```{r}
+train_exit <- train_exit %>%
+  distinct(stn_name,
+           exit_code,
+           .keep_all = TRUE)
+
+train_exit %>%
+  group_by(stn_name, exit_code) %>%
+  filter(n()>1) %>%
+  ungroup()
+```
+
+Count the number of station exits within each hexagon and then also, assign 'grid_id' to each train station exits points. The bs_count df is now enriched with number of mrt station exits information!
+
+```{r}
+bs_count$train_exit_ct = lengths(st_intersects(bs_count,train_exit))
+bs_count %>% arrange(desc(train_exit_ct)) %>% head()
+```
+
+Lets take a look at the train station exits points (denoted by the black dots). The red hexagons highlights the grids with more than 10 train stations exits.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+
+tmap_mode('view')
+tmap_options(check.and.fix = TRUE)
+
+tm_shape(mpsz)+
+  tm_polygons(alpha=0.3) +
+tm_shape(bs_count[bs_count$train_exit_ct >=10,]) +
+  tm_polygons(alpha = 0.3,
+              col='red') +
+  tm_shape(train_exit) +
+  tm_dots(size=0.005) +
+  tm_layout(main.title = "Train exits location",
+          main.title.fontface = 'bold',
+          main.title.position = "center",
+          main.title.size = 1.2,
+          legend.height = 0.45, 
+          legend.width = 0.35,
+          frame = TRUE) + 
+  tm_view(set.zoom.limits = c(11,16))
+
+tmap_mode('plot')
+
+```
+
+Let us continue to import more origin and destination attributes data.
+
+#### **Geospatial dataset 2**
+
+We will import *Pre-Schools Locations kml* file from [data.gov.sg](https://beta.data.gov.sg/collections/2064/view). It is a POINT sf object. This variable is potentially one of the attractiveness of our destinations.
+
+```{r}
+preschool = st_read('data/geospatial/pre-schools-location-kml.kml') %>% 
+  st_transform(preschool, crs=3414)
+```
+
+Count the number of preschools within each hexagon and then also, assign 'grid_id' to each preschool. The bs_count df is now enriched with number of preschool information!
+
+```{r}
+bs_count$preschool_ct = lengths(st_intersects(bs_count,preschool))
+```
+
+Let us take a look at the preschool locations (denoted by the black dots). The red hexagons highlights the grids with more than 10 preschools.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+
+tmap_mode('view')
+tmap_options(check.and.fix = TRUE)
+
+tm_shape(mpsz)+
+  tm_polygons(alpha=0.3) +
+tm_shape(bs_count[bs_count$preschool_ct >= 10,]) +
+  tm_polygons(alpha = 0.3,
+              col='red') +
+  tm_shape(preschool) +
+  tm_dots(size=0.005) +
+    tm_layout(main.title = "Preschool location",
+          main.title.fontface = 'bold',
+          main.title.position = "center",
+          main.title.size = 1.2,
+          legend.height = 0.45, 
+          legend.width = 0.35,
+          frame = TRUE) + 
+  tm_view(set.zoom.limits = c(11,16))
+
+tmap_mode('plot')
+```
+
+#### **Geospatial dataset 3**
+
+We will import the *Business* shape file provided by Prof Kam. It is a POINT sf object containing information about business locations in Sinapore. This variable is potentially one of the attractiveness of our destinations because passengers could take bus to work during the morning peak period.
+
+```{r}
+business <- st_read(dsn='data/geospatial',
+                  layer='Business') %>% 
+  st_transform(crs=3414)
+
+business<- unique(business)
+```
+
+Count the number of businesses within each hexagon and then also, assign 'grid_id' to each businesses. The bs_count df is now enriched with business POI!
+
+```{r}
+bs_count$business_ct = lengths(st_intersects(bs_count,business))
+```
+
+Let us take a look at the business locations (denoted by the black dots). The red hexagons highlights the grids with more than 50 business POI.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+
+tmap_mode('view')
+tmap_options(check.and.fix = TRUE)
+
+tm_shape(mpsz)+
+  tm_polygons(alpha=0.3) +
+tm_shape(bs_count[bs_count$business_ct >= 50,]) +
+  tm_polygons(alpha = 0.3,
+              col='red') +
+  tm_shape(business) +
+  tm_dots(size=0.005) +
+    tm_layout(main.title = "Business location",
+          main.title.fontface = 'bold',
+          main.title.position = "center",
+          main.title.size = 1.2,
+          legend.height = 0.45, 
+          legend.width = 0.35,
+          frame = TRUE) + 
+  tm_view(set.zoom.limits = c(11,16))
+
+tmap_mode('plot')
+```
+
+#### **Geospatial dataset 4**
+
+We will import the *FinServ* shape file provided by Prof Kam. It is a POINT sf object containing information about financial service locations (Banks / Money Changers) in Sinapore. This variable is potentially one of the attractiveness of our destinations because passengers could take bus to work during the morning peak period.
+
+```{r}
+finserv <- st_read(dsn='data/geospatial',
+                  layer='FinServ') %>% 
+  st_transform(crs=3414)
+
+finserv<- unique(finserv)
+```
+
+Count the number of financial service points within each hexagon and then also, assign 'grid_id' to each financial service points. The bs_count df is now enriched with financial services information!
+
+```{r}
+bs_count$finserv_ct = lengths(st_intersects(bs_count,finserv))
+```
+
+Let us take a look at the financial services locations (denoted by the black dots). The red hexagons highlights the grids with more than 50 financial services points.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+
+tmap_mode('view')
+tmap_options(check.and.fix = TRUE)
+
+tm_shape(mpsz)+
+  tm_polygons(alpha=0.3) +
+tm_shape(bs_count[bs_count$finserv_ct >= 50,]) +
+  tm_polygons(alpha = 0.3,
+              col='red') +
+  tm_shape(finserv) +
+  tm_dots(size=0.005) +
+    tm_layout(main.title = "Financial Service location",
+          main.title.fontface = 'bold',
+          main.title.position = "center",
+          main.title.size = 1.2,
+          legend.height = 0.45, 
+          legend.width = 0.35,
+          frame = TRUE) + 
+  tm_view(set.zoom.limits = c(11,16))
+
+tmap_mode('plot')
+```
+
+### **Importing the attractiveness and propulsive aspatial data**
+
+#### **Aspatial dataset 1**
+
+Let us import the *Schools general information* in csv format , downloaded from *School Directory and Information* from data.gov.sg. It contains location (implicitly in the form of the field '*POSTAL_CODE*') of the MOE kindergartens, Primary Schools , Secondary Schools and junior colleges. It does not contain ITEs , Polytechnics and Universities locations. There is a total of 346 records inside this csv file.
+
+```{r}
+sch <- read_csv('data/aspatial/Generalinformationofschools.csv')
+head(sch) %>% kable
+```
+
+Next, we will load *poly_ite_postal* csv file that is collated by myself. It contains the postal codes of the 5 polytechnics and the 3 ITE colleges in Singapore.
+
+```{r}
+ter <- read_csv('data/aspatial/poly_ite_postal.csv')
+ter %>% kable
+```
+
+Since there are only 8 records of ITEs and Polys, I have manually added these 8 records into the original *Generalinformationofschools.csv* above and rename it as *allsch.csv*
+
+Reload the allsch.csv, which contains 354 records in total.
+
+```{r}
+sch <- read_csv('data/aspatial/allsch.csv')
+```
+
+##### **Geocoding the schools location**
+
+We will use the [OneMap API](https://www.onemap.gov.sg/apidocs/apidocs/#search) to retrieve the longtitude (X) and latitude (Y) coordinates using the 'POSTAL_CODE' field. First load the `httr` package which works in a TIDY manner.
+
+```{r}
+#| eval: false
+library('httr')
+```
+
+OneMap API is owned by SLA. The API documentation is found [here](https://www.onemap.gov.sg/apidocs/apidocs/#search).
+
+```{r}
+#| eval: false
+url <- 'https://www.onemap.gov.sg/api/common/elastic/search'
+
+postcodes <- sch$`postal_code`
+```
+
+The code chunk below does the following:
+
+1.  Initiate two empty dataframes; `found` to contain the results of the postal codes that are successful geocoded and `not_found` to contain the postal codes that are not successfully geocoded.
+2.  Uses a loop to use the OneMap API for `sch` and `ter` df.
+
+```{r}
+#| eval: false
+found <- data.frame()
+not_found <- data.frame()
+
+
+for(postcode in postcodes) {
+  query <- list('searchVal' = postcode, 'returnGeom' = 'Y', 'getAddrDetails' = 'Y', 'pageNum' = '1')
+  res <- GET(url, query=query)
+
+  
+  if((content(res)$found)!=0){
+    found<-rbind(found, data.frame(content(res))[4:13])
+  } else{
+    not_found = data.frame(postcode)
+  }
+}
+```
+
+Out of the 354 records in `allsch`, 1 school (Zhenghua Secondary School) is unsuccessfully geocoded.
+
+Let us merge the output of geocoding with the original *allsch.csv* file.
+
+```{r}
+#| eval: false
+merged = merge(sch, found, by.x = 'postal_code' , by.y='results.POSTAL', all=TRUE)
+```
+
+Write `merged` into a csv file and manually add the longitude and latitude (﻿1.3887, 103.7652 ) of Zhenghua Secondary into the csv file.
+
+```{r}
+#| eval: false
+write.csv(merged, file = 'data/aspatial/schools_geocoded.csv')
+write.csv(not_found, file = 'data/aspatial/not_found.csv')
+```
+
+After manual edit, reload the *schools_geocoded.csv* file in R.
+
+```{r}
+sch <- read_csv('data/aspatial/schools_geocoded.csv') %>% 
+  select(postal_code, school_name, results.LONGITUDE, results.LATITUDE )
+
+#datatable(sch,
+          #class = 'cell-border stripe',
+          #options = list(pageLength = 5))
+```
+
+**Convert `sch` to sf point object with longitude and latitude**
+
+Convert to SVY21 Singapore Projected Coordinates System after converting to sf object.
+
+```{r}
+sch_sf <- st_as_sf(sch,
+                   coords = c('results.LONGITUDE','results.LATITUDE'),
+                        crs=4326) %>% 
+  st_transform(crs=3414)
+```
+
+Count the number of schools in each hexagon and assign each school to a grid_id.
+
+```{r}
+bs_count$sch_ct = lengths(st_intersects(bs_count,sch_sf))
+bs_count %>% arrange(desc(sch_ct)) %>% head()
+```
+
+Let us take a look at the map. The highest count of schools in a hexagon is 4.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+tmap_mode('view')
+tmap_options(check.and.fix = TRUE)
+
+tm_shape(mpsz)+
+  tm_polygons(alpha=0.3) +
+tm_shape(bs_count[bs_count$sch_ct>=4,]) +
+  tm_polygons(alpha = 0.3,
+              col = 'red') +
+  tm_shape(sch_sf) +
+  tm_dots() +
+    tm_layout(main.title = "Schools location",
+          main.title.fontface = 'bold',
+          main.title.position = "center",
+          main.title.size = 1.2,
+          legend.height = 0.45, 
+          legend.width = 0.35,
+          frame = TRUE) + 
+  tm_view(set.zoom.limits = c(11,16))
+
+tmap_mode('plot')
+```
+
+#### **Aspatial dataset 2**
+
+We will now import the *hdb.csv* file provided by Prof Kam. The original source file is named *HDB Property Information* downloaded from this [link](https://beta.data.gov.sg/collections/150/view), but it contains no postal code or coordinates. it contains data from Jan 1937 - Jun 2023.
+
+The *hdb.csv* used in this exercise has been geocoded by Prof Kam. It contains information postal code and longitude/ latitude coordinates.
+
+We will not be using commerical HDB property, therefore we will remove non-residential rows. The number of rows reduced from 12,442 to to 10,181.
+
+The fields '*total_rental_ct*' refers to the estimated number of people who stay in rented apartments, 'total\_*n*room_ct' refers to the estimated number of people staying in n-room apartment and '*total_owner_ct*' refers to the estimated number of residents who stay in HDB property.
+
+The reason for retaining the details of n-room count is because it is a potential [proxy](https://tablebuilder.singstat.gov.sg/table/CT/16481#!) for income level. The multipliers for each room type (eg. 1 for 1 room, 2 for 2 rooms, 10 for 3 rooms for instance) is estimated using the *HDBResidentPopulationAged15YearsandAbovebyFlatType*.*csv* retrieved from [data.gov](https://beta.data.gov.sg/collections/190/datasets/d_cb55223f678fb7702181fc95c587e03f/view). The bar chart below will show how the multipliers were estimated.
+
+```{r}
+#| echo: false
+res_est <- read_csv('data/aspatial/HDBResidentPopulationAged15YearsandAbovebyFlatType.csv') %>% 
+  filter(shs_year==2018)
+```
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.65
+#| code-fold: true
+ggplot(res_est, aes(x = flat_type, y = number)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(number,', ', round(number/sum(number)*100,1), '%')),
+            position = position_dodge(width = 0.8), vjust= -1, size = 3.5) +
+  labs(title = "Number of residents by Flat Types",
+       x = "Flat Type",
+       y = "Number") +
+  theme(plot.title = element_text(face="bold"))
+
+```
+
+```{r}
+hdb <- read_csv('data/aspatial/hdb.csv') %>% 
+  filter(residential == "Y") %>% 
+  mutate(total_rental_ct = `1room_rental`*1 + `2room_rental`*2 + `3room_rental`*3 + `other_room_rental`*4,
+         total_1room_ct = `1room_sold`,
+         total_2room_ct = `2room_sold`*2,
+         total_3room_ct = `3room_sold`*10,
+         total_4room_ct = `4room_sold`*21,
+         total_5room_ct = `5room_sold`*13,
+         total_exec_ct = `exec_sold`*4,
+         total_multi_ct = `multigen_sold`*13,
+         total_studio_ct = `studio_apartment_sold`,
+         total_owner_ct = `1room_sold`*1 + `2room_sold`*2 + `3room_sold`*10 + `4room_sold`*21 + `5room_sold`*13 + `exec_sold`*4 + `multigen_sold`*13 + `studio_apartment_sold`*1) %>% 
+  select(blk_no, street, total_rental_ct, total_1room_ct, total_1room_ct,total_2room_ct,total_3room_ct,total_4room_ct,total_5room_ct,total_exec_ct,total_multi_ct, total_studio_ct,total_owner_ct, lat, lng)
+```
+
+Let us take a look at the first six rows of `hdb` df.
+
+```{r}
+head(hdb) %>% kable()
+```
+
+Tranform `hdb` to a simply feature POINT object using `st_as_sf` function and transform from WSG84 to SVY21 Singapore Projected Coordinate System using `st_transform()` of sf package.
+
+```{r}
+hdb_sf <- st_as_sf(hdb,
+                   coords = c('lng','lat'),
+                        crs=4326) %>% 
+  st_transform(crs=3414)
+
+hdb_sf
+```
+
+Assign a '*grid_id*' to each observation inside the `hdb_sf` POINT sf object by using the `st_intersection()` function.
+
+Before: `hdb_sf` contanis 10,181 rows
+
+After `st_intersection()`: `hdb_hex` contains 10,133 rows. Some points in hdb_sf do not fall within `bs_count` basic hexagon units. This is expected as `bs_count` that does not have hexagons with zero bustop counts.
+
+```{r}
+hdb_hex <- st_intersection(hdb_sf,bs_count)
+```
+
+Drop the geometry column, and check for duplicates.
+
+```{r}
+hdb_hex<- hdb_hex %>% 
+  st_drop_geometry()
+hdb_hex %>% 
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+```
+
+For each '*grid_id*', sum the '*total_rental_ct*' and '*total_owners_ct*'. After group_by, the number of rows reduced from 10,133 to 392 unique '*grid_id*'
+
+```{r}
+hdb_hex <- hdb_hex %>% 
+  group_by(grid_id) %>% 
+  summarise(hdb_rental_ct = sum(total_rental_ct),
+            hdb_1room_ct = sum(total_1room_ct),
+            hdb_2room_ct = sum(total_2room_ct),
+            hdb_3room_ct = sum(total_3room_ct),
+            hdb_4room_ct = sum(total_4room_ct),
+            hdb_5room_ct = sum(total_5room_ct),
+            hdb_exec_ct = sum(total_exec_ct),
+            hdb_multi_ct = sum(total_multi_ct),
+            hdb_studio_ct = sum(total_studio_ct),
+            hdb_owner_ct = sum (total_owner_ct)) %>% 
+  ungroup()
+```
+
+Append the HDB rental and owner counts to the `bs_count` df by performing a left join
+
+```{r}
+bs_count <- left_join(bs_count, hdb_hex,
+                      by= c('grid_id' = 'grid_id'))
+
+bs_count<- bs_count %>% 
+  mutate(hdb_rental_ct = replace_na(hdb_rental_ct, 0),
+         hdb_1room_ct = replace_na(hdb_1room_ct, 0),
+         hdb_2room_ct = replace_na(hdb_2room_ct, 0),
+         hdb_3room_ct = replace_na(hdb_3room_ct, 0),
+         hdb_4room_ct = replace_na(hdb_4room_ct, 0),
+         hdb_5room_ct = replace_na(hdb_5room_ct, 0),
+         hdb_exec_ct = replace_na(hdb_exec_ct, 0),
+         hdb_multi_ct = replace_na(hdb_multi_ct, 0),
+         hdb_studio_ct = replace_na(hdb_studio_ct, 0),
+         hdb_owner_ct = replace_na(hdb_owner_ct, 0))
+```
+
+Let us visualise the estimated population density of Singapore residents who stays in HDB property.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+tmap_mode('plot')
+tmap_options(check.and.fix = TRUE)
+
+tm_shape(mpsz)+
+  tm_polygons(alpha=0.3) +
+tm_shape(bs_count) +
+  tm_fill('hdb_owner_ct',
+          alpha= 0.7) +
+  tm_borders(col='grey') +
+  tm_layout(main.title = "Population density of HDB residents 2023 by Hexagon",
+            main.title.fontface = 'bold',
+            main.title.position = "center",
+            main.title.size = 1.2,
+            legend.height = 0.45, 
+            legend.width = 0.35,
+            frame = TRUE)
+  tm_view(set.zoom.limits = c(11,16))
+
+tmap_mode('plot')
+```
+
+This rough estimation of the population density of residents staying in HDB (until June 2023) is acceptable because according to [Singapore Census of Population 2020](https://www.singstat.gov.sg/publications/reference/cop2020/cop2020-sr1), the top four planning areas with more than 250,000 residents are Bedok, Jurong West, Tampanies and Woodlands. (see chart below). The level of intensity of the map above looks similar to the intensity of the map below, with the exception of the North_east area. The North-East region with planning areas like Ponggol and Seng Kang are newer estates that are probably not captured in 2020 census.
+
+![](images/census%202020%20pop%20den.png){fig-align="center" width="389"}
+
+## **Append all attributes to flow_data1 df**
+
+We will perform left_join() twice to get the origin and destination attributes properly appended into the `flow_data1` df (currently contains only response variable 'TRIPS' and one explanatory variable 'dist') .
+
+First, convert 'grid_id' in sz_count to factor format.
+
+```{r}
+bs_count$grid_id <- as.factor(bs_count$grid_id)
+```
+
+::: panel-tabset
+### Append all origin attributes
+
+```{r}
+flow_data1 <- flow_data1 %>%
+  left_join(bs_count,
+            by = c('ORIGIN_GRID_ID' = 'grid_id')) %>%
+  rename(ORIGIN_TRAIN_EXIT_CT=train_exit_ct,
+         ORIGIN_PRESCHOOL_CT=preschool_ct,
+         ORIGIN_BUSINESS_CT=business_ct,
+         ORIGIN_FINSERV_CT=finserv_ct,
+         ORIGIN_SCH_CT=sch_ct,
+         ORIGIN_RENTAL_CT=hdb_rental_ct,
+         ORIGIN_1ROOM_CT=hdb_1room_ct,
+         ORIGIN_2ROOM_CT=hdb_2room_ct,
+         ORIGIN_3ROOM_CT=hdb_3room_ct,
+         ORIGIN_4ROOM_CT=hdb_4room_ct,
+         ORIGIN_5ROOM_CT=hdb_5room_ct,
+         ORIGIN_EXEC_CT=hdb_exec_ct,
+         ORIGIN_MULTI_CT=hdb_multi_ct,
+         ORIGIN_STUDIO_CT=hdb_studio_ct,
+         ORIGIN_OWNER_CT=hdb_owner_ct) %>%
+  select(-c(num_bs,geometry))
+```
+
+### Append all destin attributes
+
+```{r}
+flow_data1 <- flow_data1 %>%
+  left_join(bs_count,
+            by = c('DESTIN_GRID_ID' = 'grid_id')) %>%
+  rename(DESTIN_TRAIN_EXIT_CT=train_exit_ct,
+         DESTIN_PRESCHOOL_CT=preschool_ct,
+         DESTIN_BUSINESS_CT=business_ct,
+         DESTIN_FINSERV_CT=finserv_ct,
+         DESTIN_SCH_CT=sch_ct,
+         DESTIN_RENTAL_CT=hdb_rental_ct,
+         DESTIN_1ROOM_CT=hdb_1room_ct,
+         DESTIN_2ROOM_CT=hdb_2room_ct,
+         DESTIN_3ROOM_CT=hdb_3room_ct,
+         DESTIN_4ROOM_CT=hdb_4room_ct,
+         DESTIN_5ROOM_CT=hdb_5room_ct,
+         DESTIN_EXEC_CT=hdb_exec_ct,
+         DESTIN_MULTI_CT=hdb_multi_ct,
+         DESTIN_STUDIO_CT=hdb_studio_ct,
+         DESTIN_OWNER_CT=hdb_owner_ct) %>%
+  select(-c(num_bs, geometry))
+```
+:::
+
+Write `flow_data1` into local disk.
+
+```{r}
+#| eval: false
+write_rds(flow_data1,
+          "data/rds/flow_data_tidy.rds")
+```
+
+Read the flow_data1 back into R
+
+```{r}
+#| eval: false
+flow_data1 <- read_rds("data/rds/flow_data_tidy.rds")
+```
+
+## Calibrating Spatial Interaction Models
+
+::: panel-tabset
+#### Distribution of TRIPS (Target variable)
+
+'TRIPS' are all postive values, its distribution is highly skewed to the right.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+ggplot(data = flow_data1,
+       aes(x = TRIPS)) +
+  geom_histogram(color='black',size= 0.3, fill = '#DD8888') +
+  labs(y= 'Count of TRIPS', x='TRIPS') +
+  theme(axis.title.y=element_text(angle = 0),
+        plot.title = element_text(face="bold")) +
+  ggtitle('Distribution of TRIPS')
+```
+
+#### TRIPS vs Distance
+
+These two variables are not linearly related, suggesting that we could apply data transformation on them.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+ggplot(data = flow_data1,
+       aes(x = dist, # independent
+           y = TRIPS)) +  #dependent
+  geom_point() +
+  geom_smooth(method = lm) +
+  labs(y= 'TRIPS', x='dist') +
+  theme(axis.title.y=element_text(angle = 0),
+        plot.title = element_text(face="bold")) +
+  ggtitle('Relationship between TRIPS and Distance')
+```
+
+#### Log(TRIPS) vs Log(Distance)
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+ggplot(data = flow_data1,
+       aes(x = log(dist),
+           y = log(TRIPS))) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  labs(y= 'log(TRIPS)', x='log(dist)') +
+  theme(axis.title.y=element_text(angle = 0),
+        plot.title = element_text(face="bold")) +
+  ggtitle('Relationship between log(TRIPS) and log(dist)')
+```
+:::
+
+The first choice of our regression model is the Poisson Regression in `glm()` function.
+
+**Why Poisson regression?**
+
+-   our target variable (TRIPS) is count-based
+
+-   target variable can only be positive values (unlike Linear regression where positive and negative values are possible; negative TRIPS do not make sense)
+
+-   a type of generalised linear model (GLM) used to count data
+
+-   residuals may follow a asymmetric distribution around the mean (meaning outcomes on either sides of the mean are NOT equally likely.)
+
+-   It means that the probability of commuting is not described by a continuous (normal) probability distribution, but a discrete probability distribution such as the Poisson distribution
+
+It would also mean that we do not have to adhere to the assumptions of the Linear Regression Model:
+
+-   dependent variable and predictors have linear relationship
+
+-   residual errors (predicted - actual) are normally distributed, have a constant variance and unrelated with one another.
+
+**Check independent variables for zero values**
+
+Since we have chosen the Poisson regression, which is based on **log** and **log 0 is undefined**, it is important for us to ensure that are **no 0** values in the **explanatory** **variables**.
+
+In the code chunk below, summary() of Base R is used to compute the summary statistics of all variables in *`flow_data1`* data frame.
+
+```{r}
+summary(flow_data1)
+```
+
+The print report above reveals that variables all consist of 0 values.
+
+In view of this, code chunk below will be used to use a loop to replace zero values to 0.99 (randomly chosen value that is close to 0). The names of the fields to be transformed will be stored in '*columns_to_transform*' variable.
+
+```{r}
+
+columns_to_transform <- c(
+"ORIGIN_TRAIN_EXIT_CT", "ORIGIN_PRESCHOOL_CT",  "ORIGIN_BUSINESS_CT",   "ORIGIN_FINSERV_CT",   "ORIGIN_SCH_CT",        "ORIGIN_RENTAL_CT", "ORIGIN_1ROOM_CT",      "ORIGIN_2ROOM_CT",      "ORIGIN_3ROOM_CT",      "ORIGIN_4ROOM_CT",      "ORIGIN_5ROOM_CT",      "ORIGIN_EXEC_CT",       "ORIGIN_MULTI_CT",      "ORIGIN_STUDIO_CT",    "ORIGIN_OWNER_CT",      "DESTIN_TRAIN_EXIT_CT", "DESTIN_PRESCHOOL_CT",  "DESTIN_BUSINESS_CT",   "DESTIN_FINSERV_CT",   "DESTIN_SCH_CT",        "DESTIN_RENTAL_CT", "DESTIN_1ROOM_CT",      "DESTIN_2ROOM_CT",      "DESTIN_3ROOM_CT",     
+"DESTIN_4ROOM_CT",      "DESTIN_5ROOM_CT",      "DESTIN_EXEC_CT",       "DESTIN_MULTI_CT",      "DESTIN_STUDIO_CT",    "DESTIN_OWNER_CT"
+)
+
+
+for (col in columns_to_transform) {
+  flow_data1[[col]] <- ifelse(flow_data1[[col]] == 0, 0.99, flow_data1[[col]])
+}
+```
+
+**The four SIMs**
+
+For modelling the **weekday morning** peak passenger flow , we have the following attractive and propulsive variables:
+
+**Propulsive**: 'ORIGIN_RENTAL_CT', 'ORIGIN\_*n*ROOM_CT', 'ORIGIN_OWNER_CT'
+
+**Attractive:** 'DESTIN_TRAIN_EXIT_CT', 'DESTIN_PRESCHOOL_CT', 'DESTIN_BUSINESS_CT', 'DESTIN_FINSERV_CT', 'DESTIN_SCH_CT'
+
+::: panel-tabset
+### Unconstrained SIM
+
+```{r}
+#| eval: false
+uncSIM <- glm(formula = TRIPS ~ 
+                #log(ORIGIN_TRAIN_EXIT_CT) + 
+                #log(ORIGIN_PRESCHOOL_CT) +
+                #log(ORIGIN_BUSINESS_CT) +
+                #log(ORIGIN_FINSERV_CT) +
+                #log(ORIGIN_SCH_CT) +
+                log(ORIGIN_RENTAL_CT) +
+                #log(ORIGIN_1ROOM_CT) +
+                log(ORIGIN_2ROOM_CT) +
+                log(ORIGIN_3ROOM_CT) +
+                log(ORIGIN_4ROOM_CT) +
+                log(ORIGIN_5ROOM_CT) +
+                log(ORIGIN_EXEC_CT) +
+                #log(ORIGIN_MULTI_CT) +
+                log(ORIGIN_STUDIO_CT) +
+                #log(ORIGIN_OWNER_CT) +
+                log(DESTIN_TRAIN_EXIT_CT) +
+                log(DESTIN_PRESCHOOL_CT) +
+                log(DESTIN_BUSINESS_CT) +
+                log(DESTIN_FINSERV_CT) +
+                log(DESTIN_SCH_CT) +
+                #log(DESTIN_RENTAL_CT) +
+                #log(DESTIN_1ROOM_CT) +
+                #log(DESTIN_2ROOM_CT) +
+                #log(DESTIN_3ROOM_CT) +
+                #log(DESTIN_4ROOM_CT) +
+                #log(DESTIN_5ROOM_CT) +
+                #log(DESTIN_EXEC_CT) +
+                #log(DESTIN_MULTI_CT) +
+                #log(DESTIN_STUDIO_CT) +
+                #log(DESTIN_OWNER_CT) +
+                log(dist),   
+              family = poisson(link = "log"),
+              data = flow_data1,
+              na.action = na.exclude)
+```
+
+### Origin Constrained SIM
+
+```{r}
+#| eval:  false
+orcSIM <- glm(formula= TRIPS ~
+                ORIGIN_GRID_ID +
+                log(DESTIN_TRAIN_EXIT_CT) +
+                log(DESTIN_PRESCHOOL_CT) +
+                log(DESTIN_BUSINESS_CT) +
+                log(DESTIN_FINSERV_CT) +
+                log(DESTIN_SCH_CT) +
+                #log(DESTIN_RENTAL_CT) +
+                #log(DESTIN_1ROOM_CT) +
+                #log(DESTIN_2ROOM_CT) +
+                #log(DESTIN_3ROOM_CT) +
+                #log(DESTIN_4ROOM_CT) +
+                #log(DESTIN_5ROOM_CT) +
+                #log(DESTIN_EXEC_CT) +
+                #log(DESTIN_MULTI_CT) +
+                #log(DESTIN_STUDIO_CT) +
+                #log(DESTIN_OWNER_CT) +
+                log(dist)-1,
+              family = poisson(link='log'),
+              data = flow_data1,
+              na.action = na.exclude)
+```
+
+### Destination Constrained SIM
+
+```{r}
+#| eval: false
+decSIM <- glm(formula= TRIPS ~
+                DESTIN_GRID_ID +
+                #log(ORIGIN_TRAIN_EXIT_CT) + 
+                #log(ORIGIN_PRESCHOOL_CT) +
+                #log(ORIGIN_BUSINESS_CT) +
+                #log(ORIGIN_FINSERV_CT) +
+                #log(ORIGIN_SCH_CT) +
+                log(ORIGIN_RENTAL_CT) +
+                #log(ORIGIN_1ROOM_CT) +
+                log(ORIGIN_2ROOM_CT) +
+                log(ORIGIN_3ROOM_CT) +
+                log(ORIGIN_4ROOM_CT) +
+                log(ORIGIN_5ROOM_CT) +
+                log(ORIGIN_EXEC_CT) +
+                #log(ORIGIN_MULTI_CT) +
+                log(ORIGIN_STUDIO_CT) +
+                #log(ORIGIN_OWNER_CT) +
+                log(dist)-1,
+              family = poisson(link='log'),
+              data = flow_data1,
+              na.action = na.exclude)
+```
+
+### Doubly Constrained SIM
+
+```{r}
+#| eval:  false
+dbcSIM <- glm(formula = TRIPS ~ 
+                ORIGIN_GRID_ID + 
+                DESTIN_GRID_ID + 
+                log(dist),
+              family = poisson(link = "log"),
+              data = flow_data1,
+              na.action = na.exclude)
+```
+:::
+
+We will save the output of the four SIMs into rds.
+
+```{r}
+#| eval: false
+write_rds(uncSIM, "data/rds/uncSIM.rds")
+write_rds(orcSIM, "data/rds/orcSIM.rds") 
+write_rds(decSIM, "data/rds/decSIM.rds") 
+write_rds(dbcSIM, "data/rds/dbcSIM.rds") 
+
+```
+
+Now reload them into R
+
+```{r}
+uncSIM<- read_rds("data/rds/uncSIM.rds")
+orcSIM<- read_rds( "data/rds/orcSIM.rds") 
+decSIM<- read_rds( "data/rds/decSIM.rds") 
+dbcSIM<- read_rds("data/rds/dbcSIM.rds") 
+```
+
+### Results of SIMs
+
+**Unconstrained SIM output**
+
+::: panel-tabset
+#### Unconstrained R-squared
+
+The R-squared value of 0.24 tells us that the explanatory variables are able to explain 24% of the variance in the TRIPS target variable.
+
+```{r}
+CalcRSquared <- function(observed,estimated){
+  r <- cor(observed,estimated)
+  R2 <- r^2
+  R2
+}
+
+CalcRSquared(uncSIM$data$TRIPS, uncSIM$fitted.values)
+```
+
+#### Unconstrained Coefficients
+
+All the coefficients are statistically significant. The most influential explanatory variables are *distance*, *destination train exit count* and *destination school count* with coefficients of -1.43, 0.45 and 0.29 respectively.
+
+```{r}
+uncSIM$coefficients
+```
+
+#### Unconstrained Summary
+
+```{r}
+summary(uncSIM)
+```
+:::
+
+**Origin Constrained SIM output**
+
+::: panel-tabset
+#### Origin Constrained R-squared
+
+The R-squared value of 0.38 tells us that the explanatory variables are able to explain 38 % of the variance in the TRIPS target variable.
+
+```{r}
+CalcRSquared(orcSIM$data$TRIPS, orcSIM$fitted.values)
+```
+
+#### Origin Constrained Coefficients
+
+The most influential explanatory variables are *distance*, *destination train exit count* and *destination school count* with coefficients of -1.51, 0.49 and 0.29 respectively.
+
+```{r}
+orcSIM$coefficients[818:823]
+```
+
+#### Origin Constrained Summary
+
+```{r}
+summary(orcSIM)
+```
+:::
+
+**Destination Constrained SIM output**
+
+::: panel-tabset
+#### Destination Constrained R-squared
+
+The R-squared value of 0.37 tells us that the explanatory variables are able to explain 37% of the variance in the TRIPS target variable.
+
+```{r}
+CalcRSquared(decSIM$data$TRIPS, decSIM$fitted.values)
+```
+
+#### Destination Constrained Coefficients
+
+The most influential explanatory variables are *distance*, *origin 5 room count* and *origin exec count* count with coefficients of -1.42, 0.09 and 0.05 respectively.
+
+```{r}
+decSIM$coefficients[819:828]
+```
+
+#### Destination Constrained Summary
+
+```{r}
+summary(decSIM)
+```
+:::
+
+**Doubly Constrained SIM Output**
+
+::: panel-tabset
+#### Doubly Constrained R-squared
+
+The R-squared value of 0.59 tells us that the explanatory variables are able to explain 59 % of the variance in the TRIPS target variable.
+
+```{r}
+CalcRSquared(dbcSIM$data$TRIPS, dbcSIM$fitted.values)
+```
+
+#### Doubly Constrained Coefficients
+
+The explanatory variable distance has a coefficient of -0.159.
+
+```{r}
+dbcSIM$coefficients[1]
+dbcSIM$coefficients[1635]
+```
+
+#### Doubly Constrained Summary
+
+```{r}
+summary(dbcSIM)
+```
+:::
+
+### Model Comparison
+
+In this section we will use the [`compare_performance()`](https://easystats.github.io/performance/reference/compare_performance.html) of [**performance**](https://easystats.github.io/performance/) package to compare the root mean square error of the four SIMs. The smaller the values of RMSE , the better the model.
+
+First of all, let us create a list called *model_list* by using the code chunk below. It contains all our fitted models for all four variations of gravity model.
+
+```{r}
+model_list <- list(unconstrained=uncSIM,
+                   originConstrained=orcSIM,
+                   destinationConstrained=decSIM,
+                   doublyConstrained=dbcSIM)
+```
+
+The output below reveals that doubly constrained SIM is the best model among all the four SIMs because it has the smallest RMSE value of 1026.
+
+```{r}
+compare_performance(model_list,
+                    metrics = "RMSE")
+```
+
+### Visualising the fitted values
+
+The function below will save the fitted values as a dataframe and append that column of fitted values to the `flow_data1` df. We will append all the fitted values of all the four SIMs.
+
+```{r}
+process_fitted_values <- function(data, fitted_values, new_column_name) {
+  df <- as.data.frame(fitted_values) %>%
+    round(digits = 0)
+
+  data <- data %>%
+    cbind(df) %>%
+    rename({{ new_column_name }} := fitted_values)
+
+  return(data)
+}
+```
+
+```{r}
+flow_data1 <- process_fitted_values(flow_data1, uncSIM$fitted.values, "uncTRIPS")
+flow_data1 <- process_fitted_values(flow_data1, orcSIM$fitted.values, "orcTRIPS")
+flow_data1 <- process_fitted_values(flow_data1, decSIM$fitted.values, "decTRIPS")
+flow_data1 <- process_fitted_values(flow_data1, dbcSIM$fitted.values, "dbcTRIPS")
+
+```
+
+Using the `ggarragne()` function of the ggpurpackage, we will now print the 'actual vs predicted' plots side-by-side.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+
+unc_p <- ggplot(data = flow_data1,
+                aes(x = uncTRIPS,
+                    y = TRIPS)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = lm)
+
+orc_p <- ggplot(data = flow_data1,
+                aes(x = orcTRIPS,
+                    y = TRIPS)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = lm)
+
+dec_p <- ggplot(data = flow_data1,
+                aes(x = decTRIPS,
+                    y = TRIPS)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = lm)
+
+dbc_p <- ggplot(data = flow_data1,
+                aes(x = dbcTRIPS,
+                    y = TRIPS)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = lm)
+
+
+
+ggarrange(unc_p, orc_p, dec_p, dbc_p,
+          ncol = 2,
+          nrow = 2)
+```
+
+**Discussion**:
+
+We can see that hte points 'hugged' more closely towards the diagonal blue line, which indicates that doubly constrained model is indeed the best model.
+
+### Visualising the residual errors
+
+There are many types of [residuals](https://www.datascienceblog.net/post/machine-learning/interpreting_generalized_linear_models/) in glm() models like Response, Working, Pearson, Deviance residuals for instance. For simplicity, we will work with Response type, which is derived from 'actual' - 'predicted' values. In this exercise, I would like to calcualte 'Predicted - Actual' values instead; so that any over-prediction has positive values and under-predicted values will have a negative residual.
+
+We will use the same function written previously to save the residual values as a dataframe and append that column of residual values to the flow_data1 df. We will append all the residual values of all the four SIMs.
+
+```{r}
+
+flow_data1 <- process_fitted_values(flow_data1, -resid(uncSIM, type='response'), "uncRES")
+flow_data1 <- process_fitted_values(flow_data1, -resid(orcSIM, type='response'), "orcRES")
+flow_data1 <- process_fitted_values(flow_data1, -resid(decSIM, type='response'), "decRES")
+flow_data1 <- process_fitted_values(flow_data1, -resid(dbcSIM, type='response'), "dbcRES")
+```
+
+Save `flow_data1` to local.
+
+```{r}
+#| eval: false
+write_rds(flow_data1,
+          "data/rds/flow_data1.rds")
+```
+
+Convert `flow_data1` to a sf Linestring object.
+
+```{r}
+#| eval: false
+flowLine2 <- od2line(flow=flow_data1,
+                    zones= bs_count,
+                    zone_code= 'grid_id')
+```
+
+`flowLine2` to get a left join with `od_data1` in order to append the origin and destination bus stop descriptions for our map's tooltip function later.
+
+```{r}
+#| eval: false
+od_data1$ORIGIN_GRID_ID <- as.factor(od_data1$ORIGIN_GRID_ID)
+od_data1$DESTIN_GRID_ID <- as.factor(od_data1$DESTIN_GRID_ID)
+
+flowLine2 <- left_join(flowLine2, od_data1,
+                      by = c('ORIGIN_GRID_ID' = 'ORIGIN_GRID_ID',
+                             'DESTIN_GRID_ID' = 'DESTIN_GRID_ID')) %>% 
+  select(-c(MORNING_PEAK))
+```
+
+Save `flowLine2` to local
+
+```{r}
+#| eval: false
+write_rds(flowLine2,
+          "data/rds/flowLine2.rds")
+```
+
+Reload `flowLine2` into R
+
+```{r}
+flowLine2 <- read_rds('data/rds/flowLine2.rds')
+```
+
+**Residuals against Fitted Values plots**
+
+Using the `highlight()` and `subplot()` functions of the `plotly` package, we will now print the 'residual vs predicted' plots side-by-side. The chart below offers a coordinated view of a selected point in any of the charts. We will use these coordinated charts to identify flows that are radically over and under predicted.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+
+library(plotly)
+
+d <- highlight_key(flow_data1)
+
+unc_rf <- ggplot(data = d,
+                aes(x = uncTRIPS,
+                    y = uncRES)) +
+  geom_point(size = 0.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue")
+
+
+orc_rf <- ggplot(data = d,
+                aes(x = orcTRIPS,
+                    y = orcRES)) +
+  geom_point(size = 0.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue")
+
+dec_rf <- ggplot(data = d,
+                aes(x = decTRIPS,
+                    y = decRES)) +
+  geom_point(size = 0.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue")
+
+dbc_rf <- ggplot(data = d,
+                aes(x = dbcTRIPS,
+                    y = dbcRES)) +
+  geom_point(size = 0.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue")
+
+subplot(ggplotly(unc_rf),
+        ggplotly(orc_rf),
+        ggplotly(dec_rf),
+        ggplotly(dbc_rf),
+        nrows = 2,
+        titleY = TRUE, 
+        titleX = TRUE, 
+        margin = 0.1)
+
+#ggarrange(unc_rf, orc_rf, dec_rf, dbc_rf,
+          #ncol = 2,
+          #nrow = 2)
+```
+
+ll four models produces under-predicted (below X-axis) and over-predicted above X-axis) values. The unconstrained and origin-constrained model (top left) produces greater magnitude of under-predicted errors . The maximum number of actual trips is 75,364 and yet the unconstrained model produces only a maximum of about 15k trips.
+
+18,341: Woodlands checkpoint to woodlands interchange
+
+17,575: Woodlands checkpoint to Kranji MRT station
+
+23,745: Woodlands Train to Woodlands Checkpoint
+
+It seems like trips related to bus stops near the Woodlands Checkpoint tend to be poorly predicted.
+
+### Visualising the predicted errors flows
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+
+tmap_mode('view')
+tmap_options(check.and.fix = TRUE)
+
+unc <- tm_shape(mpsz) +
+  tm_polygons(alpha=0.3) +
+tm_shape(bs_count) +
+  tm_polygons(alpha=0.3) +
+  flowLine2 %>%
+  filter(uncRES >=10000 | uncRES <= -30000) %>% 
+  tm_shape() +
+  tm_lines(col = 'uncRES',
+           lwd = 5,
+           style = 'fixed',
+           breaks = c(-68000,-40000,-20000,0,20000,40000, 60000, 76000),
+           #scale= c(0.3, 3, 9, 15, 21, 30),
+           palette = 'RdYlBu',
+           n = 6,
+           alpha= 0.9,
+           popup.vars=c("# Actual Trips:"="TRIPS",
+                        "# Predicted Trips:" = "uncTRIPS",
+                        "Error:" = "uncRES",
+                        "Orig Desc:"="ORIGIN_DESC",
+                        "Destin Desc:" = "DESTIN_DESC",
+                        "Distance:" = 'dist')) +
+           #col='blue') +
+  tm_view(set.zoom.limits = c(11,17)) +
+  tm_layout(main.title = 'Over-predicted O-D Flow for Unconstrained SIM' ,
+            main.title.size = 1.0,
+            main.title.fontface = 'bold')
+unc
+
+tmap_mode('plot')
+```
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+
+tmap_mode('view')
+tmap_options(check.and.fix = TRUE)
+
+orc<- tm_shape(mpsz) +
+  tm_polygons(alpha=0.3) +
+tm_shape(bs_count) +
+  tm_polygons(alpha=0.3) +
+  flowLine2 %>%
+  filter(orcRES >=10000 | orcRES <= -30000) %>% 
+  tm_shape() +
+  tm_lines(col = 'orcRES',
+           lwd = 5,
+           style = 'fixed',
+           breaks = c(-68000,-40000,-20000,0,20000,40000, 60000, 76000),
+           #scale= c(0.3, 3, 9, 15, 21, 30),
+           palette = 'RdYlBu',
+           n = 6,
+           alpha= 0.9,
+           popup.vars=c("# Actual Trips:"="TRIPS",
+                        "# Predicted Trips:" = "orcTRIPS",
+                        "Error:" = "orcRES",
+                        "Orig Desc:"="ORIGIN_DESC",
+                        "Destin Desc:" = "DESTIN_DESC",
+                        "Distance:" = 'dist')) +
+           
+  tm_view(set.zoom.limits = c(11,17)) +
+  tm_layout(main.title = 'Over-predicted O-D Flow for Origin Constrained SIM',
+            main.title.size = 1.0,
+            main.title.fontface = 'bold')
+
+
+orc
+tmap_mode('plot')
+```
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+
+tmap_mode('view')
+tmap_options(check.and.fix = TRUE)
+
+dec <- tm_shape(mpsz) +
+  tm_polygons(alpha=0.3) +
+tm_shape(bs_count) +
+  tm_polygons(alpha=0.3) +
+  flowLine2 %>%
+  filter(decRES >=10000 | decRES <= -30000) %>% 
+  tm_shape() +
+  tm_lines(col = 'decRES',
+           lwd = 5,
+           style = 'fixed',
+           breaks = c(-68000,-40000,-20000,0,20000,40000, 60000, 76000),
+           #scale= c(0.3, 3, 9, 15, 21, 30),
+           palette = 'RdYlBu',
+           n = 6,
+           alpha= 0.9,
+           popup.vars=c("# Actual Trips:"="TRIPS",
+                        "# Predicted Trips:" = "decTRIPS",
+                        "Error:" = "decRES",
+                        "Orig Desc:"="ORIGIN_DESC",
+                        "Destin Desc:" = "DESTIN_DESC",
+                        "Distance:" = 'dist')) +
+           
+  tm_view(set.zoom.limits = c(11,17)) +
+  tm_layout(main.title = 'Over-predicted O-D Flow for Destination Constrained SIM' ,
+            main.title.size = 1.0,
+            main.title.fontface = 'bold')
+dec
+
+tmap_mode('plot')
+```
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+
+tmap_mode('view')
+tmap_options(check.and.fix = TRUE)
+
+dbc<- tm_shape(mpsz) +
+  tm_polygons(alpha=0.3) +
+tm_shape(bs_count) +
+  tm_polygons(alpha=0.3) +
+  flowLine2 %>%
+  filter(dbcRES >=10000 | dbcRES <= -30000) %>% 
+  tm_shape() +
+  tm_lines(col = 'dbcRES',
+           lwd = 5,
+           style = 'fixed',
+           breaks = c(-68000,-40000,-20000,0,20000,40000, 60000, 76000),
+           #scale= c(0.3, 3, 9, 15, 21, 30),
+           palette = 'RdYlBu',
+           n = 6,
+           alpha= 0.9,
+           popup.vars=c("# Actual Trips:"="TRIPS",
+                        "# Predicted Trips:" = "dbcTRIPS",
+                        "Error:" = "dbcRES",
+                        "Orig Desc:"="ORIGIN_DESC",
+                        "Destin Desc:" = "DESTIN_DESC",
+                        "Distance:" = 'dist')) +
+           
+  tm_view(set.zoom.limits = c(11,17)) +
+  tm_layout(main.title = 'Over-predicted O-D Flow for Doubly Constrained SIM',
+            main.title.size = 1.0,
+            main.title.fontface = 'bold')
+dbc
+
+tmap_mode('plot')
+```
+
+We will plot the residual maps side by side for easy comparison.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+
+tmap_mode('plot')
+
+tmap_arrange(unc,
+             orc,
+             dec,
+             dbc,
+             asp=2,
+             nrow=2,
+             ncol=2)
+```
+
+Discussion:
+
+At one glance, the unconstrained model tend to under-predict the number of trips than over-predict. The doubly constrained model tend to over-predict the number of trips than to under-predict.
+
+Across all the four models, common regions with high errors in predictions were woodlands check point area, Yishun/Khatib interchange area, Chua Chu Kang interchange area and Boon Lay interchange area.
+
+## Removing the Outliers
+
+In our best performing model (Doubly-Constrained), the flow trips that had the highest error in prediction were associated with areas near the woodlands checkpoint.
+
+What if we remove the observations that are close to the Woodlands Checkpoint? Will our model improve?
+
+**Two observations to remove:**
+
+Origin_grid_id: 1004 to destin_grid_id: 1108
+
+Origin_grid_id: 983 to destin_grid_id: 939
+
+```{r}
+#| eval: false
+
+dbcSIM_remove <- glm(formula = TRIPS ~ 
+                ORIGIN_GRID_ID + 
+                DESTIN_GRID_ID + 
+                log(dist),
+              family = poisson(link = "log"),
+              data = flow_data1 %>% 
+                filter(!(ORIGIN_GRID_ID == 1004 & DESTIN_GRID_ID == 1108) &
+         !(ORIGIN_GRID_ID == 983 & DESTIN_GRID_ID == 939)),
+              na.action = na.exclude)
+
+
+```
+
+Write `dbcSM_remove` to local
+
+```{r}
+#| eval: false
+write_rds(dbcSIM_remove,
+          "data/rds/dbcSIM_remove.rds")
+```
+
+Read `dbcSIM_remove` back to R
+
+```{r}
+dbcSIM_remove <- read_rds('data/rds/dbcSIM_remove.rds')
+```
+
+::: panel-tabset
+#### New DBC R-squared
+
+As compared to the original model, removing the outliers improved the model R-squared value from 0.59 to 0.61.
+
+```{r}
+CalcRSquared(dbcSIM_remove$data$TRIPS, dbcSIM_remove$fitted.values)
+```
+
+#### New DBC Coefficients
+
+The coefficient of the distance variable is -1.59
+
+```{r}
+dbcSIM_remove$coefficients[1635]
+```
+
+#### New DBC Summary
+
+```{r}
+summary(dbcSIM_remove)
+```
+:::
+
+## Conclusion and limitations
+
+Four Spatial Interaction Models were built and compared to find out the important factors influencing the commuter flow in the Weekday Morning peak period. The R-squared values for the UNC, ORC, DEC and DBC models are 0.24, 0.38, 0.37 and 0.59 respectively. From the UNC and ORC models, the significant factors affecting commuter flow are distance (negative relationship), destination MRT station exits count and destination school count (in order of highest influence first). From the DEC model, the significant factors are distance and 5room flat dwellers count.
+
+When the outliers were removed, the R-squared value of the new DBC model increased to 0.61. Possible reason why the model could not predict flow of bus stops near Woodlands CheckPoint region could be that the number of people commuting between JB and SIngapore daily for work purpose is really too huge and concentrated over Woodlands. We are also lacking the work opportunities information in JB side for model to predict properly.
+
+**Limitations of this exercise would include:**
+
+1.  The Passenger Volume by Origin Destination Bus Stops data used do not included any transfer trip information. With our attractive and propulsive attributes, we can only assume that passengers take only 1 bus trip from source to their intended destination. With the inclusion of the MRT train station exits locations, we factor in the possibility of passenger commuting to MRT station for transfer.
+2.  The population density distribution of Residents could only be estimated from the *HDB.csv* and not directly taken from the *Resident Distribution by single age and subzone* dataset because we have reduced our basic spatial unit to 750m hexagons instead of subzone (to reduce social-economic and spatial aggregation errors). Now, each hexagon could have a mix of 7 subzones inside it, thus use of Resident Distribution by single age and subzone dataset is inappropriate (otherwise we could have achieved better results).
+
+![](images/mpsz%20and%20hex.png){fig-align="center" width="354"}
+
+## Acknowledgement
+
+I would like to extend my heartfelt gratitude to Prof Kam for being an exceptional instructor and mentor throughout all his courses that I have attended. His dedication, patience, and generosity in sharing knowledge have made a profound impact on my MITB journey. Thank you!
+
+## References
+
+Tin Seong Kam. "2 Choropleth Mapping with R" From **R for Geospatial Data Science and Analytics** <https://r4gdsa.netlify.app/chap02>
+
+Tin Seong Kam. "15 Processing and Visualszing Flow Data" From **R for Geospatial Data Science and Analytics** <https://r4gdsa.netlify.app/chap15>
+
+Tin Seong Kam. "In-Class Exercise 4: Preparing Spatial Interaction Modelling Variables" <https://isss624.netlify.app/in-class_ex/in-class_ex4/in-class_ex4-gds#data-integration-and-final-touch-up>
+
+```{r}
+#| eval: false
+#| echo: false
+#| code-fold: True
+#| fig-width: 14
+#| fig-asp: 0.68
+
+```
+
+### 

@@ -29,7 +29,7 @@ website:
           - text: "Take-home Exercise 1"
             href: "Take-home_Ex1/Take-home_Ex1.qmd"
           - text: "Take-home Exercise 2"
-            #href: "Take-home_Ex2/Take-home_Ex2.qmd"
+            href: "Take-home_Ex2/Take-home_Ex2.qmd"
  
             
       - text: "In-class Exercises"      
@@ -68,7 +68,7 @@ website:
       - section: "Take-home Exercise"
         contents:
           - Take-home_Ex1/Take-home_Ex1.qmd
-          #- Take-home_Ex2/Take-home_Ex2.qmd
+          - Take-home_Ex2/Take-home_Ex2.qmd
           
 
 format:
