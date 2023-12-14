@@ -41,7 +41,7 @@ For the purpose of this assignment, data from several open government sources wi
 
 ### **Specially collected data**
 
--   Businesses, retail and services, leisure and recreation, etc geospatial data sets assemble by course instructor. (Refer to eLearn)
+-   Businesses, retail and services, leisure and recreation, etc geospatial data sets assemble by course instructor.
 
 ## **The Task**
 
@@ -138,7 +138,7 @@ odbus_aug$DESTINATION_PT_CODE <- as.factor(odbus_aug$DESTINATION_PT_CODE)
 The function below will extract origin data based on the four time intervals required by the task. The expected arguments are
 
 1.  daytype: 'WEEKDAY' or 'WEEKENDS/HOLIDAY'
-2.  timeinterval: c(8,10) if we want data from 8am to 11am.
+2.  timeinterval: c(6,8) if we want data from 6am to 9am.
 
 The function will also compute the sum of all trips by 'ORIGIN_PT_CODE' for each time interval and stored under a new field called 'TRIPS'.
 
@@ -680,7 +680,7 @@ flowLine <- od2line(flow=flow_data1,
                     zone_code= 'grid_id')
 ```
 
-Perform a left join with od_data1 to get 'ORIGIN_DESC' and 'DESTIN_DESC' information appended into `flowLine` df. It will be useful for tooltip later when exploring our maps.
+Perform a left join with od_data1 to get \'ORIGIN_DESC\' and \'DESTIN_DESC\' information appended into `flowLine` df. It will be useful for tooltip later when exploring our maps.
 
 ```{r}
 #| eval: false
@@ -814,8 +814,6 @@ tm_shape(bs_count_filtered) +
   tm_layout(main.title = 'O-D Flow On Weekday Morning Peak hour' ,
             main.title.size = 1.0,
             main.title.fontface = 'bold')
-
-tmap_mode('plot')
 ```
 
 ### Interactive Flow Map 2
@@ -863,8 +861,6 @@ tm_shape(bs_count_filtered) +
   tm_layout(main.title = 'O-D Flow On Weekday Morning Peak hour' ,
             main.title.size = 1.0,
             main.title.fontface = 'bold')
-
-tmap_mode('plot')
 ```
 
 ### Interactive Flow Map 3
@@ -914,9 +910,6 @@ tm_shape(bs_count_filtered) +
   tm_layout(main.title = 'O-D Flow On Weekday Morning Peak hour' ,
             main.title.size = 1.0,
             main.title.fontface = 'bold')
-
-tmap_mode('plot')
-
 ```
 :::
 
@@ -1059,7 +1052,7 @@ tm_shape(bs_count[bs_count$preschool_ct >= 10,]) +
 
 #### **Geospatial dataset 3**
 
-We will import the *Business* shape file provided by Prof Kam. It is a POINT sf object containing information about business locations in Sinapore. This variable is potentially one of the attractiveness of our destinations because passengers could take bus to work during the morning peak period.
+We will import the *Business* shape file provided by Prof Kam. It is a POINT sf object containing information about business locations in Singapore. This variable is potentially one of the attractiveness of our destinations because passengers could take bus to work during the morning peak period.
 
 ```{r}
 business <- st_read(dsn='data/geospatial',
@@ -1107,7 +1100,7 @@ tm_shape(bs_count[bs_count$business_ct >= 50,]) +
 
 #### **Geospatial dataset 4**
 
-We will import the *FinServ* shape file provided by Prof Kam. It is a POINT sf object containing information about financial service locations (Banks / Money Changers) in Sinapore. This variable is potentially one of the attractiveness of our destinations because passengers could take bus to work during the morning peak period.
+We will import the *FinServ* shape file provided by Prof Kam. It is a POINT sf object containing information about financial service locations (Banks / Money Changers) in Singapore. This variable is potentially one of the attractiveness of our destinations because passengers could take bus to work during the morning peak period.
 
 ```{r}
 finserv <- st_read(dsn='data/geospatial',
@@ -1181,7 +1174,7 @@ sch <- read_csv('data/aspatial/allsch.csv')
 
 ##### **Geocoding the schools location**
 
-We will use the [OneMap API](https://www.onemap.gov.sg/apidocs/apidocs/#search) to retrieve the longtitude (X) and latitude (Y) coordinates using the 'POSTAL_CODE' field. First load the `httr` package which works in a TIDY manner.
+We will use the [OneMap API](https://www.onemap.gov.sg/apidocs/apidocs/#search) to retrieve the longitude (X) and latitude (Y) coordinates using the 'POSTAL_CODE' field. First load the `httr` package which works in a TIDY manner.
 
 ```{r}
 #| eval: false
@@ -1298,7 +1291,7 @@ We will now import the *hdb.csv* file provided by Prof Kam. The original source 
 
 The *hdb.csv* used in this exercise has been geocoded by Prof Kam. It contains information postal code and longitude/ latitude coordinates.
 
-We will not be using commerical HDB property, therefore we will remove non-residential rows. The number of rows reduced from 12,442 to to 10,181.
+We will not be using commercial HDB property, therefore we will remove non-residential rows. The number of rows reduced from 12,442 to to 10,181.
 
 The fields '*total_rental_ct*' refers to the estimated number of people who stay in rented apartments, 'total\_*n*room_ct' refers to the estimated number of people staying in n-room apartment and '*total_owner_ct*' refers to the estimated number of residents who stay in HDB property.
 
@@ -1528,7 +1521,7 @@ Basic data exploration of `flow_data1` df.
 ::: panel-tabset
 #### Distribution of TRIPS (Target variable)
 
-'TRIPS' are all postive values, its distribution is highly skewed to the right.
+'TRIPS' are all positive values, its distribution is highly skewed to the right.
 
 ```{r}
 #| fig-width: 14
@@ -2198,7 +2191,6 @@ tm_shape(bs_count_filtered) +
             main.title.size = 1.0,
             main.title.fontface = 'bold')
 unc
-
 tmap_mode('plot')
 ```
 
@@ -2437,9 +2429,9 @@ summary(dbcSIM_remove)
 
 Four Spatial Interaction Models were built and compared to find out the important factors influencing the commuter flow in the Weekday Morning peak period. The R-squared values for the UNC, ORC, DEC and DBC models are 0.24, 0.38, 0.37 and 0.59 respectively. From the UNC and ORC models, the significant factors affecting commuter flow are distance (negative relationship), destination MRT station exits count and destination school count (in order of highest influence first). From the DEC model, the significant factors are distance and 5room flat dwellers count.
 
-When the outliers were removed, the R-squared value of the new DBC model increased to 0.61. Possible reason why the model could not predict flow of bus stops near Woodlands CheckPoint region could be that the number of people commuting between JB and SIngapore daily for work purpose is really too huge and concentrated over Woodlands. We are also lacking the work opportunities information in JB side for model to predict properly.
+When the outliers were removed, the R-squared value of the new DBC model increased to 0.61. Possible reason why the model could not predict flow of bus stops near Woodlands Checkpoint region could be that the number of people commuting between JB and Singapore daily for work purpose is really too huge and concentrated over Woodlands. We are also lacking the work opportunities information in JB side for model to predict properly.
 
-With the models created, possible 'what-if' scenarios can be simulated; take for instance what if there are new MRT stations / development of a new residental town in the future? The models could predict new flows patterns and assist transport authority to plan ahead.
+With the models created, possible 'what-if' scenarios can be simulated; take for instance what if there are new MRT stations / development of a new residential town in the future? The models could predict new flows patterns and assist transport authority to plan ahead.
 
 **Limitations of this exercise would include:**
 
