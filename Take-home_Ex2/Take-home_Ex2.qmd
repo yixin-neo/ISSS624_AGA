@@ -680,7 +680,7 @@ flowLine <- od2line(flow=flow_data1,
                     zone_code= 'grid_id')
 ```
 
-Perform a left join with od_data1 to get 'dist' information appended into `flowLine` df.
+Perform a left join with od_data1 to get 'ORIGIN_DESC' and 'DESTIN_DESC' information appended into `flowLine` df. It will be useful for tooltip later when exploring our maps.
 
 ```{r}
 #| eval: false
@@ -734,18 +734,23 @@ In the next few tabs, we will perform further filtering on 'TRIPS' and 'dist' an
 #| code-fold: true
 tmap_mode('plot')
 
+filtered_flowLine <- flowLine %>%
+  filter(TRIPS >= 5000)
+
+bs_count_filtered <- bs_count %>%
+  filter(grid_id %in% c(filtered_flowLine$ORIGIN_GRID_ID, filtered_flowLine$DESTIN_GRID_ID))
+
 tm_shape(mpsz) +
-  tm_polygons(alpha=0.3) +
-tm_shape(bs_count) +
-  tm_polygons(alpha=0.3) +
-tm_shape(busstop_hex_geo) +
-  tm_dots(size= 0.005)+
-  flowLine %>%
-  filter(TRIPS >= 5000) %>% 
+  tm_polygons(alpha=0.3)+
+              #col='black') +
+#tm_shape(bs_count_filtered) +
+  #tm_polygons(alpha=0.3) +
+  
+  filtered_flowLine %>%
   tm_shape() +
   tm_lines(lwd = 'TRIPS',
            style = 'quantile',
-           scale= c(0.3, 3, 9, 15, 21, 30),
+           scale= c(1, 3, 9, 15, 21, 30),
            #scale= c(0.1, 1, 3, 5, 7, 10),
            n = 6,
            alpha= 0.3,
@@ -769,7 +774,7 @@ Findings:
 
 1\) The flows with the greatest volumes were located near the Woodlands Check Point area that transported commuters across the causeway.
 
-2\) Great volumes of flows were associated with *destinations* at bus or train stations, suggesting that passengers take bus for further transit. This gives us a hint that presence of bus interchange / train stations could be an important explanotory factors for 'TRIPS' in our Spatial Interaction Model later.
+2\) Great volumes of flows were associated with *destinations* at bus or train stations, suggesting that passengers take bus for further transit. This gives us a hint that presence of bus interchange / train stations could be an important explanatory factors for 'TRIPS' in our Spatial Interaction Model later.
 
 ```{r}
 #| fig-width: 14
@@ -778,26 +783,33 @@ Findings:
 tmap_mode('view')
 tmap_options(check.and.fix = TRUE)
 
+filtered_flowLine <- flowLine %>%
+  filter(TRIPS >= 15000)
+
+bs_count_filtered <- bs_count %>%
+  filter(grid_id %in% c(filtered_flowLine$ORIGIN_GRID_ID, filtered_flowLine$DESTIN_GRID_ID))
+
+
 tm_shape(mpsz) +
-  tm_polygons(alpha=0.3) +
-tm_shape(bs_count) +
-  tm_polygons(alpha=0.3) +
+  tm_polygons(alpha=0.7,
+              col='black') +
+tm_shape(bs_count_filtered) +
+  tm_polygons(alpha=0.4) +
 #tm_shape(busstop_hex_geo) +
   #tm_dots(size= 0.005)+
-  flowLine %>%
-  filter(TRIPS >= 15000) %>% 
+  filtered_flowLine %>%
   tm_shape() +
   tm_lines(lwd = 'TRIPS',
            style = 'quantile',
-           scale= c(0.3, 3, 9, 15, 21, 30),
+           scale= c(1, 3, 9, 15, 21, 30),
            #scale= c(0.1, 1, 3, 5, 7, 10),
            n = 6,
-           alpha= 0.3,
+           alpha= 0.5,
            popup.vars=c("# Trips:"="TRIPS",
                         "Orig Desc:"="ORIGIN_DESC",
                         "Destin Desc:" = "DESTIN_DESC",
                         "Distance:" = 'dist'),
-           col='blue') +
+           col='yellow') +
   tm_view(set.zoom.limits = c(11,17)) +
   tm_layout(main.title = 'O-D Flow On Weekday Morning Peak hour' ,
             main.title.size = 1.0,
@@ -808,7 +820,7 @@ tmap_mode('plot')
 
 ### Interactive Flow Map 2
 
-In order to investigate the long distance bus trips with considerable amount of trips volume, we have filtered and retain TRIPS \>= 5000 and distance \>= 13km. We noticed that these trips tend to connect passengers between the Northern parts of Singapore (Woodlands, Khatib and Yishun for instance) and the Eastern parts of Singapore (Tampanies, Seng Kang and Ponggol for instance). Taking a look at the Singapore MRT map, it would require passengers to use at least three different 'lines' in order for them to commute between Eastern and Northern Singapore; maybe this is why passengers prefer to take a direct bus instead.
+In order to investigate the long distance bus trips with considerable amount of trips volume, we have filtered and retain TRIPS \>= 5000 and distance \>= 13km. We noticed that these trips tend to connect passengers between the Northern parts of Singapore (Woodlands, Khatib and Yishun for instance) and the Eastern parts of Singapore (Tampanies, Seng Kang and Punggol for instance). Taking a look at the Singapore MRT map, it would require passengers to use at least three different 'lines' in order for them to commute between Eastern and Northern Singapore; maybe this is why passengers prefer to take a direct bus instead.
 
 ![](images/mrt%20map.png){fig-align="center" width="385"}
 
@@ -820,27 +832,33 @@ In order to investigate the long distance bus trips with considerable amount of 
 tmap_mode('view')
 tmap_options(check.and.fix = TRUE)
 
+filtered_flowLine <- flowLine %>%
+  filter(dist >= 13000,
+         TRIPS >= 5000)
+
+bs_count_filtered <- bs_count %>%
+  filter(grid_id %in% c(filtered_flowLine$ORIGIN_GRID_ID, filtered_flowLine$DESTIN_GRID_ID))
+
 tm_shape(mpsz) +
-  tm_polygons(alpha=0.3) +
-tm_shape(bs_count) +
-  tm_polygons(alpha=0.3) +
+  tm_polygons(alpha=0.7,
+              col='black') +
+tm_shape(bs_count_filtered) +
+  tm_polygons(alpha=0.4) +
 #tm_shape(busstop_hex_geo) +
   #tm_dots(size= 0.005)+
-  flowLine %>%
-  filter(dist >= 13000,
-         TRIPS >= 5000) %>% 
+  filtered_flowLine %>%
   tm_shape() +
   tm_lines(lwd = 'TRIPS',
            style = 'quantile',
-           scale= c(0.3, 3, 9, 15, 21, 30),
+           scale= c(1, 3, 9, 15, 21, 30),
            #scale= c(0.1, 1, 3, 5, 7, 10),
            n = 6,
-           alpha= 0.3,
+           alpha= 0.5,
            popup.vars=c("# Trips:"="TRIPS",
                         "Orig Desc:"="ORIGIN_DESC",
                         "Destin Desc:" = "DESTIN_DESC",
                         "Distance:" = 'dist'),
-           col='blue') +
+           col='yellow') +
   tm_view(set.zoom.limits = c(11,17)) +
   tm_layout(main.title = 'O-D Flow On Weekday Morning Peak hour' ,
             main.title.size = 1.0,
@@ -851,7 +869,7 @@ tmap_mode('plot')
 
 ### Interactive Flow Map 3
 
-For our curiousity of the longest bus route, we filter all trips with distances \>= 23 km irregardless of trips volume.
+For our curiosity of the longest bus route, we filter all trips with distances \>= 23 km irregardless of trips volume.
 
 Some passengers were willing to take bus between Changi Airport and Woodlands Checkpoint and also between Bedok and Boon Lay.
 
@@ -865,26 +883,33 @@ Zoom in and click on the flowlines for details on trip volume, distance and bus 
 tmap_mode('view')
 tmap_options(check.and.fix = TRUE)
 
+
+filtered_flowLine <- flowLine %>%
+  filter(dist >= 23000)
+
+bs_count_filtered <- bs_count %>%
+  filter(grid_id %in% c(filtered_flowLine$ORIGIN_GRID_ID, filtered_flowLine$DESTIN_GRID_ID))
+
 tm_shape(mpsz) +
-  tm_polygons(alpha=0.3) +
-tm_shape(bs_count) +
-  tm_polygons(alpha=0.3) +
+  tm_polygons(alpha=0.7,
+              col='black') +
+tm_shape(bs_count_filtered) +
+  tm_polygons(alpha=0.4) +
 #tm_shape(busstop_hex_geo) +
   #tm_dots(size= 0.005)+
-  flowLine %>%
-  filter(dist >= 23000) %>% 
+  filtered_flowLine %>%
   tm_shape() +
   tm_lines(lwd = 'TRIPS',
            style = 'quantile',
-           scale= c(0.3, 3, 9, 15, 21, 30),
+           scale= c(1, 3, 9, 15, 21, 30),
            #scale= c(0.1, 1, 3, 5, 7, 10),
            n = 6,
-           alpha= 0.3,
+           alpha= 0.5,
            popup.vars=c("# Trips:"="TRIPS",
                         "Orig Desc:"="ORIGIN_DESC",
                         "Destin Desc:" = "DESTIN_DESC",
                         "Distance:" = 'dist'),
-           col='blue') +
+           col='yellow') +
   tm_view(set.zoom.limits = c(11,17)) +
   tm_layout(main.title = 'O-D Flow On Weekday Morning Peak hour' ,
             main.title.size = 1.0,
@@ -1417,7 +1442,7 @@ tm_shape(bs_count) +
   tm_scale_bar()
 ```
 
-This rough estimation of the population density of residents staying in HDB (until June 2023) is acceptable because according to [Singapore Census of Population 2020](https://www.singstat.gov.sg/publications/reference/cop2020/cop2020-sr1), the top four planning areas with more than 250,000 residents are Bedok, Jurong West, Tampanies and Woodlands. (see chart below). The level of intensity of the map above looks similar to the intensity of the map below, with the exception of the North_east area. The North-East region with planning areas like Ponggol and Seng Kang are newer estates that are probably not captured in 2020 census.
+This rough estimation of the population density of residents staying in HDB (until June 2023) is acceptable because according to [Singapore Census of Population 2020](https://www.singstat.gov.sg/publications/reference/cop2020/cop2020-sr1), the top four planning areas with more than 250,000 residents are Bedok, Jurong West, Tampanies and Woodlands. (see chart below). The level of intensity of the map above looks similar to the intensity of the map below, with the exception of the North_east area. The North-East region with planning areas like Punggol and Seng Kang are newer estates that are probably not captured in 2020 census.
 
 ![](images/census%202020%20pop%20den.png){fig-align="center" width="565"}
 
@@ -2118,7 +2143,7 @@ Woodlands Train to Woodlands Checkpoint
 
 Flow from Boon Lay MRT to Pioneer MRT station is badly over-predicted in our best model but predicted rather well in all the other 3 models.
 
-Flows from residential Woodlands/ Ponggol to Woodlands Bus interchange. Ponggol station are also badly over-predicted in our best model but predicted rather well in all the other 3 models.
+Flows from residential Woodlands/ Punggol to Woodlands Bus interchange. Punggol station are also badly over-predicted in our best model but predicted rather well in all the other 3 models.
 
 ### Visualising the predicted errors flows
 
@@ -2140,13 +2165,18 @@ Red-yellowish lines represents under-predicted flows while blue lines represents
 tmap_mode('view')
 tmap_options(check.and.fix = TRUE)
 
+filtered_flowLine <- flowLine2 %>%
+  filter(uncRES >=10000 | uncRES <= -30000)
+
+bs_count_filtered <- bs_count %>%
+  filter(grid_id %in% c(filtered_flowLine$ORIGIN_GRID_ID, filtered_flowLine$DESTIN_GRID_ID))
+
 unc <- tm_shape(mpsz) +
   tm_polygons(alpha=0.3,
               col='black') +
-tm_shape(bs_count) +
+tm_shape(bs_count_filtered) +
   tm_polygons(alpha=0.3) +
-  flowLine2 %>%
-  filter(uncRES >=10000 | uncRES <= -30000) %>% 
+  filtered_flowLine %>%
   tm_shape() +
   tm_lines(col = 'uncRES',
            lwd = 5,
@@ -2182,13 +2212,18 @@ tmap_mode('plot')
 tmap_mode('view')
 tmap_options(check.and.fix = TRUE)
 
+filtered_flowLine <- flowLine2 %>%
+  filter(orcRES >=10000 | orcRES <= -30000)
+
+bs_count_filtered <- bs_count %>%
+  filter(grid_id %in% c(filtered_flowLine$ORIGIN_GRID_ID, filtered_flowLine$DESTIN_GRID_ID))
+
 orc<- tm_shape(mpsz) +
   tm_polygons(alpha=0.3,
               col='black') +
-tm_shape(bs_count) +
+tm_shape(bs_count_filtered) +
   tm_polygons(alpha=0.3) +
-  flowLine2 %>%
-  filter(orcRES >=10000 | orcRES <= -30000) %>% 
+  filtered_flowLine %>%
   tm_shape() +
   tm_lines(col = 'orcRES',
            lwd = 5,
@@ -2225,13 +2260,18 @@ tmap_mode('plot')
 tmap_mode('view')
 tmap_options(check.and.fix = TRUE)
 
+filtered_flowLine <- flowLine2 %>%
+  filter(decRES >=10000 | decRES <= -30000)
+
+bs_count_filtered <- bs_count %>%
+  filter(grid_id %in% c(filtered_flowLine$ORIGIN_GRID_ID, filtered_flowLine$DESTIN_GRID_ID))
+
 dec <- tm_shape(mpsz) +
   tm_polygons(alpha=0.3,
               col='black') +
-tm_shape(bs_count) +
+tm_shape(bs_count_filtered) +
   tm_polygons(alpha=0.3,) +
-  flowLine2 %>%
-  filter(decRES >=10000 | decRES <= -30000) %>% 
+  filtered_flowLine %>%
   tm_shape() +
   tm_lines(col = 'decRES',
            lwd = 5,
@@ -2267,13 +2307,18 @@ tmap_mode('plot')
 tmap_mode('view')
 tmap_options(check.and.fix = TRUE)
 
+filtered_flowLine <- flowLine2 %>%
+  filter(dbcRES >=10000 | dbcRES <= -30000)
+
+bs_count_filtered <- bs_count %>%
+  filter(grid_id %in% c(filtered_flowLine$ORIGIN_GRID_ID, filtered_flowLine$DESTIN_GRID_ID))
+
 dbc<- tm_shape(mpsz) +
   tm_polygons(alpha=0.3,
               col='black') +
-tm_shape(bs_count) +
+tm_shape(bs_count_filtered) +
   tm_polygons(alpha=0.3) +
-  flowLine2 %>%
-  filter(dbcRES >=10000 | dbcRES <= -30000) %>% 
+  filtered_flowLine %>%
   tm_shape() +
   tm_lines(col = 'dbcRES',
            lwd = 5,
