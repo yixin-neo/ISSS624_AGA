@@ -1,5 +1,5 @@
 ---
-title: "In-class Exercise 5:"
+title: "In-class Exercise 5: Spatial Econometric Interaction Models"
 author: "NeoYX"
 date: '16 Dec 2023'
 date-modified: "`r Sys.Date()`"
@@ -17,8 +17,269 @@ format:
     code-line-numbers: true
 ---
 
+The main new package used today will be [`spflow`](https://lukece.github.io/spflow/). It is recently developed as a software tool in 2021.
+
 ```{r}
-#pacman::p_load(sf, tmap, tidyverse)
+#devtools::install_github('LukeCe/spflow')
+```
+
+```{r}
+pacman::p_load(sf, tmap, spdep, sp, Matrix, spflow, reshape2, knitr, tidyverse)
+```
+
+## Data Preparation
+
+We need three datasets, namely:
+
+-   a spatial weights,
+
+-   a tibble data frame consists of the origins, dest, flows and distances between the origins and destination, and
+
+-   a tibble dataframe that consists of the explanatory variables.
+
+```{r}
+#| eval: false
+#| echo: false
+
+# Building the geographical area
+
+#The URA master planning 2019 planning subzone GIS data will be used.
+
+mpsz <- st_read(dsn='data/geospatial',
+                layer = 'MPSZ-2019') %>% 
+  st_transform(crs = 3414)
+
+busstop <- st_read(dsn="data/geospatial/BusStopLocation/BusStopLocation_Jul2023", layer = "BusStop") %>% 
+  st_transform(crs = 3414)
+```
+
+```{r}
+#| eval: false
+#| echo: false
+mpsz$BUSSTOP_COUNT <- lengths(
+  st_intersects(
+  mpsz, busstop))
+```
+
+```{r}
+#| eval: false
+#| echo: false
+
+# new method to derive centroid points
+centroids <- suppressWarnings({
+  st_point_on_surface(st_geometry(mpsz_busstops))
+})
+```
+
+```{r}
+#| echo: false
+#| eval: false
+# Compute the three different methods, use a list to store three objects all at one go.
+mpsz_nb <- list(
+  'by_contiguity' = poly2nb(mpsz_busstop),
+  'by_distance' = dnearniegh(centroids,
+                             d1= 0, d2 = 5000),
+  'by_knn' = knn2nb(knearneigh(centroids,3))
+)
+```
+
+**Key differences in data preparation:**
+
+-   In spatial economics model, we do not need to remove the intra-zonal trips because the model can account for it.
+
+-   Do not need to explicitly label an attribute as an origin or destination variable when using the `spflow` package.
+
+### Load our rds data into R:
+
+`mpsz_flow`: i-j pairs, distance and trips (used to create `spflow_network_pair)`
+
+`mpsz_nb`: neighbours weights (used to create `spflow_network-class)`
+
+`mpsz_var`: attributes (used to create `spflow_network-class)`
+
+```{r}
+mpsz_nb<- read_rds('data/rds/mpsz_nb.rds')
+mpsz_flow<- read_rds('data/rds/mpsz_flow.rds')
+mpsz_var<- read_rds('data/rds/mpsz_var.rds')
+```
+
+### Creating `spflow_network-class` objects. 
+
+It is a S4 class that contains all information on a spatial network which is composed by a set of nodes that are linked by some neighbourhood relation. We need **neighbour list** and **attributes**.
+
+\*Note that we should not use 'fixed distance' nb method here as there was a subzone without a neighbour during data preparation just now.
+
+```{r}
+mpsz_net <- spflow_network(
+  id_net = 'sg',  # give it an id
+  node_neighborhood = 
+    nb2mat(mpsz_nb$by_contiguity),
+  node_data = mpsz_var,
+  node_key_column = 'SZ_CODE')
+```
+
+New to this package, explore the structure of our new object class.
+
+```{r}
+str(mpsz_net)
+#mpsz_net@node_neighborhood
+```
+
+### Create `spflow_network_pair()` data
+
+It will contain origin and destination subzones, distance and trips (flow).
+
+```{r}
+mpsz_net_pairs <- spflow_network_pair(
+  id_orig_net = 'sg',
+  id_dest_net = 'sg',
+  pair_data = mpsz_flow,
+  orig_key_column = 'ORIGIN_SZ',
+  dest_key_column = 'DESTIN_SZ')
+```
+
+### Combine first two objects together to get `spflow_network_multi()`.
+
+Careful: Do not reverse the order of mpsz_net and mpsz_net_pairs. Follow the syntax carefully.
+
+```{r}
+mpsz_multi_net <- spflow_network_multi(mpsz_net, 
+                                       mpsz_net_pairs)
+
+```
+
+## Correlation Anaylsis
+
+Check for Multi-collinearity to avoid including explanatory var that are highly correlated, using `spflow` package:
+
+-   [`pair_cor`](https://lukece.github.io/spflow/reference/pair_cor.html)`()` to create a correlation matrix, and
+
+-   [`cor_image`](https://lukece.github.io/spflow/reference/cor_image.html)`()` to plot the correlation matrix as a correlogram.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+
+# run all to test
+cor_formula <- log(1+ TRIPS) ~ # 1 is to avoid log 0
+  BUSSTOP_COUNT +
+  AGE7_12+ 
+  AGE13_24 +
+  AGE25_64 +
+  SCHOOL_COUNT +
+  BUSINESS_COUNT +
+  RETAILS_COUNT +
+  FINSERV_COUNT +
+  P_(log(DISTANCE + 1))  # impedence/ resistance/ cost
+
+
+cor_mat <- pair_cor(
+  mpsz_multi_net,
+  #id_net_pair = id(object)[["pairs"]][[1]],
+  spflow_formula = cor_formula,
+  add_lags_x = FALSE,
+  #add_lags_y = FALSE
+)
+
+colnames(cor_mat) <- paste0(
+  substr(
+    colnames(cor_mat),1,3), '...')
+
+cor_image(cor_mat)
+```
+
+Observed that most of the age groups are highly correlated, two choices:
+
+-   aggregate all the age groups
+
+-   exclude some age group
+
+## Model Calibration
+
+Three [`spflow`](https://lukece.github.io/spflow/reference/spflow.html)`()` models available, check documentation.
+
+-   maximum likelihood (MLE) \<- this is the default.
+
+-   Tailspin two stafe least sqaure (S2SLS)
+
+-   Bayes Markov chain monte carlo (MCMC)
+
+`O_(X1) + D_(X2) + I_(X3) + P_(X4)`
+
+I refers to intra-zonal -flow, P is impedence
+
+This model goes beyong spatial interaction model by telling us whether one's neighbours' variable values are statistically significant and their coefficients.
+
+```{r}
+base_model <- spflow(
+  spflow_formula = log(1 + TRIPS) ~
+    O_(BUSSTOP_COUNT+
+         AGE25_64) +
+    D_(SCHOOL_COUNT +
+         BUSINESS_COUNT +
+         RETAILS_COUNT +
+         FINSERV_COUNT) +
+    P_(log(DISTANCE + 1)),
+  spflow_networks = mpsz_multi_net)
+
+base_model
+```
+
+'*rho_d*': destination constrain
+
+'*rho_w*': intra_zonal constrain
+
+'*D_SCHOOL_COUNT*' : the coefficient of school count at that subzone (statisically significant)
+
+'*D_SCHOOL_COUNT.lag1*' : coefficient of neighbouring schools (NOT significant)
+
+Retail count is not a good explanatory variable as well.
+Financial service count is a good explanatory variable.
+
+### 
+Moran scatterplot (wrapper of spdep) of residuals
+
+**If points are closer to zero line, less chance of autocorrelation.**
+
+```{r}
+old_par <- par(mfrow = c(1,3),
+               mar = c(2,2,2,2))
+spflow_moran_plots(base_model)
+par(old_par)
+```
+
+Next, `pair_cor()` can be used to inspect the relationship of the **residual** and the **explanatory variables** by using the code chunk below.
+
+```{r}
+corr_residual <- pair_cor(base_model) # this time round input the fitted model into pair_cor() to see residuals in cor plot
+colnames(corr_residual) <- substr(colnames(corr_residual),1,3)
+cor_image(corr_residual)
+```
+
+## 
+Working with model control
+
+```{r}
+spflow_formula<- log(1 + TRIPS) ~
+    O_(BUSSTOP_COUNT+
+         AGE25_64) +
+    D_(SCHOOL_COUNT +
+         BUSINESS_COUNT +
+         RETAILS_COUNT +
+         FINSERV_COUNT) +
+    P_(log(DISTANCE + 1))
+
+model_control <- spflow_control(
+  estimation_method = "mle",
+  model = 'model_1') # there are many models to choose from, check lecture notes.
+#model_8 will take special care of intra-zonal trips! our model has larger intra-zonal trips
+
+mle_model1 <- spflow(
+  spflow_formula,
+  spflow_networks = mpsz_multi_net,
+  estimation_control = model_control)
+
+mle_model1
 ```
 
 ```{r}
