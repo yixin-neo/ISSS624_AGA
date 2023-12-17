@@ -2350,7 +2350,7 @@ Flows from residential Woodlands/ Punggol to Woodlands Bus interchange. Punggol 
 
 Only flows with under-predicted values of more than 30,000 and over-predicted values of above 10,000 are visualised on the maps.
 
-Red-yellowish lines represents under-predicted flows while blue lines represents over-predicted flows.
+Shades of Blue lines represents under-predicted flows while shades of red lines represents over-predicted flows.
 
 **Map Tips:** Clicking on a flow line will reveal tooltip containing predicted trips, residuals, origin/destination bus stop descriptions and the distance of the route.
 
