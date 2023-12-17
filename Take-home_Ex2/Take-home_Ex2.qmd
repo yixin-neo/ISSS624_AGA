@@ -186,7 +186,7 @@ busstop
 
 **Are there any duplicates in 'BUS_STOP_N' in busstop?**
 
-Checking for duplicates in the 'BUS_STOP_N' field reveals that there are about 16 repeated bus stop numbers. Note that they have different geometry points in the simple feature busstop object above. These could be due to temprorary bus stops . We should remove these duplicated bus stops number or else it will give us problems when we try to map these bus stops to a grid_id in the Traffic Analysis Zone (TAZ).
+Checking for duplicates in the 'BUS_STOP_N' field reveals that there are about 16 repeated bus stop numbers. Note that they have different geometry points in the simple feature busstop object above. These could be due to temporary bus stops . We should remove these duplicated bus stops number or else it will give us problems when we try to map these bus stops to a grid_id in the Traffic Analysis Zone (TAZ).
 
 ```{r}
 busstop %>% 
@@ -224,6 +224,60 @@ busstop %>%
   filter(n()>1) %>%
   ungroup() %>% 
   arrange(BUS_STOP_N)
+```
+
+Further works in this exercise led me to realise that the YISHUN bus interchange is missing from the bus stop location shapefile. It has a postal code of 769100 and using the onemap geocoding function (describe in later section) will give us its SVY21 coordinates of 28314.3933093864, 45511.7310683895. The 'BUS_STOP_N' of Yishun Bus interchange is 59009. We will manually add them into the `busstop` df.
+
+```{r}
+#| eval: false
+#| echo: false
+library('httr')
+yishun <- data.frame(
+  LOC_DESC = 'YISHUN INT',
+  postal_code = 769100)
+
+
+url <- 'https://www.onemap.gov.sg/api/common/elastic/search'
+
+postcodes <- yishun$`postal_code`
+
+
+found <- data.frame()
+not_found <- data.frame()
+
+
+for(postcode in postcodes) {
+  query <- list('searchVal' = postcode, 'returnGeom' = 'Y', 'getAddrDetails' = 'Y', 'pageNum' = '1')
+  res <- GET(url, query=query)
+
+  
+  if((content(res)$found)!=0){
+    found<-rbind(found, data.frame(content(res))[4:13])
+  } else{
+    not_found = data.frame(postcode)
+  }
+}
+```
+
+The point in black is to be added
+
+![](images/yishun%20point.png){fig-align="center" width="408"}
+
+**Adding geometry of Yishun Bus Interchange into `busstop` sf object.**
+
+The code chunk below first creates a sf object containing only SVY21 geometry of the Yishun interchange. Next, it appends into the `busstop` df.
+
+```{r}
+yishun <- data.frame(
+  BUS_STOP_N = 59009,
+  BUS_ROOF_N = NA, 
+  LOC_DESC = 'YISHUN INT',
+  geometry = st_sfc(st_point(c(28314.3933093864,45511.7310683895))))
+
+
+yishun_sf <- st_sf(yishun, crs = 3414)
+
+busstop <- rbind(busstop, yishun_sf)
 ```
 
 **Import the *MPSZ-2019* data**.
@@ -309,13 +363,13 @@ The code chunk below performs points and hexagon polygon overlap using [st_inter
 
 [Before overlapping:]{.underline}
 
-`busstop` : 5145 points
+`busstop` : 5146 points
 
 `bs_count` hexagon base layer: 834 hexagons
 
 [After overlapping:]{.underline}
 
-`busstop_hex` : 5145 points suggesting all bus stops falls within at least one hexagon grid. This is good result because we are not losing any bus stops.
+`busstop_hex` : 5165 points suggesting all bus stops falls within at least one hexagon grid. This is good result because we are not losing any bus stops.
 
 ```{r}
 busstop_hex <- st_intersection(busstop, bs_count) %>% 
@@ -436,6 +490,8 @@ The code chunk below will do the following:
 1.  There are missing grid_ids for some of the origin and destination bus stop because the *Bus Stops Location* data uploaded by LTA in July 2023 could be more outdated than *Passenger Volume by Origin Destination Bus Stops data* collected in August 2023. We will drop rows with missing values.
 
 2.  Group-by 'ORIGIN_GRID_ID' and 'DESTIN_GRID_ID' to generate a new field 'MORNING_PEAK' that contains the summation of all trips between each pair of i,j hexagons. (i denotes origin and j denotes destination)
+
+3.  `od_data` finally has 62,807 rows.
 
 ```{r}
 od_data <- od_data %>%
@@ -565,7 +621,7 @@ glimpse(distPair)
 
 In this section, our desired output is a dataframe containing number of TRIPS and distance for each origin and destination grid id.
 
-Let us rename the `od_data` to call it `flow_data` df.
+Let us rename the `od_data` to call it `flow_data` df. `flow_data` has 62,807 rows.
 
 ```{r}
 flow_data <- od_data %>%
@@ -592,7 +648,7 @@ flow_data$offset <- ifelse(
   0.000001, 1)
 ```
 
-Filter to keep only inter-zonal trips, removing the intra-zonal trips. After filtering, the number of rows reduced from 62, 741 to 62,120 rows.
+Filter to keep only inter-zonal trips, removing the intra-zonal trips. After filtering, the number of rows reduced from 62,807 to 62,186 rows.
 
 ```{r}
 inter_zonal_flow <- flow_data %>% 
@@ -630,13 +686,13 @@ The output `flow_data_1` contains **distance** and **total morning peak trips** 
 
 **Before left join:**
 
-`inter_zonal_flow` has 62,741 rows.
+`inter_zonal_flow` has 62,186 rows.
 
 `distPair` has 695,556 rows (is the all possible pairs out of 834 hex grid_ids, order matters and with replacement.)
 
 **After join:**
 
-`flow_data1` has 62,741 rows.
+`flow_data1` has 62,186 rows.
 
 `inter_zonal_flow` has no distance data. `flow_data1` has distance data.
 
@@ -661,7 +717,7 @@ head(flow_data1) %>% knitr::kable()
 
 We will not plot the intra-zonal flows. The code chunk below will be used to remove intra-zonal flows. It does so by removing the flows that originate and ends in the same subzone.
 
-Rows reduced from 62,685 to 62,079.
+Rows reduced from 62,807 to 62,186.
 
 ```{r}
 od_data1 <- od_data[od_data$ORIGIN_GRID_ID!=od_data$DESTIN_GRID_ID,]
@@ -680,7 +736,7 @@ flowLine <- od2line(flow=flow_data1,
                     zone_code= 'grid_id')
 ```
 
-Perform a left join with od_data1 to get \'ORIGIN_DESC\' and \'DESTIN_DESC\' information appended into `flowLine` df. It will be useful for tooltip later when exploring our maps.
+Perform a left join with od_data1 to get 'ORIGIN_DESC' and 'DESTIN_DESC' information appended into `flowLine` df. It will be useful for tooltip later when exploring our maps.
 
 ```{r}
 #| eval: false
@@ -801,7 +857,8 @@ tm_shape(bs_count_filtered) +
   tm_shape() +
   tm_lines(lwd = 'TRIPS',
            style = 'quantile',
-           scale= c(1, 3, 9, 15, 21, 30),
+           scale=c(4,5,6,7,8,9),
+           #scale= c(1, 3, 9, 15, 21, 30),
            #scale= c(0.1, 1, 3, 5, 7, 10),
            n = 6,
            alpha= 0.5,
@@ -848,7 +905,8 @@ tm_shape(bs_count_filtered) +
   tm_shape() +
   tm_lines(lwd = 'TRIPS',
            style = 'quantile',
-           scale= c(1, 3, 9, 15, 21, 30),
+           scale=c(4,5,6,7,8,9),
+           #scale= c(1, 3, 9, 15, 21, 30),
            #scale= c(0.1, 1, 3, 5, 7, 10),
            n = 6,
            alpha= 0.5,
@@ -897,7 +955,8 @@ tm_shape(bs_count_filtered) +
   tm_shape() +
   tm_lines(lwd = 'TRIPS',
            style = 'quantile',
-           scale= c(1, 3, 9, 15, 21, 30),
+           scale=c(4,5,6,7,8,9),
+           #scale= c(1, 3, 9, 15, 21, 30),
            #scale= c(0.1, 1, 3, 5, 7, 10),
            n = 6,
            alpha= 0.5,
@@ -1068,7 +1127,7 @@ Count the number of businesses within each hexagon and then also, assign 'grid_i
 bs_count$business_ct = lengths(st_intersects(bs_count,business))
 ```
 
-Let us take a look at the business locations (denoted by the black dots). The red hexagons highlights the grids with more than 50 business POI.
+Let us take a look at the business locations (denoted by the black dots). The red hexagons highlights the grids with more than 50 business POI. We observe that business locations are more concentrated on the Southern parts of Singapore.
 
 ```{r}
 #| fig-width: 14
@@ -1116,7 +1175,7 @@ Count the number of financial service points within each hexagon and then also, 
 bs_count$finserv_ct = lengths(st_intersects(bs_count,finserv))
 ```
 
-Let us take a look at the financial services locations (denoted by the black dots). The red hexagons highlights the grids with more than 50 financial services points.
+Let us take a look at the financial services locations (denoted by the black dots). The red hexagons highlights the grids with more than 50 financial services points. The financial services are most concentrated at the CBD district.
 
 ```{r}
 #| fig-width: 14
@@ -1625,8 +1684,35 @@ For modelling the **weekday morning** peak passenger flow , we have the followin
 
 **Attractive:** 'DESTIN_TRAIN_EXIT_CT', 'DESTIN_PRESCHOOL_CT', 'DESTIN_BUSINESS_CT', 'DESTIN_FINSERV_CT', 'DESTIN_SCH_CT'
 
+Before we proceed with regression methods, lets us check for multi-collinearity for all our continuous variables.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+cor_matrix <- cor(flow_data1[, c("TRIPS","ORIGIN_TRAIN_EXIT_CT", "ORIGIN_PRESCHOOL_CT","ORIGIN_BUSINESS_CT","ORIGIN_FINSERV_CT","ORIGIN_SCH_CT","ORIGIN_RENTAL_CT","ORIGIN_1ROOM_CT","ORIGIN_2ROOM_CT","ORIGIN_3ROOM_CT","ORIGIN_4ROOM_CT","ORIGIN_5ROOM_CT","ORIGIN_EXEC_CT","ORIGIN_MULTI_CT","ORIGIN_STUDIO_CT","ORIGIN_OWNER_CT", "DESTIN_TRAIN_EXIT_CT","DESTIN_PRESCHOOL_CT","DESTIN_BUSINESS_CT","DESTIN_FINSERV_CT","DESTIN_SCH_CT","DESTIN_RENTAL_CT","DESTIN_1ROOM_CT","DESTIN_2ROOM_CT","DESTIN_3ROOM_CT","DESTIN_4ROOM_CT","DESTIN_5ROOM_CT","DESTIN_EXEC_CT","DESTIN_MULTI_CT","DESTIN_STUDIO_CT","DESTIN_OWNER_CT")])
+
+# creating correlation matrix
+cor_matrix <- round(cor_matrix,2)
+ 
+# reduce the size of correlation matrix
+melted_corr_matrix <- melt(cor_matrix)
+head(melted_corr_matrix)
+ 
+# plotting the correlation heatmap
+ggplot(data = melted_corr_matrix, aes(x=Var1, y=Var2, 
+                                   fill=value)) + 
+geom_tile() +
+geom_text(aes(Var2, Var1, label = value), 
+          color = "black", size = 2.5) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+The correlation heatmap shows that the origin and destination variable 'OWNER_CT' is highly corrrelated with '4ROOM_CT' and '5ROOM_CT'. For the subsequent regression methods, we will input either 'OWNER_CT' or '4ROOM_CT' and '5ROOM_CT' variables and use the variabels that give us the better result.
+
 ::: panel-tabset
 ### Unconstrained SIM
+
+The final variables selected here are based on a series of trials and errors; they are statistically significant and would produce the best R-squared results. It turned out that using 'ORIGIN_4ROOM_CT' and 'ORIGIN_5ROOM_CT' produce better results than 'ORIGIN_OWNER_CT'.
 
 ```{r}
 #| eval: false
@@ -1668,6 +1754,8 @@ uncSIM <- glm(formula = TRIPS ~
 ```
 
 ### Origin Constrained SIM
+
+The final variables selected here are based on a series of trials and errors; they are statistically significant and would produce the best R-squared results.
 
 ```{r}
 #| eval:  false
@@ -1762,7 +1850,7 @@ dbcSIM<- read_rds("data/rds/dbcSIM.rds")
 ::: panel-tabset
 #### Unconstrained R-squared
 
-The R-squared value of 0.24 tells us that the explanatory variables are able to explain 24% of the variance in the TRIPS target variable.
+The R-squared value of 0.25 tells us that the explanatory variables are able to explain 25% of the variance in the TRIPS target variable.
 
 ```{r}
 CalcRSquared <- function(observed,estimated){
@@ -1774,12 +1862,28 @@ CalcRSquared <- function(observed,estimated){
 CalcRSquared(uncSIM$data$TRIPS, uncSIM$fitted.values)
 ```
 
+Adjusted R-squared. As we increase the number of predictors, the R-square value naturally increases. Thus let us compare the adjusted R-square values instead. To do so, we write custom function:
+
+![](images/Adj%20R%20squared%20formula.png){fig-align="center" width="212"}
+
+```{r}
+Calc_AdjRSquared <- function(rsquared, n, p) {
+  result <- 1 - (1 - rsquared) * (n - 1) / (n - p - 1)
+  return(result)
+}
+
+Calc_AdjRSquared(CalcRSquared(uncSIM$data$TRIPS, uncSIM$fitted.values),
+                 length(uncSIM$data$TRIPS),
+                 length(uncSIM$coefficients)-1)
+```
+
 #### Unconstrained Coefficients
 
-All the coefficients are statistically significant (refer to next tab). The most influential explanatory variables are *distance*, *destination train exit count* and *destination school count* with coefficients of -1.43, 0.45 and 0.29 respectively.
+All the coefficients are statistically significant (refer to next tab). The most influential explanatory variables are *distance*, *destination train exit count* and *destination school count* with coefficients of -1.42, 0.44 and 0.28 respectively. This result is not surprising given the passengers would take bus to MRT stations or schools between 6am-9am on weekdays.
 
 ```{r}
 uncSIM$coefficients
+length(uncSIM$coefficients)-1
 ```
 
 #### Unconstrained Summary
@@ -1794,15 +1898,23 @@ summary(uncSIM)
 ::: panel-tabset
 #### Origin Constrained R-squared
 
-The R-squared value of 0.38 tells us that the explanatory variables are able to explain 38 % of the variance in the TRIPS target variable.
+The R-squared value of 0.38 tells us that the explanatory variables are able to explain 38 % of the variance in the TRIPS target variable. It has higher R-squared value than the unconstrained model because it has additional 'knowledge' of the origin population data.
 
 ```{r}
 CalcRSquared(orcSIM$data$TRIPS, orcSIM$fitted.values)
 ```
 
+Adjusted R-squared
+
+```{r}
+Calc_AdjRSquared(CalcRSquared(orcSIM$data$TRIPS, orcSIM$fitted.values),
+                 length(orcSIM$data$TRIPS),
+                 length(orcSIM$coefficients)-1)
+```
+
 #### Origin Constrained Coefficients
 
-All the coefficients are statistically significant (refer to next tab). The most influential explanatory variables are *distance*, *destination train exit count* and *destination school count* with coefficients of -1.51, 0.49 and 0.29 respectively.
+All the coefficients are statistically significant (refer to next tab). The most influential explanatory variables are *distance*, *destination train exit count* and *destination school count* with coefficients of -1.50, 0.49 and 0.28 respectively. This result is consistent with unconstrained model.
 
 ```{r}
 orcSIM$coefficients[818:823]
@@ -1826,11 +1938,19 @@ The R-squared value of 0.37 tells us that the explanatory variables are able to 
 CalcRSquared(decSIM$data$TRIPS, decSIM$fitted.values)
 ```
 
+Adjusted_squared
+
+```{r}
+Calc_AdjRSquared(CalcRSquared(decSIM$data$TRIPS, decSIM$fitted.values),
+                 length(decSIM$data$TRIPS),
+                 length(decSIM$coefficients)-1)
+```
+
 #### Destination Constrained Coefficients
 
 All the coefficients are statistically significant (refer to next tab).
 
-The most influential explanatory variables are *distance*, *origin 5 room count* and *origin exec count* count with coefficients of -1.42, 0.09 and 0.05 respectively.
+The most influential explanatory variables are *distance*, *origin 5 room count* and *origin exec count* count with coefficients of -1.42, 0.09 and 0.04 respectively.
 
 ```{r}
 decSIM$coefficients[819:828]
@@ -1848,15 +1968,23 @@ summary(decSIM)
 ::: panel-tabset
 #### Doubly Constrained R-squared
 
-The R-squared value of 0.59 tells us that the explanatory variables are able to explain 59 % of the variance in the TRIPS target variable.
+The R-squared value of 0.58 tells us that the explanatory variables are able to explain 58 % of the variance in the TRIPS target variable.
 
 ```{r}
 CalcRSquared(dbcSIM$data$TRIPS, dbcSIM$fitted.values)
 ```
 
+Adjusted R-squared of 0.57 is the highest for this model.
+
+```{r}
+Calc_AdjRSquared(CalcRSquared(dbcSIM$data$TRIPS, dbcSIM$fitted.values),
+                 length(dbcSIM$data$TRIPS),
+                 length(dbcSIM$coefficients)-1)
+```
+
 #### Doubly Constrained Coefficients
 
-The explanatory variable 'distance' is staitstically significant and has a coefficient of -0.159.
+The explanatory variable 'distance' is statistically significant and has a coefficient of -0.158.
 
 ```{r}
 dbcSIM$coefficients[1]
@@ -1883,7 +2011,7 @@ model_list <- list(unconstrained=uncSIM,
                    doublyConstrained=dbcSIM)
 ```
 
-The output below reveals that **doubly constrained SIM** is the **best** model among all the four SIMs because it has the smallest RMSE value of 1026.
+The output below reveals that **doubly constrained SIM** is the **best** model among all the four SIMs because it has the smallest RMSE value of 1039.
 
 ```{r}
 compare_performance(model_list,
@@ -1955,7 +2083,80 @@ ggarrange(unc_p, orc_p, dec_p, dbc_p,
 
 **Discussion**:
 
-We can see that the points 'hug' more closely to the diagonal blue line, which indicates that doubly constrained model is indeed the best model.
+We can see that the points 'hug' more closely to the diagonal blue line, which indicates that doubly constrained model is indeed the best model. However, the origin constrained model is more useful in explaining the predictors that affects the flow of bus trips.
+
+We focus our attention on the most influential factor affecting bus trips, that is count of MRT stations with the highest coefficient of 0.49. Given that I have prepared a MRT train flow data (in another exercise out of personal interest), we could incorporate this dataset into this exercise to visualise how commuters from various residential zones would potentially take bus to MRT stations.
+
+```{r}
+flowLine_train_wkdaymorn <- read_rds("data/rds/flowLine_train_wkday_am.rds")
+```
+
+In the map below, only bus trips above 13,000 and MRT trips above 14,800 trips are displayed. The lines represent bus flows while the pink lines represent MRT flows.
+
+```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
+#| code-fold: true
+
+tmap_mode('view')
+tmap_options(check.and.fix = TRUE)
+
+
+filtered_flowLine_bus <- flowLine %>% 
+  filter(TRIPS >= 13000)
+
+filtered_flowLine_train <- flowLine_train_wkdaymorn %>%
+  filter(TRIPS >= 14800)
+
+bs_count_filtered <- bs_count %>%
+  filter(grid_id %in% c(filtered_flowLine_bus$ORIGIN_GRID_ID, filtered_flowLine_bus$DESTIN_GRID_ID))
+
+
+tm_shape(mpsz) +
+  tm_polygons(alpha=0.7,
+              col='black') +
+tm_shape(bs_count_filtered) +
+  tm_polygons(alpha=0.3) +
+#tm_shape(busstop_hex_geo) +
+  #tm_dots(size= 0.005)+
+  filtered_flowLine_bus %>% 
+  tm_shape() + 
+  tm_lines(lwd= 'TRIPS',
+           scale= c(4,5,6,7,8,9),
+           #scale= c(2,3,4,5,6,7),
+           n = 6,
+           alpha= 0.3,
+           popup.vars=c("# Trips:"="TRIPS",
+                        "Orig Desc:"="ORIGIN_DESC",
+                        "Destin Desc:" = "DESTIN_DESC",
+                        "Distance:" = 'dist'),
+           col= 'yellow') +
+  
+  filtered_flowLine_train %>%
+  tm_shape() +
+  tm_lines(lwd = 'TRIPS',
+           style = 'quantile',
+           scale= c(4,5,6,7,8,9),
+           #scale=c(2,3,4,5,6,7),
+           #scale= c(0.3, 3, 9, 15, 21, 30),
+           #scale= c(0.1, 1, 3, 5, 7,10),
+           n = 6,
+           alpha= 0.3,
+           popup.vars=c("# Trips:"="TRIPS",
+                        "Orig Desc:"="ORIGIN_DESC",
+                        "Destin Desc:" = "DESTIN_DESC",
+                        "Distance:" = 'dist'),
+           col='pink') +
+  tm_view(set.zoom.limits = c(11,17)) +
+  tm_layout(main.title = 'O-D Flow On Weekday Morning Peak hour' ,
+            main.title.size = 1.0,
+            main.title.fontface = 'bold')
+
+tmap_mode('plot')
+
+```
+
+The map above shows how the passengers commute from their residential areas to MRT stations via the yellow lines (Bus) and then from MRT to their final destinations via the pink lines (Train).
 
 ### Visualising the residual errors
 
@@ -1969,6 +2170,11 @@ flow_data1 <- process_fitted_values(flow_data1, -resid(uncSIM, type='response'),
 flow_data1 <- process_fitted_values(flow_data1, -resid(orcSIM, type='response'), "orcRES")
 flow_data1 <- process_fitted_values(flow_data1, -resid(decSIM, type='response'), "decRES")
 flow_data1 <- process_fitted_values(flow_data1, -resid(dbcSIM, type='response'), "dbcRES")
+
+flow_data1 <- process_fitted_values(flow_data1, -resid(uncSIM, type='working'), "uncRES_norm")
+flow_data1 <- process_fitted_values(flow_data1, -resid(orcSIM, type='working'), "orcRES_norm")
+flow_data1 <- process_fitted_values(flow_data1, -resid(decSIM, type='working'), "decRES_norm")
+flow_data1 <- process_fitted_values(flow_data1, -resid(dbcSIM, type='working'), "dbcRES_norm")
 ```
 
 Save `flow_data1` to local.
@@ -2061,13 +2267,15 @@ All four models produces under-predicted (below X-axis) and over-predicted above
 
 Using the `highlight()` and `subplot()` functions of the [plotly](https://plotly.com/r/subplots/) package, we print the 'residual vs predicted' **coordinated** plots side-by-side. Clicking on any point in one of the chart will highlight the same point in the other three maps.
 
-Since the best model is doubly-constrained, we filter to retain only the data points with over-predicted trips of above 20,00 and under-predicted trips of -20,000.
+Since the best model is doubly-constrained, we filter to retain only the data points with over-predicted trips of above 20,000 and under-predicted trips of -20,000.
 
 We will use these coordinated charts to identify flows that are *consistently* **radically** over and under predicted.
 
 **Map Tips:** Hover mouse over any points to reveal tool tip that contains predicted value, residuals (predicted - actual) and origin / destination bus-stop descriptions.
 
 ```{r}
+#| fig-width: 14
+#| fig-asp: 0.68
 #| code-fold: true
 
 library(plotly)
@@ -2120,7 +2328,7 @@ subplot(ggplotly(unc_rf),
         margin = 0.1)
 ```
 
-**Flows that are consistently largely under-predicted in all four models:**
+**Flows that are consistently under-predicted (in big magnitude) in all four models:**
 
 Woodlands checkpoint to Woodlands Bus interchange
 
@@ -2128,7 +2336,7 @@ Woodlands checkpoint to Kranji MRT station
 
 **\*It appears that trips related to bus stops near the Woodlands Checkpoint tend to be poorly predicted.**
 
-**Flows that are consistently largely over-predicted in DEC and DBC models:**
+**Flows that are consistently over-predicted (in big magnitude) in DEC and DBC models:**
 
 Woodlands Train to Woodlands Checkpoint
 
@@ -2176,7 +2384,8 @@ tm_shape(bs_count_filtered) +
            style = 'fixed',
            breaks = c(-68000,-40000,-20000,0,20000,40000, 60000, 76000),
            #scale= c(0.3, 3, 9, 15, 21, 30),
-           palette = 'RdYlBu',
+           palette = c("darkblue", "blue", "lightblue", "pink", "red", "darkred"),
+           #palette = 'RdYlBu',
            n = 6,
            alpha= 0.9,
            popup.vars=c("# Actual Trips:"="TRIPS",
@@ -2222,7 +2431,8 @@ tm_shape(bs_count_filtered) +
            style = 'fixed',
            breaks = c(-68000,-40000,-20000,0,20000,40000, 60000, 76000),
            #scale= c(0.3, 3, 9, 15, 21, 30),
-           palette = 'RdYlBu',
+           palette = c("darkblue", "blue", "lightblue", "pink", "red", "darkred"),
+           #palette = 'RdYlBu',
            n = 6,
            alpha= 0.9,
            popup.vars=c("# Actual Trips:"="TRIPS",
@@ -2270,7 +2480,8 @@ tm_shape(bs_count_filtered) +
            style = 'fixed',
            breaks = c(-68000,-40000,-20000,0,20000,40000, 60000, 76000),
            #scale= c(0.3, 3, 9, 15, 21, 30),
-           palette = 'RdYlBu',
+           palette = c("darkblue", "blue", "lightblue", "pink", "red", "darkred"),
+           #palette = 'RdYlBu',
            n = 6,
            alpha= 0.9,
            popup.vars=c("# Actual Trips:"="TRIPS",
@@ -2317,7 +2528,8 @@ tm_shape(bs_count_filtered) +
            style = 'fixed',
            breaks = c(-68000,-40000,-20000,0,20000,40000, 60000, 76000),
            #scale= c(0.3, 3, 9, 15, 21, 30),
-           palette = 'RdYlBu',
+           palette = c("darkblue", "blue", "lightblue", "pink", "red", "darkred"),
+           #palette = 'RdYlBu',
            n = 6,
            alpha= 0.9,
            popup.vars=c("# Actual Trips:"="TRIPS",
@@ -2358,7 +2570,7 @@ tmap_arrange(unc,
 
 At one glance, the unconstrained model tend to under-predict the number of trips than over-predict. The doubly constrained model tend to over-predict the number of trips than to under-predict.
 
-Across all the four models, common regions with high errors in predictions were Woodlands Check Point area, Yishun/Khatib interchange area, Chua Chu Kang interchange area and Boon Lay interchange area.
+Across all the four models, common regions with high errors in predictions were Woodlands Check Point area, Yishun/Khatib interchange area, Chua Chu Kang interchange area and Boon Lay interchange area. This is because I have used the absolute residual count and these regions have the higher flows in our study area.
 
 ## Removing the Outliers
 
@@ -2404,7 +2616,7 @@ dbcSIM_remove <- read_rds('data/rds/dbcSIM_remove.rds')
 ::: panel-tabset
 #### New DBC R-squared
 
-As compared to the original model, removing the outliers improved the model R-squared value from 0.59 to 0.61.
+As compared to the original model, removing the outliers improved the model R-squared value from 0.58 to 0.60.
 
 ```{r}
 CalcRSquared(dbcSIM_remove$data$TRIPS, dbcSIM_remove$fitted.values)
@@ -2412,7 +2624,7 @@ CalcRSquared(dbcSIM_remove$data$TRIPS, dbcSIM_remove$fitted.values)
 
 #### New DBC Coefficients
 
-The coefficient of the distance variable is -1.59
+The coefficient of the distance variable is -1.58.
 
 ```{r}
 dbcSIM_remove$coefficients[1635]
@@ -2427,15 +2639,15 @@ summary(dbcSIM_remove)
 
 ## Conclusion and limitations
 
-Four Spatial Interaction Models were built and compared to find out the important factors influencing the commuter flow in the Weekday Morning peak period. The R-squared values for the UNC, ORC, DEC and DBC models are 0.24, 0.38, 0.37 and 0.59 respectively. From the UNC and ORC models, the significant factors affecting commuter flow are distance (negative relationship), destination MRT station exits count and destination school count (in order of highest influence first). From the DEC model, the significant factors are distance and 5room flat dwellers count.
+Four Spatial Interaction Models were built and compared to find out the important factors influencing the commuter flow in the Weekday Morning peak period. The R-squared values for the UNC, ORC, DEC and DBC models are 0.25, 0.38, 0.37 and 0.58 respectively. From the UNC and ORC models, the significant factors affecting commuter flow are **distance** (negative relationship), **destination** **MRT station exits count** and **destination** **school count** (in order of highest influence first). From the DEC model, the significant factors are **distance** and **origin** **5room flat dwellers count**.
 
-When the outliers were removed, the R-squared value of the new DBC model increased to 0.61. Possible reason why the model could not predict flow of bus stops near Woodlands Checkpoint region could be that the number of people commuting between JB and Singapore daily for work purpose is really too huge and concentrated over Woodlands. We are also lacking the work opportunities information in JB side for model to predict properly.
+When the outliers were removed, the R-squared value of the new DBC model increased to 0.60. Possible reason why the model could not predict flow of bus stops near Woodlands Checkpoint region could be that the number of people commuting between JB and Singapore daily for work purpose is really too huge and concentrated over Woodlands. We are also lacking the work opportunities information in JB side for model to predict properly.
 
 With the models created, possible 'what-if' scenarios can be simulated; take for instance what if there are new MRT stations / development of a new residential town in the future? The models could predict new flows patterns and assist transport authority to plan ahead.
 
 **Limitations of this exercise would include:**
 
-1.  The Passenger Volume by Origin Destination Bus Stops data used do not included any transfer trip information. With our attractive and propulsive attributes, we can only assume that passengers take only 1 bus trip from source to their intended destination. With the inclusion of the MRT train station exits locations, we factor in the possibility of passenger commuting to MRT station for transfer.
+1.  The Passenger Volume by Origin Destination Bus Stops data used does not include any transfer trip information. With our attractive and propulsive attributes, we can only assume that passengers take only 1 bus trip from source to their intended destination. With the inclusion of the MRT train station exits locations, we factor in the possibility of passenger commuting to MRT station for transfer.
 2.  The population density distribution of Residents could only be estimated from the *HDB.csv* and not directly taken from the *Resident Distribution by single age and subzone* dataset because we have reduced our basic spatial unit to 750m hexagons instead of subzone (to reduce social-economic and spatial aggregation errors). Now, each hexagon could have a mix of 7 subzones inside it, thus use of Resident Distribution by single age and subzone dataset is inappropriate (otherwise we could have achieved better results).
 
 ![](images/mpsz%20and%20hex.png){fig-align="center" width="354"}

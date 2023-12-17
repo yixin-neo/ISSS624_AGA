@@ -103,7 +103,7 @@ mpsz_flow<- read_rds('data/rds/mpsz_flow.rds')
 mpsz_var<- read_rds('data/rds/mpsz_var.rds')
 ```
 
-### Creating `spflow_network-class` objects. 
+### Creating `spflow_network-class` objects.
 
 It is a S4 class that contains all information on a spatial network which is composed by a set of nodes that are linked by some neighbourhood relation. We need **neighbour list** and **attributes**.
 
@@ -233,10 +233,10 @@ base_model
 
 '*D_SCHOOL_COUNT.lag1*' : coefficient of neighbouring schools (NOT significant)
 
-Retail count is not a good explanatory variable as well.
-Financial service count is a good explanatory variable.
+Retail count is not a good explanatory variable as well. Financial service count is a good explanatory variable.
 
 ### 
+
 Moran scatterplot (wrapper of spdep) of residuals
 
 **If points are closer to zero line, less chance of autocorrelation.**
@@ -257,6 +257,7 @@ cor_image(corr_residual)
 ```
 
 ## 
+
 Working with model control
 
 ```{r}
